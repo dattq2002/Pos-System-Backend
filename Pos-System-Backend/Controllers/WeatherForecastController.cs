@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Pos_System_Backend.Model.Models;
+using Pos_System_Backend.Repository.Interfaces;
 
 namespace Pos_System_Backend.Controllers
 {
@@ -6,28 +8,21 @@ namespace Pos_System_Backend.Controllers
 	[Route("[controller]")]
 	public class WeatherForecastController : ControllerBase
 	{
-		private static readonly string[] Summaries = new[]
-		{
-		"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-	};
+		private readonly IUnitOfWork<PosSystemContext> _unitOfWork;
 
 		private readonly ILogger<WeatherForecastController> _logger;
 
-		public WeatherForecastController(ILogger<WeatherForecastController> logger)
+		public WeatherForecastController(ILogger<WeatherForecastController> logger, IUnitOfWork<PosSystemContext> unitOfWork)
 		{
 			_logger = logger;
+			_unitOfWork = unitOfWork;
 		}
 
-		[HttpGet(Name = "GetWeatherForecast")]
-		public IEnumerable<WeatherForecast> Get()
+		[HttpGet]
+		public async Task<IActionResult> Get()
 		{
-			return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-			{
-				Date = DateTime.Now.AddDays(index),
-				TemperatureC = Random.Shared.Next(-20, 55),
-				Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-			})
-			.ToArray();
+			var list = await _unitOfWork.GetRepository<PaymentType>().GetListAsync();
+			return Ok(list);
 		}
 	}
 }
