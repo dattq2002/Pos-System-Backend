@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Pos_System_Backend.Model.Models
+{
+    public partial class Order
+    {
+        public Order()
+        {
+            OrderDetails = new HashSet<OrderDetail>();
+            Payments = new HashSet<Payment>();
+        }
+
+        public Guid Id { get; set; }
+        public Guid CheckInPerson { get; set; }
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
+        public string InvoiceId { get; set; } = null!;
+        public double TotalAmount { get; set; }
+        public double Discount { get; set; }
+        public double? DiscountOrderDetail { get; set; }
+        public double FinalAmount { get; set; }
+        public double Vat { get; set; }
+        public double Vatamount { get; set; }
+        public string? OrderType { get; set; }
+        public int? NumberOfGuest { get; set; }
+        public int Status { get; set; }
+        public Guid? OrderSourceId { get; set; }
+        public string? Note { get; set; }
+        public double? FeeAmount { get; set; }
+        public string? FeeDescription { get; set; }
+        public Guid SessionId { get; set; }
+        public Guid? TableId { get; set; }
+
+        public virtual Account CheckInPersonNavigation { get; set; } = null!;
+        public virtual OrderSource IdNavigation { get; set; } = null!;
+        public virtual Session Session { get; set; } = null!;
+        public virtual Table? Table { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
+    }
+}

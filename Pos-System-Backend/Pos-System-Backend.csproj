@@ -11,4 +11,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pos-System-Backend.Model\Pos-System-Backend.Model.csproj" />
+    <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj" />
+  </ItemGroup>
+
 </Project>
