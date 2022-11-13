@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend", "Pos-System-Backend\Pos-System-Backend.csproj", "{E8C9ACAA-D568-41E4-90D0-05D96B27D0C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend.Model", "Pos-System-Backend.Model\Pos-System-Backend.Model.csproj", "{CBEFE1DA-8761-4D3C-B0DA-2517A3CFBE7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend.Domain", "Pos-System-Backend.Model\Pos-System-Backend.Domain.csproj", "{CBEFE1DA-8761-4D3C-B0DA-2517A3CFBE7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pos-System-Backend.Repository", "Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj", "{DD118A34-B096-4AEA-BF0D-414AE9CA6635}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend.Repository", "Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj", "{DD118A34-B096-4AEA-BF0D-414AE9CA6635}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

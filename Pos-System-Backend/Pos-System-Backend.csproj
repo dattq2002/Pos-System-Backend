@@ -8,15 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLog" Version="5.0.5" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Middlewares\" />
+    <Folder Include="Models\Response\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pos-System-Backend.Model\Pos-System-Backend.Model.csproj" />
+    <ProjectReference Include="..\Pos-System-Backend.Model\Pos-System-Backend.Domain.csproj" />
     <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj" />
   </ItemGroup>
 
