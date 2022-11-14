@@ -4,7 +4,6 @@ using NLog.Web;
 using Pos_System_Backend.Constants;
 using Pos_System_Backend.Extensions;
 using Pos_System_Backend.Middlewares;
-using Pos_System_Backend.Model.Models;
 
 var logger = NLog.LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),"/nlog.config")).GetCurrentClassLogger();
 

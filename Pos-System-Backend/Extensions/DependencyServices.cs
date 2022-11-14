@@ -1,5 +1,5 @@
 ﻿using Pos_System_Backend.Constants;
-using Pos_System_Backend.Model.Models;
+using Pos_System_Backend.Domain.Models;
 using Pos_System_Backend.Repository.Implement;
 using Pos_System_Backend.Repository.Interfaces;
 

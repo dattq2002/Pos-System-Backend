@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Pos_System_Backend.Model.Models
+namespace Pos_System_Backend.Domain.Models
 {
     public partial class PosSystemContext : DbContext
     {

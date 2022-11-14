@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Pos_System_Backend.Model.Models
+namespace Pos_System_Backend.Domain.Models
 {
     public partial class Pos
     {

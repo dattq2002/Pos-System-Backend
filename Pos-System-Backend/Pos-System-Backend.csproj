@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pos-System-Backend.Model\Pos-System-Backend.Domain.csproj" />
-    <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj" />
+	  <ProjectReference Include="..\Pos-System-Backend.Domain\Pos-System-Backend.Domain.csproj" />
+	  <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj" />
   </ItemGroup>
 
 </Project>
