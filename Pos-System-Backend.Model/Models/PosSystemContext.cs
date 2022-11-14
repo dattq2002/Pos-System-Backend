@@ -19,6 +19,7 @@ namespace Pos_System_Backend.Model.Models
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<Area> Areas { get; set; } = null!;
         public virtual DbSet<Brand> Brands { get; set; } = null!;
+        public virtual DbSet<BrandAccount> BrandAccounts { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Collection> Collections { get; set; } = null!;
         public virtual DbSet<CollectionProduct> CollectionProducts { get; set; } = null!;
@@ -35,8 +36,10 @@ namespace Pos_System_Backend.Model.Models
         public virtual DbSet<Pos> Pos { get; set; } = null!;
         public virtual DbSet<PosSession> PosSessions { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Session> Sessions { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
+        public virtual DbSet<StoreAccount> StoreAccounts { get; set; } = null!;
         public virtual DbSet<Table> Tables { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -60,17 +63,13 @@ namespace Pos_System_Backend.Model.Models
 
                 entity.Property(e => e.Password).HasMaxLength(64);
 
-                entity.Property(e => e.Role).HasMaxLength(30);
+                entity.Property(e => e.Status).HasMaxLength(20);
 
-                entity.HasOne(d => d.Brand)
+                entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
-                    .HasForeignKey(d => d.BrandId)
-                    .HasConstraintName("FK_Account_Brand");
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.Accounts)
-                    .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK_Account_Store");
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Account_Role");
             });
 
             modelBuilder.Entity<Area>(entity =>
@@ -108,6 +107,28 @@ namespace Pos_System_Backend.Model.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(20)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<BrandAccount>(entity =>
+            {
+                entity.ToTable("BrandAccount");
+
+                entity.HasIndex(e => e.AccountId, "UX_BrandAccount_Account")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Account)
+                    .WithOne(p => p.BrandAccount)
+                    .HasForeignKey<BrandAccount>(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandAccount_Account");
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.BrandAccounts)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandAccount_Brand");
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -465,6 +486,15 @@ namespace Pos_System_Backend.Model.Models
                     .HasConstraintName("FK_Product_Product");
             });
 
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.ToTable("Role");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name).HasMaxLength(20);
+            });
+
             modelBuilder.Entity<Session>(entity =>
             {
                 entity.ToTable("Session");
@@ -500,6 +530,28 @@ namespace Pos_System_Backend.Model.Models
                     .HasForeignKey(d => d.BrandId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Brand");
+            });
+
+            modelBuilder.Entity<StoreAccount>(entity =>
+            {
+                entity.ToTable("StoreAccount");
+
+                entity.HasIndex(e => e.AccountId, "UX_StoreAccount_AccountId")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Account)
+                    .WithOne(p => p.StoreAccount)
+                    .HasForeignKey<StoreAccount>(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreAccount_Account");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreAccounts)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreAccount_Store");
             });
 
             modelBuilder.Entity<Table>(entity =>
