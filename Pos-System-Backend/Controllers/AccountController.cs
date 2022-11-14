@@ -15,7 +15,7 @@ namespace Pos_System_Backend.Controllers
 		[HttpGet("Accounts")]
 		public async Task<IActionResult> GetAccount()
 		{
-			_logger.LogInformation("Get Payment type");
+			_logger.LogInformation("Get list Payment type");
 			ICollection<PaymentType> result = await _unitOfWork.GetRepository<PaymentType>().GetListAsync();
 			return Ok(result);
 		}
