@@ -13,13 +13,12 @@ namespace Pos_System_Backend.Model.Models
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public string Role { get; set; } = null!;
-        public bool IsUsed { get; set; }
-        public Guid? StoreId { get; set; }
-        public Guid? BrandId { get; set; }
+        public string Status { get; set; } = null!;
+        public Guid RoleId { get; set; }
 
-        public virtual Brand? Brand { get; set; }
-        public virtual Store? Store { get; set; }
+        public virtual Role Role { get; set; } = null!;
+        public virtual BrandAccount? BrandAccount { get; set; }
+        public virtual StoreAccount? StoreAccount { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

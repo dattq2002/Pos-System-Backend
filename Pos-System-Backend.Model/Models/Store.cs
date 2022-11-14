@@ -7,9 +7,9 @@ namespace Pos_System_Backend.Model.Models
     {
         public Store()
         {
-            Accounts = new HashSet<Account>();
             Areas = new HashSet<Area>();
             MenuStores = new HashSet<MenuStore>();
+            StoreAccounts = new HashSet<StoreAccount>();
         }
 
         public Guid Id { get; set; }
@@ -22,8 +22,8 @@ namespace Pos_System_Backend.Model.Models
         public Guid BrandId { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
-        public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<Area> Areas { get; set; }
         public virtual ICollection<MenuStore> MenuStores { get; set; }
+        public virtual ICollection<StoreAccount> StoreAccounts { get; set; }
     }
 }
