@@ -12,6 +12,7 @@ namespace Pos_System_Backend.Controllers
 		{
 		}
 
+
 		[HttpGet("Accounts")]
 		public async Task<IActionResult> GetAccount()
 		{
