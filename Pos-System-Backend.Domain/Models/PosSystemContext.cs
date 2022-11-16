@@ -42,20 +42,14 @@ namespace Pos_System_Backend.Domain.Models
         public virtual DbSet<StoreAccount> StoreAccounts { get; set; } = null!;
         public virtual DbSet<Table> Tables { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=pos-system-dev.cmzdrlsusaac.ap-southeast-1.rds.amazonaws.com,6969;User Id=possystem;Password=3w^N&Sp775B5;Database=PosSystem");
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");
+
+                entity.HasIndex(e => e.Username, "UX_Account_Username")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -64,6 +58,8 @@ namespace Pos_System_Backend.Domain.Models
                 entity.Property(e => e.Password).HasMaxLength(64);
 
                 entity.Property(e => e.Status).HasMaxLength(20);
+
+                entity.Property(e => e.Username).HasMaxLength(50);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)

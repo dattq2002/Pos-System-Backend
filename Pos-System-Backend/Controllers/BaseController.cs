@@ -10,12 +10,10 @@ namespace Pos_System_Backend.Controllers
 	public class BaseController<T> : ControllerBase where T : BaseController<T>
 	{
 		protected ILogger<T> _logger;
-		protected IUnitOfWork<PosSystemContext> _unitOfWork;
 
-		public BaseController(ILogger<T> logger, IUnitOfWork<PosSystemContext> unitOfWork)
+		public BaseController(ILogger<T> logger)
 		{
 			_logger = logger;
-			_unitOfWork = unitOfWork;
 		}
 	}
 }

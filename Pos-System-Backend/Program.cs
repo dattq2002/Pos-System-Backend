@@ -21,10 +21,12 @@ try
 	});
 	builder.Services.AddControllers();
 	builder.Services.AddDatabase();
+	builder.Services.AddServices();
 	builder.Services.AddUnitOfWork();
+	builder.Services.AddJwtValidation();
 	// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 	builder.Services.AddEndpointsApiExplorer();
-	builder.Services.AddSwaggerGen();
+	builder.Services.AddConfigSwagger();
 
 	var app = builder.Build();
 
@@ -35,6 +37,7 @@ try
 
 	//app.UseHttpsRedirection();
 	app.UseCors(CorsConstant.PolicyName);
+	app.UseAuthentication();
 	app.UseAuthorization();
 
 	app.MapControllers();

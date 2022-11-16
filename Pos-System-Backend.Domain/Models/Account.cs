@@ -15,6 +15,7 @@ namespace Pos_System_Backend.Domain.Models
         public string Password { get; set; } = null!;
         public string Status { get; set; } = null!;
         public Guid RoleId { get; set; }
+        public string Username { get; set; } = null!;
 
         public virtual Role Role { get; set; } = null!;
         public virtual BrandAccount? BrandAccount { get; set; }
