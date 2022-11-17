@@ -25,6 +25,10 @@ namespace Pos_System_Backend.Controllers
 		public async Task<IActionResult> GetAccount(LoginRequest loginRequest)
 		{
 			var account = await _accountService.Login(loginRequest);
+			if (account == null)
+			{
+				return BadRequest("Username or password is not correct");
+			}
 			var token = JwtUtil.GenerateJwtToken(account);
 			return Ok(token);
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Pos_System_Backend.Domain.Models;
@@ -10,7 +11,7 @@ namespace Pos_System_Backend.Services.Implements
 {
 	public class AccountService : BaseService<AccountService>, IAccountService
 	{
-		public AccountService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<AccountService> logger) : base(unitOfWork, logger)
+		public AccountService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<AccountService> logger, IMapper mapper) : base(unitOfWork, logger, mapper)
 		{
 		}
 

@@ -1,4 +1,5 @@
-﻿using Pos_System_Backend.Domain.Models;
+﻿using AutoMapper;
+using Pos_System_Backend.Domain.Models;
 using Pos_System_Backend.Repository.Interfaces;
 
 namespace Pos_System_Backend.Services
@@ -7,11 +8,13 @@ namespace Pos_System_Backend.Services
 	{
 		protected IUnitOfWork<PosSystemContext> _unitOfWork;
 		protected ILogger<T> _logger;
+		protected IMapper _mapper;
 
-		public BaseService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<T> logger)
+		public BaseService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<T> logger, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
 			_logger = logger;
+			_mapper = mapper;
 		}
 	}
 }
