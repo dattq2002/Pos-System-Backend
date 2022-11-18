@@ -20,7 +20,9 @@ namespace Pos_System_Backend.Domain.Models
         public string? Description { get; set; }
         public string? PicUrl { get; set; }
         public string Status { get; set; } = null!;
+        public Guid? BrandId { get; set; }
 
+        public virtual Brand? Brand { get; set; }
         public virtual ICollection<ExtraCategory> ExtraCategoryExtraCategoryCodeNavigations { get; set; }
         public virtual ICollection<ExtraCategory> ExtraCategoryProductCategoryCodeNavigations { get; set; }
         public virtual ICollection<Product> Products { get; set; }

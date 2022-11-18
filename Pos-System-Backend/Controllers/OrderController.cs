@@ -5,7 +5,10 @@ namespace Pos_System_Backend.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class OrderController : ControllerBase
+	public class OrderController : BaseController<OrderController>
 	{
+		public OrderController(ILogger<OrderController> logger) : base(logger)
+		{
+		}
 	}
 }

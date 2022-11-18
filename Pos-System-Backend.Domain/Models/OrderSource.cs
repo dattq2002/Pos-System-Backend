@@ -11,7 +11,9 @@ namespace Pos_System_Backend.Domain.Models
         public string Address { get; set; } = null!;
         public string Phone { get; set; } = null!;
         public string? PicUrl { get; set; }
+        public Guid BrandId { get; set; }
 
+        public virtual Brand Brand { get; set; } = null!;
         public virtual Order? Order { get; set; }
     }
 }

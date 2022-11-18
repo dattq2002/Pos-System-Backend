@@ -12,10 +12,11 @@ namespace Pos_System_Backend.Domain.Models
         public double TotalAmount { get; set; }
         public double FinalAmount { get; set; }
         public string? Notes { get; set; }
-        public int? Status { get; set; }
-        public string ProductCode { get; set; } = null!;
+        public string Status { get; set; } = null!;
+        public Guid ProductId { get; set; }
+        public double SellingPrice { get; set; }
 
         public virtual Order Order { get; set; } = null!;
-        public virtual Product ProductCodeNavigation { get; set; } = null!;
+        public virtual Product Product { get; set; } = null!;
     }
 }

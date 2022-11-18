@@ -8,7 +8,7 @@ namespace Pos_System_Backend.Controllers
 	[ApiController]
 	public class MenuController : BaseController<MenuController>
 	{
-		private const string ControllerName = "Menu";
+		private const string ControllerName = "menu";
 		public MenuController(ILogger<MenuController> logger) : base(logger)
 		{
 		}

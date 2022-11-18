@@ -8,6 +8,8 @@ namespace Pos_System_Backend.Domain.Models
         public Brand()
         {
             BrandAccounts = new HashSet<BrandAccount>();
+            Categories = new HashSet<Category>();
+            OrderSources = new HashSet<OrderSource>();
             Products = new HashSet<Product>();
             Stores = new HashSet<Store>();
         }
@@ -19,6 +21,8 @@ namespace Pos_System_Backend.Domain.Models
         public string? Phone { get; set; }
 
         public virtual ICollection<BrandAccount> BrandAccounts { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<OrderSource> OrderSources { get; set; }
         public virtual ICollection<Product> Products { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
     }

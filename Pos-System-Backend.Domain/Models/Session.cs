@@ -8,7 +8,6 @@ namespace Pos_System_Backend.Domain.Models
         public Session()
         {
             Orders = new HashSet<Order>();
-            PosSessions = new HashSet<PosSession>();
         }
 
         public Guid Id { get; set; }
@@ -21,8 +20,9 @@ namespace Pos_System_Backend.Domain.Models
         public double? TotalChangeCash { get; set; }
         public double? TotalDiscountAmount { get; set; }
         public double? TotalFinalAmount { get; set; }
+        public Guid StoreId { get; set; }
 
+        public virtual Store Store { get; set; } = null!;
         public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<PosSession> PosSessions { get; set; }
     }
 }

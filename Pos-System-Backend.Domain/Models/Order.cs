@@ -24,18 +24,16 @@ namespace Pos_System_Backend.Domain.Models
         public double Vatamount { get; set; }
         public string? OrderType { get; set; }
         public int? NumberOfGuest { get; set; }
-        public int Status { get; set; }
+        public string Status { get; set; } = null!;
         public Guid? OrderSourceId { get; set; }
         public string? Note { get; set; }
         public double? FeeAmount { get; set; }
         public string? FeeDescription { get; set; }
         public Guid SessionId { get; set; }
-        public Guid? TableId { get; set; }
 
         public virtual Account CheckInPersonNavigation { get; set; } = null!;
         public virtual OrderSource IdNavigation { get; set; } = null!;
         public virtual Session Session { get; set; } = null!;
-        public virtual Table? Table { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
     }

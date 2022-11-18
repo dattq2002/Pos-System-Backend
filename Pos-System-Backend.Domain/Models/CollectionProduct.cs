@@ -6,11 +6,11 @@ namespace Pos_System_Backend.Domain.Models
     public partial class CollectionProduct
     {
         public Guid Id { get; set; }
-        public string CollectionCode { get; set; } = null!;
-        public string ProductCode { get; set; } = null!;
+        public Guid CollectionId { get; set; }
+        public Guid ProductId { get; set; }
         public string Status { get; set; } = null!;
 
-        public virtual Collection CollectionCodeNavigation { get; set; } = null!;
-        public virtual Product ProductCodeNavigation { get; set; } = null!;
+        public virtual Collection Collection { get; set; } = null!;
+        public virtual Product Product { get; set; } = null!;
     }
 }
