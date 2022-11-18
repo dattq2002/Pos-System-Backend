@@ -25,8 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Pos-System-Backend.Domain\Pos-System-Backend.Domain.csproj" />
-	  <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj" />
+	  <ProjectReference Include="..\Pos-System-Backend.Domain\Pos-System.Domain.csproj" />
+	  <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System.Repository.csproj" />
+	  <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
+	  <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend", "Pos-System-Backend\Pos-System-Backend.csproj", "{E8C9ACAA-D568-41E4-90D0-05D96B27D0C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System.API", "Pos-System\Pos-System.API.csproj", "{E8C9ACAA-D568-41E4-90D0-05D96B27D0C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System-Backend.Repository", "Pos-System-Backend.Repository\Pos-System-Backend.Repository.csproj", "{DD118A34-B096-4AEA-BF0D-414AE9CA6635}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System.Repository", "Pos-System.Repository\Pos-System.Repository.csproj", "{DD118A34-B096-4AEA-BF0D-414AE9CA6635}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pos-System-Backend.Domain", "Pos-System-Backend.Domain\Pos-System-Backend.Domain.csproj", "{66B1105D-87BA-4CF5-B192-3D55D1600C3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pos-System.Domain", "Pos-System.Domain\Pos-System.Domain.csproj", "{66B1105D-87BA-4CF5-B192-3D55D1600C3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
