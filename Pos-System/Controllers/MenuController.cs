@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pos_System_Backend.Constants;
+using Pos_System_Backend.Services.Interfaces;
 
 namespace Pos_System_Backend.Controllers
 {
@@ -9,15 +10,19 @@ namespace Pos_System_Backend.Controllers
 	public class MenuController : BaseController<MenuController>
 	{
 		private const string ControllerName = "menu";
-		public MenuController(ILogger<MenuController> logger) : base(logger)
+		private readonly IMenuService _menuService;
+		public MenuController(ILogger<MenuController> logger, IMenuService menuService) : base(logger)
 		{
+			_menuService = menuService;
 		}
 
 		[Authorize(Roles = $"{RoleConstant.Employee},{RoleConstant.BrandManager},{RoleConstant.StoreManager}")]
 		[HttpGet(ControllerName)]
-		public async Task<IActionResult> GetMenu()
+		public async Task<IActionResult> GetMenu([FromQuery]Guid storeId, [FromQuery]DateTime? inputDateTime)
 		{
-			return Ok();
+			DateTime requestDateTime = inputDateTime ?? DateTime.Now;
+			var store = await _menuService.GetMenuOfStore(storeId,requestDateTime);
+			return Ok(store);
 		}
 	}
 }

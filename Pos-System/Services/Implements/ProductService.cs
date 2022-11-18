@@ -7,7 +7,7 @@ namespace Pos_System_Backend.Services.Implements;
 
 public class ProductService : BaseService<ProductService>,IProductService
 {
-	public ProductService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<ProductService> logger, IMapper mapper) : base(unitOfWork, logger, mapper)
+	public ProductService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
 	{
 	}
 

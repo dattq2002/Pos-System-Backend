@@ -21,12 +21,11 @@
     <Folder Include="Middlewares\" />
     <Folder Include="Models\Request\" />
     <Folder Include="Mappers\" />
+    <Folder Include="Enums\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Pos-System-Backend.Domain\Pos-System.Domain.csproj" />
-	  <ProjectReference Include="..\Pos-System-Backend.Repository\Pos-System.Repository.csproj" />
 	  <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
 	  <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
   </ItemGroup>

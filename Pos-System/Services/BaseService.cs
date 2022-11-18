@@ -9,12 +9,13 @@ namespace Pos_System_Backend.Services
 		protected IUnitOfWork<PosSystemContext> _unitOfWork;
 		protected ILogger<T> _logger;
 		protected IMapper _mapper;
-
-		public BaseService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<T> logger, IMapper mapper)
+		protected IHttpContextAccessor _httpContextAccessor;
+		public BaseService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<T> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
 		{
 			_unitOfWork = unitOfWork;
 			_logger = logger;
 			_mapper = mapper;
+			_httpContextAccessor = httpContextAccessor;
 		}
 	}
 }

@@ -1,6 +1,8 @@
-﻿namespace Pos_System_Backend.Services.Interfaces;
+﻿using Pos_System_Backend.Domain.Models;
+
+namespace Pos_System_Backend.Services.Interfaces;
 
 public interface IMenuService
 {
-	public void GetMenuOfStore();
+	public Task<Store> GetMenuOfStore(Guid storeId, DateTime requestDateTime);
 }

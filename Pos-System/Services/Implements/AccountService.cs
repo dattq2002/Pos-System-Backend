@@ -11,7 +11,7 @@ namespace Pos_System_Backend.Services.Implements
 {
 	public class AccountService : BaseService<AccountService>, IAccountService
 	{
-		public AccountService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<AccountService> logger, IMapper mapper) : base(unitOfWork, logger, mapper)
+		public AccountService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<AccountService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
 		{
 		}
 
