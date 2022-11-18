@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Extensions;
-using Pos_System_Backend.Middlewares;
+using Pos_System.API.Constants;
+using Pos_System.API.Extensions;
+using Pos_System.API.Middlewares;
 
 var logger = NLog.LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),"/nlog.config")).GetCurrentClassLogger();
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Pos_System_Backend.Domain.Models
+namespace Pos_System.Domain.Models
 {
     public partial class BrandAccount
     {

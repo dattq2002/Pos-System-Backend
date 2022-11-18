@@ -1,4 +1,4 @@
-﻿namespace Pos_System_Backend.Constants;
+﻿namespace Pos_System.API.Constants;
 
 public static class DatabaseConstant
 {

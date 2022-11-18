@@ -1,4 +1,4 @@
-﻿namespace Pos_System_Backend.Enums;
+﻿namespace Pos_System.API.Enums;
 
 public enum StoreStatus
 {

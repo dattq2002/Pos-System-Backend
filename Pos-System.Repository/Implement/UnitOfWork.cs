@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Pos_System_Backend.Repository.Interfaces;
+using Pos_System.Repository.Interfaces;
 
-namespace Pos_System_Backend.Repository.Implement;
+namespace Pos_System.Repository.Implement;
 
-public class UnitOfWork<TContext> : IUnitOfWork<TContext>  where TContext : DbContext
+public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbContext
 {
 	public TContext Context { get; }
 	private Dictionary<Type, object> _repositories;
@@ -18,12 +18,12 @@ public class UnitOfWork<TContext> : IUnitOfWork<TContext>  where TContext : DbCo
 		_repositories ??= new Dictionary<Type, object>();
 		if (_repositories.TryGetValue(typeof(TEntity), out object repository))
 		{
-			return (IGenericRepository<TEntity>) repository;
+			return (IGenericRepository<TEntity>)repository;
 		}
 
 		repository = new GenericRepository<TEntity>(Context);
 		_repositories.Add(typeof(TEntity), repository);
-		return (IGenericRepository<TEntity>) repository;
+		return (IGenericRepository<TEntity>)repository;
 	}
 
 	public void Dispose()

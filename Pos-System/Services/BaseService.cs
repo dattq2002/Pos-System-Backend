@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Repository.Interfaces;
+using Pos_System.Domain.Models;
+using Pos_System.Repository.Interfaces;
 
-namespace Pos_System_Backend.Services
+namespace Pos_System.API.Services
 {
 	public abstract class BaseService<T> where T : class
 	{

@@ -1,6 +1,6 @@
-﻿namespace Pos_System_Backend.Models.Response;
+﻿namespace Pos_System.API.Models.Response;
 
 public class LoginResponse
 {
-	
+
 }

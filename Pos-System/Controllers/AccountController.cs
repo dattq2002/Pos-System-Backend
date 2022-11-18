@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Models.Request;
-using Pos_System_Backend.Repository.Interfaces;
-using Pos_System_Backend.Services.Interfaces;
-using Pos_System_Backend.Utils;
+using Pos_System.Domain.Models;
+using Pos_System.API.Services.Interfaces;
+using Pos_System.API.Constants;
+using Pos_System.API.Models.Request;
+using Pos_System.API.Utils;
 
-namespace Pos_System_Backend.Controllers
+namespace Pos_System.API.Controllers
 {
 	[ApiController]
 	public class AccountController : BaseController<AccountController>
@@ -37,7 +36,7 @@ namespace Pos_System_Backend.Controllers
 		[HttpGet(ControllerName)]
 		public IActionResult GetOk()
 		{
-			
+
 			return Ok();
 		}
 	}

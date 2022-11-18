@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Pos_System_Backend.Repository.Interfaces;
+using Pos_System.Repository.Interfaces;
 
-namespace Pos_System_Backend.Repository.Implement
+namespace Pos_System.Repository.Implement
 {
 	public class GenericRepository<T> : IGenericRepository<T> where T : class
 	{
@@ -26,9 +26,9 @@ namespace Pos_System_Backend.Repository.Implement
 		public virtual async Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
 		{
 			IQueryable<T> query = _dbSet;
-			if(include != null) query = include(query);
+			if (include != null) query = include(query);
 
-			if(predicate != null) query = query.Where(predicate);
+			if (predicate != null) query = query.Where(predicate);
 
 			if (orderBy != null) return await orderBy(query).AsNoTracking().FirstOrDefaultAsync();
 
@@ -39,9 +39,9 @@ namespace Pos_System_Backend.Repository.Implement
 			Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
 		{
 			IQueryable<T> query = _dbSet;
-			if(include != null) query = include(query);
+			if (include != null) query = include(query);
 
-			if(predicate != null) query = query.Where(predicate);
+			if (predicate != null) query = query.Where(predicate);
 
 			if (orderBy != null) return await orderBy(query).AsNoTracking().Select(selector).FirstOrDefaultAsync();
 
@@ -51,12 +51,12 @@ namespace Pos_System_Backend.Repository.Implement
 		public virtual async Task<ICollection<T>> GetListAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
 		{
 			IQueryable<T> query = _dbSet;
-			
-			if(include != null) query = include(query);
+
+			if (include != null) query = include(query);
 
 			if (predicate != null) query = query.Where(predicate);
 
-			if(orderBy != null) return await orderBy(query).AsNoTracking().ToListAsync();
+			if (orderBy != null) return await orderBy(query).AsNoTracking().ToListAsync();
 
 			return await query.AsNoTracking().ToListAsync();
 		}
@@ -65,7 +65,7 @@ namespace Pos_System_Backend.Repository.Implement
 		{
 			IQueryable<T> query = _dbSet;
 
-			if(include != null) query = include(query);
+			if (include != null) query = include(query);
 
 			if (predicate != null) query = query.Where(predicate);
 

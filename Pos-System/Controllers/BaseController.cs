@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Repository.Interfaces;
+using Pos_System.Domain.Models;
+using Pos_System.Repository.Interfaces;
 
-namespace Pos_System_Backend.Controllers
+namespace Pos_System.API.Controllers
 {
 	[Route("api/v1")]
 	[ApiController]

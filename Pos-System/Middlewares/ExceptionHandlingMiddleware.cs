@@ -1,10 +1,10 @@
-﻿namespace Pos_System_Backend.Middlewares;
+﻿namespace Pos_System.API.Middlewares;
 
 using System.Net;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Pos_System_Backend.Models.Response;
+using Pos_System.API.Models.Response;
 
 public class ExceptionHandlingMiddleware
 {
@@ -24,7 +24,7 @@ public class ExceptionHandlingMiddleware
 		}
 		catch (Exception ex)
 		{
-			await HandleExceptionAsync(context,ex);
+			await HandleExceptionAsync(context, ex);
 		}
 	}
 
@@ -33,7 +33,7 @@ public class ExceptionHandlingMiddleware
 		context.Response.ContentType = "application/json";
 		var response = context.Response;
 
-		var errorResponse = new ErrorResponse() { TimeStamp = DateTime.UtcNow, Error = exception.Message};
+		var errorResponse = new ErrorResponse() { TimeStamp = DateTime.UtcNow, Error = exception.Message };
 		switch (errorResponse)
 		{
 			//add more custom exception

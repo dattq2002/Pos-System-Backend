@@ -2,16 +2,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Repository.Implement;
-using Pos_System_Backend.Repository.Interfaces;
-using Pos_System_Backend.Services.Implements;
-using Pos_System_Backend.Services.Interfaces;
 
-namespace Pos_System_Backend.Extensions;
+namespace Pos_System.API.Extensions;
 
 using Microsoft.EntityFrameworkCore;
+using Pos_System.API.Constants;
+using Pos_System.API.Services.Implements;
+using Pos_System.API.Services.Interfaces;
+using Pos_System.Domain.Models;
+using Pos_System.Repository.Implement;
+using Pos_System.Repository.Interfaces;
 
 public static class DependencyServices
 {
@@ -69,7 +69,7 @@ public static class DependencyServices
 	{
 		services.AddSwaggerGen(options =>
 		{
-			options.SwaggerDoc("v1", new OpenApiInfo() { Title = "Pos System", Version = "v1"});
+			options.SwaggerDoc("v1", new OpenApiInfo() { Title = "Pos System", Version = "v1" });
 			options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
 			{
 				In = ParameterLocation.Header,

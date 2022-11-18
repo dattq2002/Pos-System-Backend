@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Services.Interfaces;
+using Pos_System.API.Constants;
+using Pos_System.API.Services.Interfaces;
 
-namespace Pos_System_Backend.Controllers
+namespace Pos_System.API.Controllers
 {
 	[ApiController]
 	public class ProductController : BaseController<ProductController>

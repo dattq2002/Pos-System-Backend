@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Pos_System_Backend.Repository.Interfaces
+namespace Pos_System.Repository.Interfaces
 {
 	public interface IUnitOfWork : IGenericRepositoryFactory, IDisposable
 	{

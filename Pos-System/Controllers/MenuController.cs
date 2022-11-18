@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Services.Interfaces;
+using Pos_System.API.Constants;
+using Pos_System.API.Services.Interfaces;
 
-namespace Pos_System_Backend.Controllers
+namespace Pos_System.API.Controllers
 {
 	[ApiController]
 	public class MenuController : BaseController<MenuController>
@@ -18,10 +18,10 @@ namespace Pos_System_Backend.Controllers
 
 		[Authorize(Roles = $"{RoleConstant.Employee},{RoleConstant.BrandManager},{RoleConstant.StoreManager}")]
 		[HttpGet(ControllerName)]
-		public async Task<IActionResult> GetMenu([FromQuery]Guid storeId, [FromQuery]DateTime? inputDateTime)
+		public async Task<IActionResult> GetMenu([FromQuery] Guid storeId, [FromQuery] DateTime? inputDateTime)
 		{
 			DateTime requestDateTime = inputDateTime ?? DateTime.Now;
-			var store = await _menuService.GetMenuOfStore(storeId,requestDateTime);
+			var store = await _menuService.GetMenuOfStore(storeId, requestDateTime);
 			return Ok(store);
 		}
 	}

@@ -1,4 +1,4 @@
-﻿namespace Pos_System_Backend.Repository.Interfaces
+﻿namespace Pos_System.Repository.Interfaces
 {
 	public interface IGenericRepositoryFactory
 	{

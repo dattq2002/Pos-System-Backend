@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace Pos_System_Backend.Repository.Interfaces
+namespace Pos_System.Repository.Interfaces
 {
 	public interface IGenericRepository<T> : IDisposable where T : class
 	{
@@ -20,7 +20,7 @@ namespace Pos_System_Backend.Repository.Interfaces
 
 		Task<ICollection<T>> GetListAsync(
 			Expression<Func<T, bool>> predicate = null,
-			Func<IQueryable<T>,IOrderedQueryable<T>> orderBy = null,
+			Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
 			Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 
 		Task<ICollection<TResult>> GetListAsync<TResult>(

@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Pos_System_Backend.Constants;
-using Pos_System_Backend.Domain.Models;
+using Pos_System.API.Constants;
+using Pos_System.Domain.Models;
 
-namespace Pos_System_Backend.Utils;
+namespace Pos_System.API.Utils;
 
 public class JwtUtil
 {

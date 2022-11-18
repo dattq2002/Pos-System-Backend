@@ -1,7 +1,7 @@
-﻿using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Models.Request;
+﻿using Pos_System.API.Models.Request;
+using Pos_System.Domain.Models;
 
-namespace Pos_System_Backend.Services.Interfaces
+namespace Pos_System.API.Services.Interfaces
 {
 	public interface IAccountService
 	{

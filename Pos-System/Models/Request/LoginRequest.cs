@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Pos_System_Backend.Models.Request;
+namespace Pos_System.API.Models.Request;
 
 public class LoginRequest
 {

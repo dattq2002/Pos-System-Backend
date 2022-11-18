@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Pos_System_Backend.Controllers
+namespace Pos_System.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]

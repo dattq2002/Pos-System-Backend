@@ -2,12 +2,13 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Pos_System_Backend.Domain.Models;
-using Pos_System_Backend.Models.Request;
-using Pos_System_Backend.Repository.Interfaces;
-using Pos_System_Backend.Services.Interfaces;
+using Pos_System.API.Models.Request;
+using Pos_System.API.Services;
+using Pos_System.API.Services.Interfaces;
+using Pos_System.Domain.Models;
+using Pos_System.Repository.Interfaces;
 
-namespace Pos_System_Backend.Services.Implements
+namespace Pos_System.API.Services.Implements
 {
 	public class AccountService : BaseService<AccountService>, IAccountService
 	{
@@ -17,8 +18,8 @@ namespace Pos_System_Backend.Services.Implements
 
 		public async Task<Account> Login(LoginRequest loginRequest)
 		{
-			Expression<Func<Account,bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(loginRequest.Password);
-			Account account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: searchFilter, include: p=> p.Include(x => x.Role));
+			Expression<Func<Account, bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(loginRequest.Password);
+			Account account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: searchFilter, include: p => p.Include(x => x.Role));
 			return account;
 		}
 	}
