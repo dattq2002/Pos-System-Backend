@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
@@ -19,7 +20,10 @@ try
 		options.AddPolicy(name: CorsConstant.PolicyName,
 			policy => { policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod(); });
 	});
-	builder.Services.AddControllers();
+	builder.Services.AddControllers().AddJsonOptions(x =>
+	{
+		x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+	});
 	builder.Services.AddDatabase();
 	builder.Services.AddUnitOfWork();
 	builder.Services.AddServices();

@@ -21,8 +21,8 @@ namespace Pos_System.API.Controllers
 		public async Task<IActionResult> GetMenu([FromQuery] Guid storeId, [FromQuery] DateTime? inputDateTime)
 		{
 			DateTime requestDateTime = inputDateTime ?? DateTime.Now;
-			var store = await _menuService.GetMenuOfStore(storeId, requestDateTime);
-			return Ok(store);
+			var menuResponse = await _menuService.GetMenuOfStore(storeId, requestDateTime);
+			return Ok(menuResponse);
 		}
 	}
 }
