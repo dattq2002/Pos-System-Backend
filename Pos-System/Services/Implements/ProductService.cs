@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
+using Pos_System.API.Enums;
+using Pos_System.API.Models.Request;
+using Pos_System.API.Models.Response.Product;
 using Pos_System.API.Services;
 using Pos_System.API.Services.Interfaces;
+using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
 using Pos_System.Repository.Interfaces;
 
@@ -12,9 +16,4 @@ public class ProductService : BaseService<ProductService>, IProductService
 	{
 	}
 
-	public async Task<ICollection<Product>> GetProducts()
-	{
-		var products = await _unitOfWork.GetRepository<Product>().GetListAsync();
-		return products;
-	}
 }

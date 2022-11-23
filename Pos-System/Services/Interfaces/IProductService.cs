@@ -1,8 +1,10 @@
-﻿using Pos_System.Domain.Models;
+﻿using Pos_System.API.Models.Request;
+using Pos_System.API.Models.Response.Product;
+using Pos_System.Domain.Models;
 
 namespace Pos_System.API.Services.Interfaces;
 
 public interface IProductService
 {
-	Task<ICollection<Product>> GetProducts();
+
 }

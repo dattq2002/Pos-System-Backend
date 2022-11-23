@@ -19,10 +19,10 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Middlewares\" />
-    <Folder Include="Models\Request\" />
     <Folder Include="Mappers\" />
     <Folder Include="Enums\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Models\Response\Menu\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
