@@ -17,7 +17,7 @@ namespace Pos_System.API.Controllers
 			_menuService = menuService;
 		}
 
-		[Authorize(Roles = $"{RoleConstant.Employee},{RoleConstant.BrandManager},{RoleConstant.StoreManager}")]
+		[Authorize]
 		[HttpGet(ControllerName)]
 		public async Task<IActionResult> GetMenu()
 		{

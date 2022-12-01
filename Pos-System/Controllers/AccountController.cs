@@ -21,7 +21,7 @@ namespace Pos_System.API.Controllers
 
 
 		[HttpPost(ControllerName + "/login")]
-		public async Task<IActionResult> GetAccount(LoginRequest loginRequest)
+		public async Task<IActionResult> Login(LoginRequest loginRequest)
 		{
 			var account = await _accountService.Login(loginRequest);
 			if (account == null)
@@ -32,7 +32,7 @@ namespace Pos_System.API.Controllers
 			return Ok(token);
 		}
 
-		[Authorize(Roles = RoleConstant.Employee)]
+		[Authorize]
 		[HttpGet(ControllerName)]
 		public IActionResult GetOk()
 		{
