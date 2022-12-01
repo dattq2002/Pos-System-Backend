@@ -19,6 +19,7 @@ namespace Pos_System.Domain.Models
         public string? Email { get; set; }
         public string? Address { get; set; }
         public string? Phone { get; set; }
+        public string? PicUrl { get; set; }
 
         public virtual ICollection<BrandAccount> BrandAccounts { get; set; }
         public virtual ICollection<Category> Categories { get; set; }

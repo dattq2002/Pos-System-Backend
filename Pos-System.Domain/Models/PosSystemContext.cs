@@ -48,7 +48,7 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Name).HasMaxLength(20);
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.Password).HasMaxLength(64);
 
@@ -78,6 +78,8 @@ namespace Pos_System.Domain.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(20)
                     .IsUnicode(false);
+
+                entity.Property(e => e.PicUrl).IsUnicode(false);
             });
 
             modelBuilder.Entity<BrandAccount>(entity =>
