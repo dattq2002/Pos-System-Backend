@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Pos_System.API.Constants;
+using Pos_System.API.Enums;
 using Pos_System.Domain.Models;
 
 namespace Pos_System.API.Utils;
@@ -28,7 +29,7 @@ public class JwtUtil
 			new Claim(JwtRegisteredClaimNames.Sub,account.Username),
 			new Claim(ClaimTypes.Role,account.Role.Name),
 		};
-		var expires = DateTime.Now.AddMinutes(configuration.GetValue<long>(JwtConstant.TokenExpireInMinutes));
+		var expires = account.Role.Name.Equals(RoleEnum.Staff.GetDescriptionFromEnum()) ? DateTime.Now.AddDays(1) : DateTime.Now.AddMinutes(configuration.GetValue<long>(JwtConstant.TokenExpireInMinutes));
 		var token = new JwtSecurityToken(issuer, null, claims, notBefore: DateTime.Now, expires, credentials);
 		return jwtHandler.WriteToken(token);
 	}

@@ -22,6 +22,8 @@
     <Folder Include="Mappers\" />
     <Folder Include="Helpers\" />
     <Folder Include="Models\Response\Menu\" />
+    <Folder Include="Models\Response\Product\" />
+    <Folder Include="Validators\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
