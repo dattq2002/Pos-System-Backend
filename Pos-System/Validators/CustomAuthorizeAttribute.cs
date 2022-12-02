@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Pos_System.API.Enums;
+using Pos_System.API.Utils;
 
 namespace Pos_System.API.Validators;
 
 public class CustomAuthorizeAttribute : AuthorizeAttribute
 {
-	public CustomAuthorizeAttribute(RoleEnum roleEnum)
+	public CustomAuthorizeAttribute(params RoleEnum[] roleEnums)
 	{
-		Roles = roleEnum.ToString().Replace(" ",string.Empty);
+		var allowedRolesAsString = roleEnums.Select(x => x.GetDescriptionFromEnum());
+		Roles = string.Join(",", allowedRolesAsString);
 	}
 }
