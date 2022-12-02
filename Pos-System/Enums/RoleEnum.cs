@@ -1,5 +1,6 @@
 ﻿namespace Pos_System.API.Enums;
 
+[Flags]
 public enum RoleEnum
 {
 	Admin,

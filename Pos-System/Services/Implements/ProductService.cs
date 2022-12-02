@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Pos_System.API.Enums;
 using Pos_System.API.Models.Request;
-using Pos_System.API.Models.Response.Product;
 using Pos_System.API.Services;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;

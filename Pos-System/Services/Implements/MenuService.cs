@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Extensions;
 using Pos_System.API.Enums;
 using Pos_System.API.Helpers;
-using Pos_System.API.Models.Response.Product;
 using Pos_System.API.Services;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.Domain.Models;

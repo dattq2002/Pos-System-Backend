@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Models.Request;
-using Pos_System.API.Models.Response.Product;
 using Pos_System.API.Services.Interfaces;
 
 namespace Pos_System.API.Controllers
@@ -35,7 +35,6 @@ namespace Pos_System.API.Controllers
 
 		[Authorize]
 		[HttpGet(ControllerName)]
-		[ProducesResponseType(typeof(List<ProductInMenuResponse>),StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetProductInBrand([FromQuery] Guid brandId)
 		{
 			return Ok();

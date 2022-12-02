@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Pos_System.Domain.Models;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Constants;
+using Pos_System.API.Enums;
 using Pos_System.API.Models.Request;
+using Pos_System.API.Models.Response;
 using Pos_System.API.Utils;
+using Pos_System.API.Validators;
 
 namespace Pos_System.API.Controllers
 {
@@ -23,16 +26,17 @@ namespace Pos_System.API.Controllers
 		[HttpPost(ControllerName + "/login")]
 		public async Task<IActionResult> Login(LoginRequest loginRequest)
 		{
-			var account = await _accountService.Login(loginRequest);
-			if (account == null)
+			var loginReponse = await _accountService.Login(loginRequest);
+			if (loginReponse == null)
 			{
-				return BadRequest("Username or password is not correct");
+				return BadRequest(LoginMessage.InvalidUsernameOrPassword);
 			}
-			var token = JwtUtil.GenerateJwtToken(account);
-			return Ok(token);
+			if (loginReponse.Status == AccountStatus.Deactivated)
+				return BadRequest(LoginMessage.DeactivatedAccount);
+			return Ok(loginReponse);
 		}
 
-		[Authorize]
+		[CustomAuthorize(RoleEnum.Admin)]
 		[HttpGet(ControllerName)]
 		public IActionResult GetOk()
 		{
