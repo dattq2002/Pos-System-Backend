@@ -4,7 +4,7 @@ using System.Net;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Pos_System.API.Models.Response;
+using Pos_System.API.Payload.Response;
 
 public class ExceptionHandlingMiddleware
 {

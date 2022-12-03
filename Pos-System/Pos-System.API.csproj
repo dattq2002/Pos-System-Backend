@@ -18,11 +18,11 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Mappers\Accounts\" />
+    <Folder Include="Mappers\Brands\" />
     <Folder Include="Middlewares\" />
-    <Folder Include="Mappers\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Models\Response\Menu\" />
-    <Folder Include="Models\Response\Product\" />
+    <Folder Include="Payload\Response\Brands\" />
     <Folder Include="Validators\" />
     <Folder Include="Utils\" />
   </ItemGroup>

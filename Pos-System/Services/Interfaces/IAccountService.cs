@@ -1,5 +1,5 @@
-﻿using Pos_System.API.Models.Request;
-using Pos_System.API.Models.Response;
+﻿using Pos_System.API.Payload.Request;
+using Pos_System.API.Payload.Response;
 using Pos_System.Domain.Models;
 
 namespace Pos_System.API.Services.Interfaces
