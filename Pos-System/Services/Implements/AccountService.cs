@@ -2,8 +2,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Pos_System.API.Models.Request;
-using Pos_System.API.Models.Response;
+using Pos_System.API.Payload.Request;
+using Pos_System.API.Payload.Response;
 using Pos_System.API.Services;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;

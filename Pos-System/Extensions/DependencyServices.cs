@@ -37,8 +37,7 @@ public static class DependencyServices
 	public static IServiceCollection AddServices(this IServiceCollection services)
 	{
 		services.AddScoped<IAccountService, AccountService>();
-		services.AddScoped<IProductService, ProductService>();
-		services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IBrandService, BrandService>();
 		return services;
 	}
 

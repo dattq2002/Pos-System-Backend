@@ -1,4 +1,4 @@
-﻿namespace Pos_System.API.Models.Response;
+﻿namespace Pos_System.API.Payload.Response;
 
 using System.Text.Json;
 

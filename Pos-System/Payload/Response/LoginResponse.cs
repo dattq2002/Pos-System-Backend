@@ -1,6 +1,6 @@
 ﻿using Pos_System.API.Enums;
 
-namespace Pos_System.API.Models.Response;
+namespace Pos_System.API.Payload.Response;
 
 public class LoginResponse
 {
