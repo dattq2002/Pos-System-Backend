@@ -20,4 +20,4 @@ jobs:
 
     - name: Run
       run: |
-        nohup dotnet run --project CapstoneOnGoing -nowarn & sleep 15
+        nohup dotnet run --project Pos-System -nowarn & sleep 15
