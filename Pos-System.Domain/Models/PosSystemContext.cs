@@ -80,6 +80,8 @@ namespace Pos_System.Domain.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.PicUrl).IsUnicode(false);
+
+                entity.Property(e => e.Status).HasMaxLength(20);
             });
 
             modelBuilder.Entity<BrandAccount>(entity =>
