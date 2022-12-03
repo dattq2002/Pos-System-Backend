@@ -12,6 +12,6 @@ public class MappingProfiles : Profile
 	{
 		CreateMap<Account, LoginResponse>()
 			.ForMember(des => des.AccessToken, src => src.Ignore())
-            .ForMember(des => des.Role, src => src.MapFrom(src => EnumUtil.ParseEnum<RoleEnum>(src.Role.Name)));
+      .ForMember(des => des.Role, src => src.MapFrom(src => EnumUtil.ParseEnum<RoleEnum>(src.Role.Name)));
 	}
 }
