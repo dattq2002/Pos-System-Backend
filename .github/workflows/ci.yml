@@ -18,6 +18,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
     - name: Run
       run: |
         nohup dotnet run --project Pos-System -nowarn & sleep 15
