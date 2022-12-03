@@ -11,11 +11,11 @@ namespace Pos_System.API.Controllers
         {
         }
 
-        // [HttpPost(ControllerName)]
-        // public Task<IActionResult> CreateNewBrand()
-        // {
+        [HttpPost(ControllerName)]
+        public IActionResult CreateNewBrand()
+        {
 
-        //     return Ok();
-        // }
+            return Ok();
+        }
     }
 }
