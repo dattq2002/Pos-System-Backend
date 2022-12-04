@@ -28,6 +28,7 @@ public class BrandService : BaseService<BrandService>, IBrandService
         {
             createNewBrandResponse = _mapper.Map<CreateNewBrandResponse>(newBrand);
         }
+
         return createNewBrandResponse;
     }
 }
