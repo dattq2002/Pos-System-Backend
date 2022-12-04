@@ -19,7 +19,6 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Mappers\Accounts\" />
-    <Folder Include="Mappers\Brands\" />
     <Folder Include="Middlewares\" />
     <Folder Include="Helpers\" />
     <Folder Include="Payload\Response\Brands\" />

@@ -20,10 +20,10 @@ namespace Pos_System.API.Controllers
             _brandService = brandService;
         }
 
-        [CustomAuthorize(RoleEnum.Admin)]
+        [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpPost(ControllerName)]
         [ProducesResponseType(typeof(CreateNewBrandResponse),StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ObjectResult), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNewBrand(CreateNewBrandRequest createNewBrandRequest)
         {
             CreateNewBrandResponse response =  await _brandService.CreateNewBrand(createNewBrandRequest);
@@ -33,7 +33,7 @@ namespace Pos_System.API.Controllers
                 return Problem($"{MessageConstant.CreateNewBrandMessage.FailMessage}: {createNewBrandRequest.Name}");
             }
             _logger.LogInformation($"Create new brand successful with {createNewBrandRequest.Name}");
-            return Ok(response);
+            return CreatedAtAction(nameof(CreateNewBrand),response);
         }
     }
 }

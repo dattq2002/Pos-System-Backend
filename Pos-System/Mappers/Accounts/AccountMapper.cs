@@ -6,9 +6,9 @@ using Pos_System.Domain.Models;
 
 namespace Pos_System.API.Mappers.Accounts;
 
-public class AccountMapping : Profile
+public class AccountMapper : Profile
 {
-    public AccountMapping()
+    public AccountMapper()
     {
         CreateMap<Account, LoginResponse>()
             .ForMember(des => des.AccessToken, src => src.Ignore())
