@@ -16,4 +16,10 @@ public static class ApiEndPointConstant
         public const string AuthenticationEndpoint = ApiEndpoint + "/auth";
         public const string Login = AuthenticationEndpoint + "/login";
     }
+
+    public static class Brand
+    {
+	    public const string BrandEndpoint = ApiEndpoint + "/brands";
+	    public const string CreateBrandAccountEndpoint = BrandEndpoint + "/{id}/users";
+    }
 }

@@ -25,7 +25,6 @@
     <Folder Include="Payload\Response\Brands\" />
     <Folder Include="Payload\Request\Brands\" />
     <Folder Include="Validators\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
 
   <ItemGroup>

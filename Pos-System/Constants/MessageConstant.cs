@@ -7,9 +7,14 @@ public static class MessageConstant
         public const string InvalidUsernameOrPassword = "Username or password is not correct";
         public const string DeactivatedAccount = "Deactivated account can not login system";
     }
-    public static class CreateNewBrandMessage
+    public static class Brand
     {
-        public const string FailMessage = "Create new brand failed";
-        public const string SucceedMessage = "Create new brand successful";
+        public const string CreateBrandFailMessage = "Create new brand failed";
+        public const string CreateBrandSucceedMessage = "Create new brand successful";
+        public const string BrandNotFoundMessage = "Brand does not exist in system";
+    }
+    public static class Account
+    {
+	    public const string CreateAccountWithWrongRoleMessage = "Please create with acceptent role";
     }
 }

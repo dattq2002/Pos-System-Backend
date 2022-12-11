@@ -34,10 +34,13 @@ public class ExceptionHandlingMiddleware
 		var response = context.Response;
 
 		var errorResponse = new ErrorResponse() { TimeStamp = DateTime.UtcNow, Error = exception.Message };
-		switch (errorResponse)
+		switch (exception)
 		{
 			//add more custom exception
-			//For example case AppException: do something 
+			//For example case AppException: do something
+			case BadHttpRequestException:
+				_logger.LogInformation(exception.Message);
+				break;
 			default:
 				//unhandled error
 				errorResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
