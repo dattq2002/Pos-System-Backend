@@ -46,6 +46,7 @@ namespace Pos_System.API.Services.Implements
 			newBrandAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id,predicate: x => x.Name.Equals(createNewBrandAccountRequest.Role.GetDescriptionFromEnum()));
 			newBrandAccount.BrandAccount = new BrandAccount()
 			{
+				Id = Guid.NewGuid(),	
 				AccountId = newBrandAccount.Id,
 				BrandId = brand.Id
 			};

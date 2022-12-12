@@ -40,13 +40,15 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpPost(ApiEndPointConstant.Brand.CreateBrandAccountEndpoint)]
+        [ProducesResponseType(typeof(CreateNewBrandAccountResponse),StatusCodes.Status200OK)]
+        [ProducesErrorResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> CreateBrandAccount(CreateNewBrandAccountRequest createNewBrandAccountRequest)
         {
 	        CreateNewBrandAccountResponse response = await _accountService.CreateNewBrandAccount(createNewBrandAccountRequest);
 	        if (response == null)
 	        {
-                //To-do
-		        return Problem();
+		        _logger.LogError($"Create new brand account failed: brand {createNewBrandAccountRequest.BrandId} with account {createNewBrandAccountRequest.Username}");
+		        return Problem(MessageConstant.Account.CreateBrandAccountFailMessage);
 	        }
             _logger.LogInformation($"Create brand account successfully with brand: {createNewBrandAccountRequest.BrandId}, account: {createNewBrandAccountRequest.Username}");
 	        return CreatedAtAction(nameof(CreateBrandAccount),response);
