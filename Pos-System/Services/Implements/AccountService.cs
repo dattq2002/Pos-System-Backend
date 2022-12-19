@@ -23,7 +23,7 @@ namespace Pos_System.API.Services.Implements
 
 		public async Task<LoginResponse> Login(LoginRequest loginRequest)
 		{
-			Expression<Func<Account, bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(loginRequest.Password);
+			Expression<Func<Account, bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(PasswordUtil.HashPassword(loginRequest.Password));
 			Account account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: searchFilter, include: p => p.Include(x => x.Role));
 			if (account == null) return null;
 			var token = JwtUtil.GenerateJwtToken(account);
