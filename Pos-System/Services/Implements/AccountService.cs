@@ -11,6 +11,7 @@ using Pos_System.API.Services;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Services.Implements
@@ -54,6 +55,19 @@ namespace Pos_System.API.Services.Implements
 			bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
 			CreateNewBrandAccountResponse response = isSuccessful ? _mapper.Map<CreateNewBrandAccountResponse>(newBrandAccount) : null;
 			return response;
+		}
+
+		public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, int page, int size)
+		{
+			if (brandId == Guid.Empty) throw new BadHttpRequestException("Brand Id is empty");
+			IPaginate<GetAccountResponse> accountsInBrand = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
+					selector: x => new GetAccountResponse(){ Id = x.Id, Username = x.Username, Name = x.Name, Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)},
+					predicate: x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId),
+					orderBy: null,
+					include: x => x.Include(x=> x.BrandAccount),
+					page: page,
+					size: size);
+			return accountsInBrand;
 		}
 	}
 }

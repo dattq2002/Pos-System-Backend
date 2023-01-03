@@ -5,6 +5,7 @@ public class Paginate<TResult> : IPaginate<TResult>
 	public int Size { get; set; }
 	public int Page { get; set; }
 	public int Total { get; set; }
+	public int TotalPages { get; set; }
 	public IList<TResult> Items { get; set; }
 
 	public Paginate(IEnumerable<TResult> source, int page, int size, int firstPage)
@@ -21,6 +22,7 @@ public class Paginate<TResult> : IPaginate<TResult>
 			Size = size;
 			Total = queryable.Count();
 			Items = queryable.Skip((page - firstPage) * size).Take(size).ToList();
+			TotalPages = (int)Math.Ceiling(Total / (double)Size);
 		}
 		else
 		{
@@ -28,6 +30,7 @@ public class Paginate<TResult> : IPaginate<TResult>
 			Size = size;
 			Total = enumerable.Length;
 			Items = enumerable.Skip((page - firstPage) * size).Take(size).ToList();
+			TotalPages = (int)Math.Ceiling(Total / (double)Size);
 		}
 	}
 
