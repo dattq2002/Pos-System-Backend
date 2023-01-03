@@ -34,7 +34,7 @@ namespace Pos_System.API.Controllers
 			{
 				return Unauthorized(MessageConstant.LoginMessage.InvalidUsernameOrPassword);
 			}
-			if (loginResponse.Status == AccountStatus.Deactivated)
+			if (loginResponse.Status == AccountStatus.Deactivate)
 				return Unauthorized(MessageConstant.LoginMessage.DeactivatedAccount);
 			return Ok(loginResponse);
 		}

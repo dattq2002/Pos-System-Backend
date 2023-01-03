@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
@@ -39,7 +40,7 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
-        [HttpPost(ApiEndPointConstant.Brand.CreateBrandAccountEndpoint)]
+        [HttpPost(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
         [ProducesResponseType(typeof(CreateNewBrandAccountResponse),StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> CreateBrandAccount(CreateNewBrandAccountRequest createNewBrandAccountRequest)
@@ -52,6 +53,15 @@ namespace Pos_System.API.Controllers
 	        }
             _logger.LogInformation($"Create brand account successfully with brand: {createNewBrandAccountRequest.BrandId}, account: {createNewBrandAccountRequest.Username}");
 	        return CreatedAtAction(nameof(CreateBrandAccount),response);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
+        public async Task<IActionResult> ViewBrandsAccounts(Guid id, [FromQuery]int page, [FromQuery]int size)
+        {
+
+	        var accountsInBrand = await _accountService.GetBrandAccounts(id,page,size);
+	        return Ok(accountsInBrand);
         }
     }
 }
