@@ -57,16 +57,52 @@ namespace Pos_System.API.Services.Implements
 			return response;
 		}
 
-		public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, int page, int size)
+		public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum role, int page, int size)
 		{
-			if (brandId == Guid.Empty) throw new BadHttpRequestException("Brand Id is empty");
-			IPaginate<GetAccountResponse> accountsInBrand = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
-					selector: x => new GetAccountResponse(){ Id = x.Id, Username = x.Username, Name = x.Name, Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)},
-					predicate: x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId),
-					orderBy: null,
-					include: x => x.Include(x=> x.BrandAccount),
-					page: page,
-					size: size);
+			if (brandId == Guid.Empty) throw new BadHttpRequestException("Brand Id bị trống");
+			IPaginate<GetAccountResponse> accountsInBrand = new Paginate<GetAccountResponse>();
+			searchUsername = searchUsername?.Trim().ToLower();
+			switch (role)
+			{
+				case RoleEnum.BrandAdmin:
+				case RoleEnum.BrandManager:
+					accountsInBrand = await _unitOfWork.GetRepository<Account>()
+						.GetPagingListAsync(
+							selector: x => new GetAccountResponse()
+							{
+								Id = x.Id, Username = x.Username, Name = x.Name,
+								Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
+								Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)
+							},
+							predicate: string.IsNullOrEmpty(searchUsername) ? x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId) && x.Role.Name.Equals(role.GetDescriptionFromEnum())
+								: x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId) && x.Role.Name.Equals(role.GetDescriptionFromEnum()) && x.Username.ToLower().Contains(searchUsername),
+							orderBy: x => x.OrderBy(x => x.Username),
+							include: x => x.Include(x => x.BrandAccount).Include(x => x.Role),
+							page: page,
+							size: size);
+					break;
+				case RoleEnum.StoreManager:
+				case RoleEnum.Staff:
+					IEnumerable<Guid> storeIds = await _unitOfWork.GetRepository<Store>()
+						.GetListAsync(selector: x => x.Id,predicate: x => x.BrandId.Equals(brandId));
+					accountsInBrand = await _unitOfWork.GetRepository<Account>()
+						.GetPagingListAsync(
+							selector: x => new GetAccountResponse()
+							{
+								Id = x.Id,
+								Username = x.Username,
+								Name = x.Name,
+								Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
+								Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)
+							},
+							predicate: string.IsNullOrEmpty(searchUsername) ? x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) && x.Role.Name.Equals(role.GetDescriptionFromEnum()) 
+								: x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) && x.Role.Name.Equals(role.GetDescriptionFromEnum()) && x.Username.ToLower().Contains(searchUsername),
+							orderBy: x => x.OrderBy(x => x.Username),
+							include: x => x.Include(x => x.StoreAccount),
+							page: page,
+							size: size);
+					break;
+			}
 			return accountsInBrand;
 		}
 	}

@@ -57,10 +57,10 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
-        public async Task<IActionResult> ViewBrandsAccounts(Guid id, [FromQuery]int page, [FromQuery]int size)
+        public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? searchUsername, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
         {
 
-	        var accountsInBrand = await _accountService.GetBrandAccounts(id,page,size);
+	        var accountsInBrand = await _accountService.GetBrandAccounts(id, searchUsername, role, page, size);
 	        return Ok(accountsInBrand);
         }
     }
