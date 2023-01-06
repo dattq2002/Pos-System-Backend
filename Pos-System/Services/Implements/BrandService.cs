@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response.Brands;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Services.Implements;
@@ -30,5 +32,26 @@ public class BrandService : BaseService<BrandService>, IBrandService
         }
 
         return createNewBrandResponse;
+    }
+
+    public async Task<IPaginate<GetBrandResponse>> GetBrands(string? searchBrandName, int page, int size)
+    {
+	    searchBrandName = searchBrandName?.Trim().ToLower();
+	    IPaginate<GetBrandResponse> brands = await _unitOfWork.GetRepository<Brand>().GetPagingListAsync(
+		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status)),
+            predicate: string.IsNullOrEmpty(searchBrandName) ? x => true : x => x.Name.ToLower().Contains(searchBrandName),
+            page: page,
+            size: size);
+	    return brands;
+    }
+
+    public async Task<GetBrandResponse> GetBrandById(Guid brandId)
+    {
+	    if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+	    GetBrandResponse brandResponse = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status)),
+            predicate: x => x.Id.Equals(brandId)
+		    );
+        return brandResponse;
     }
 }

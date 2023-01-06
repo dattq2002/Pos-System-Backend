@@ -59,7 +59,7 @@ namespace Pos_System.API.Services.Implements
 
 		public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum role, int page, int size)
 		{
-			if (brandId == Guid.Empty) throw new BadHttpRequestException("Brand Id bị trống");
+			if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
 			IPaginate<GetAccountResponse> accountsInBrand = new Paginate<GetAccountResponse>();
 			searchUsername = searchUsername?.Trim().ToLower();
 			switch (role)
