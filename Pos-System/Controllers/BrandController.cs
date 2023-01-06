@@ -9,6 +9,7 @@ using Pos_System.API.Payload.Response;
 using Pos_System.API.Payload.Response.Brands;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
@@ -24,7 +25,7 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
-        [HttpPost(ApiEndPointConstant.Brand.BrandEndpoint)]
+        [HttpPost(ApiEndPointConstant.Brand.BrandsEndpoint)]
         [ProducesResponseType(typeof(CreateNewBrandResponse),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNewBrand(CreateNewBrandRequest createNewBrandRequest)
@@ -57,11 +58,31 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetAccountResponse>),StatusCodes.Status200OK)]
         public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? searchUsername, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
         {
 
 	        var accountsInBrand = await _accountService.GetBrandAccounts(id, searchUsername, role, page, size);
 	        return Ok(accountsInBrand);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.BrandsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetBrandResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBrands([FromQuery] string? searchBrandName, [FromQuery] int page,
+	        [FromQuery] int size)
+        {
+			var brands = await _brandService.GetBrands(searchBrandName, page, size);
+			return Ok(brands);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.BrandEndpoint)]
+        [ProducesResponseType(typeof(GetBrandResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBrandById(Guid id)
+        {
+	        var brandResponse = await _brandService.GetBrandById(id);
+            return Ok(brandResponse);
         }
     }
 }
