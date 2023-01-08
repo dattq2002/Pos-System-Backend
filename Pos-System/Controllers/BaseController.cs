@@ -1,9 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
-using Pos_System.Domain.Models;
-using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Controllers
 {

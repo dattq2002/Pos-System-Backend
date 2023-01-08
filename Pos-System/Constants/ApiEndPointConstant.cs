@@ -20,7 +20,14 @@ public static class ApiEndPointConstant
     public static class Brand
     {
 	    public const string BrandsEndpoint = ApiEndpoint + "/brands";
-	    public const string BrandEndpoint = BrandsEndpoint + "/id";
-	    public const string BrandAccountEndpoint = BrandsEndpoint + "/{id}/users";
+	    public const string BrandEndpoint = BrandsEndpoint + "/{id}";
+	    public const string BrandAccountEndpoint = BrandEndpoint + "/users";
+	    public const string StoresInBrandEndpoint = BrandEndpoint + "/stores";
+    }
+
+    public static class Store
+    {
+	    public const string StoresEndpoint = ApiEndpoint + "/stores";
+	    public const string StoreEndpoint = StoresEndpoint + "/{id}";
     }
 }

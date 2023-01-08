@@ -7,6 +7,7 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
 using Pos_System.API.Payload.Response.Brands;
+using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
 using Pos_System.Domain.Paginate;
@@ -18,10 +19,12 @@ namespace Pos_System.API.Controllers
     {
 	    private readonly IBrandService _brandService;
         private readonly IAccountService _accountService;
-        public BrandController(ILogger<BrandController> logger, IBrandService brandService, IAccountService accountService) : base(logger)
+        private readonly IStoreService _storeService;
+        public BrandController(ILogger<BrandController> logger, IBrandService brandService, IAccountService accountService, IStoreService storeService) : base(logger)
         {
             _brandService = brandService;
             _accountService = accountService;
+            _storeService = storeService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
@@ -83,6 +86,15 @@ namespace Pos_System.API.Controllers
         {
 	        var brandResponse = await _brandService.GetBrandById(id);
             return Ok(brandResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.StoresInBrandEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? searchShortName, [FromQuery] int page, [FromQuery] int size)
+        {
+	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, searchShortName, page, size);
+	        return Ok(storesInBrandResponse);
         }
     }
 }
