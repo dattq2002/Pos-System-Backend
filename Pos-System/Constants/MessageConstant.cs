@@ -19,4 +19,9 @@ public static class MessageConstant
 	    public const string CreateAccountWithWrongRoleMessage = "Please create with acceptent role";
 	    public const string CreateBrandAccountFailMessage = "Create brand account failed";
     }
+
+    public static class Store
+    {
+	    public const string EmptyStoreIdMessage = "Store Id bị trống";
+    }
 }
