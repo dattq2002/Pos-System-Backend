@@ -39,6 +39,8 @@ public class ExceptionHandlingMiddleware
 			//add more custom exception
 			//For example case AppException: do something
 			case BadHttpRequestException:
+				response.StatusCode = (int)HttpStatusCode.BadRequest;
+				errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
 				_logger.LogInformation(exception.Message);
 				break;
 			default:
