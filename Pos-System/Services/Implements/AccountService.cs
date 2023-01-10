@@ -105,5 +105,22 @@ namespace Pos_System.API.Services.Implements
 			}
 			return accountsInBrand;
 		}
+
+		public async Task<bool> UpdateAccountStatus(Guid accountId, UpdateAccountStatusRequest updateAccountStatusRequest)
+		{
+			if (!updateAccountStatusRequest.Op.Equals("/update") || !updateAccountStatusRequest.Path.Equals("/status"))
+				throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+			bool isValidValue = Enum.TryParse(updateAccountStatusRequest.Value,out AccountStatus newStatus);
+			if (!isValidValue)
+				throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+			Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+				.SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
+			if (updatedAccount == null)
+				throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+			updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+			_unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+			bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+			return isSuccessful;
+		}
 	}
 }

@@ -18,6 +18,10 @@ public static class MessageConstant
     {
 	    public const string CreateAccountWithWrongRoleMessage = "Please create with acceptent role";
 	    public const string CreateBrandAccountFailMessage = "Create brand account failed";
+	    public const string UpdateAccountStatusRequestWrongFormatMessage = "Cập nhật status tài khoản request sai format";
+	    public const string AccountNotFoundMessage = "Không tìm thấy tài khoản";
+	    public const string UpdateAccountStatusSuccessfulMessage = "Cập nhật status tài khoản thành công";
+	    public const string UpdateAccountStatusFailedMessage = "Cập nhật status tài khoản thất bại";
     }
 
     public static class Store

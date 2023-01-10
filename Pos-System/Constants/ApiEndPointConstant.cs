@@ -30,4 +30,10 @@ public static class ApiEndPointConstant
 	    public const string StoresEndpoint = ApiEndpoint + "/stores";
 	    public const string StoreEndpoint = StoresEndpoint + "/{id}";
     }
+
+    public static class Account
+    {
+	    public const string AccountsEndpoint = ApiEndpoint + "/accounts";
+	    public const string AccountEndpoint = AccountsEndpoint + "/{id}";
+    }
 }
