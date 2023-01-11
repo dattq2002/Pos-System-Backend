@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Brands;
@@ -38,10 +39,16 @@ public class BrandService : BaseService<BrandService>, IBrandService
     {
 	    searchBrandName = searchBrandName?.Trim().ToLower();
 	    IPaginate<GetBrandResponse> brands = await _unitOfWork.GetRepository<Brand>().GetPagingListAsync(
-		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status)),
+		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status), x.Stores.Count),
             predicate: string.IsNullOrEmpty(searchBrandName) ? x => true : x => x.Name.ToLower().Contains(searchBrandName),
+            include: x => x.Include(x => x.Stores),
             page: page,
             size: size);
+        //foreach (var brand in brands.Items)
+        //{
+        //    var stores = await _unitOfWork.GetRepository<Store>().GetListAsync(predicate: x => x.BrandId.Equals(brand.Id));
+        //    brand.AmountStores = stores.Count();
+        //}
 	    return brands;
     }
 
@@ -49,8 +56,9 @@ public class BrandService : BaseService<BrandService>, IBrandService
     {
 	    if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
 	    GetBrandResponse brandResponse = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
-		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status)),
-            predicate: x => x.Id.Equals(brandId)
+		    selector: x => new GetBrandResponse(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, EnumUtil.ParseEnum<BrandStatus>(x.Status), x.Stores.Count),
+            predicate: x => x.Id.Equals(brandId),
+            include: x => x.Include(x => x.Stores)
 		    );
         return brandResponse;
     }
