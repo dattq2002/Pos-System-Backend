@@ -7,8 +7,10 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
 using Pos_System.API.Payload.Response.Brands;
+using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
@@ -17,14 +19,16 @@ namespace Pos_System.API.Controllers
     {
 	    private readonly IBrandService _brandService;
         private readonly IAccountService _accountService;
-        public BrandController(ILogger<BrandController> logger, IBrandService brandService, IAccountService accountService) : base(logger)
+        private readonly IStoreService _storeService;
+        public BrandController(ILogger<BrandController> logger, IBrandService brandService, IAccountService accountService, IStoreService storeService) : base(logger)
         {
             _brandService = brandService;
             _accountService = accountService;
+            _storeService = storeService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
-        [HttpPost(ApiEndPointConstant.Brand.BrandEndpoint)]
+        [HttpPost(ApiEndPointConstant.Brand.BrandsEndpoint)]
         [ProducesResponseType(typeof(CreateNewBrandResponse),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNewBrand(CreateNewBrandRequest createNewBrandRequest)
@@ -57,11 +61,40 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetAccountResponse>),StatusCodes.Status200OK)]
         public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? searchUsername, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
         {
 
 	        var accountsInBrand = await _accountService.GetBrandAccounts(id, searchUsername, role, page, size);
 	        return Ok(accountsInBrand);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.BrandsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetBrandResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBrands([FromQuery] string? searchBrandName, [FromQuery] int page,
+	        [FromQuery] int size)
+        {
+			var brands = await _brandService.GetBrands(searchBrandName, page, size);
+			return Ok(brands);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.BrandEndpoint)]
+        [ProducesResponseType(typeof(GetBrandResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBrandById(Guid id)
+        {
+	        var brandResponse = await _brandService.GetBrandById(id);
+            return Ok(brandResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Brand.StoresInBrandEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? searchShortName, [FromQuery] int page, [FromQuery] int size)
+        {
+	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, searchShortName, page, size);
+	        return Ok(storesInBrandResponse);
         }
     }
 }

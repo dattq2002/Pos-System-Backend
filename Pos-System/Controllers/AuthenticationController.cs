@@ -1,16 +1,9 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Pos_System.Domain.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request;
 using Pos_System.API.Payload.Response;
-using Pos_System.API.Utils;
-using Pos_System.API.Validators;
 
 namespace Pos_System.API.Controllers
 {

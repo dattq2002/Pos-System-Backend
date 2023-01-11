@@ -59,7 +59,7 @@ namespace Pos_System.API.Services.Implements
 
 		public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum role, int page, int size)
 		{
-			if (brandId == Guid.Empty) throw new BadHttpRequestException("Brand Id bị trống");
+			if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
 			IPaginate<GetAccountResponse> accountsInBrand = new Paginate<GetAccountResponse>();
 			searchUsername = searchUsername?.Trim().ToLower();
 			switch (role)
@@ -104,6 +104,23 @@ namespace Pos_System.API.Services.Implements
 					break;
 			}
 			return accountsInBrand;
+		}
+
+		public async Task<bool> UpdateAccountStatus(Guid accountId, UpdateAccountStatusRequest updateAccountStatusRequest)
+		{
+			if (!updateAccountStatusRequest.Op.Equals("/update") || !updateAccountStatusRequest.Path.Equals("/status"))
+				throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+			bool isValidValue = Enum.TryParse(updateAccountStatusRequest.Value,out AccountStatus newStatus);
+			if (!isValidValue)
+				throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+			Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+				.SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
+			if (updatedAccount == null)
+				throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+			updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+			_unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+			bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+			return isSuccessful;
 		}
 	}
 }
