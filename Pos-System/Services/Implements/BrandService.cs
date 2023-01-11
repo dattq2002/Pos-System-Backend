@@ -44,11 +44,6 @@ public class BrandService : BaseService<BrandService>, IBrandService
             include: x => x.Include(x => x.Stores),
             page: page,
             size: size);
-        //foreach (var brand in brands.Items)
-        //{
-        //    var stores = await _unitOfWork.GetRepository<Store>().GetListAsync(predicate: x => x.BrandId.Equals(brand.Id));
-        //    brand.AmountStores = stores.Count();
-        //}
 	    return brands;
     }
 
