@@ -57,4 +57,22 @@ public class BrandService : BaseService<BrandService>, IBrandService
 		    );
         return brandResponse;
     }
+
+    public async Task<bool> UpdateBrandInformation(Guid brandId, UpdateBrandRequest updateBrandRequest)
+    {
+	    if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+	    Brand brand = await _unitOfWork.GetRepository<Brand>()
+		    .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
+	    if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+        _logger.LogInformation($"Start update brand {brandId}");
+        updateBrandRequest.TrimString();
+        brand.Name = string.IsNullOrEmpty(updateBrandRequest.Name) ? brand.Name : updateBrandRequest.Name;
+        brand.Email = string.IsNullOrEmpty(updateBrandRequest.Email) ? brand.Email : updateBrandRequest.Email;
+        brand.Address = string.IsNullOrEmpty(updateBrandRequest.Address) ? brand.Address : updateBrandRequest.Address;
+		brand.Phone = string.IsNullOrEmpty(updateBrandRequest.Phone) ? brand.Phone : updateBrandRequest.Phone;
+        brand.PicUrl = string.IsNullOrEmpty(updateBrandRequest.PicUrl) ? brand.PicUrl : updateBrandRequest.PicUrl;
+        _unitOfWork.GetRepository<Brand>().UpdateAsync(brand);
+        bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+        return isSuccessful;
+    }
 }

@@ -96,5 +96,19 @@ namespace Pos_System.API.Controllers
 	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, searchShortName, page, size);
 	        return Ok(storesInBrandResponse);
         }
+
+        [CustomAuthorize(RoleEnum.SysAdmin,RoleEnum.BrandManager)]
+        [HttpPut(ApiEndPointConstant.Brand.BrandEndpoint)]
+        public async Task<IActionResult> UpdateBrandInformation(Guid id,UpdateBrandRequest updateBrandRequest)
+        {
+            bool isSuccessful = await _brandService.UpdateBrandInformation(id, updateBrandRequest);
+            if (isSuccessful)
+            {
+                _logger.LogInformation($"Update Brand {id} information successfully");
+                return Ok(MessageConstant.Brand.UpdateBrandSuccessfulMessage);
+            }
+            _logger.LogInformation($"Update Brand {id} information failed");
+	        return Ok(MessageConstant.Brand.UpdateBrandFailedMessage);
+        }
     }
 }
