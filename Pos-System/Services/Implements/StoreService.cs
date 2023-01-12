@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
+using Pos_System.API.Enums;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
+using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
 using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
@@ -37,4 +40,30 @@ public class StoreService : BaseService<StoreService>, IStoreService
 			);
 		return storeDetailResponse;
 	}
+
+    public async Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size)
+    {
+        if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+        IPaginate<GetStoreEmployeesResponse> storeEmployees = new Paginate<GetStoreEmployeesResponse>();
+		searchUserName = searchUserName?.Trim().ToLower();
+
+		storeEmployees = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
+			selector: x => new GetStoreEmployeesResponse()
+			{
+				Id = x.Id,
+				Name = x.Name,
+				Status = EnumUtil.ParseEnum<AccountStatus>(x.Status),
+				Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
+				Username = x.Username,
+			},
+			predicate: string.IsNullOrEmpty(searchUserName) ? 
+				x => x.StoreAccount != null && x.StoreAccount.StoreId.Equals(storeId) 
+				: x => x.StoreAccount != null && x.StoreAccount.StoreId.Equals(storeId) && x.Username.ToLower().Contains(searchUserName),
+			orderBy: x => x.OrderBy(x => x.Username),
+			include: x => x.Include(x => x.StoreAccount).Include(x => x.Role),
+			page: page,
+			size: size);
+
+		return storeEmployees;
+    }
 }
