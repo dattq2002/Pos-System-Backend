@@ -91,9 +91,9 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.StoresInBrandEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetStoreResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? searchShortName, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? shortName, [FromQuery] int page, [FromQuery] int size)
         {
-	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, searchShortName, page, size);
+	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, shortName, page, size);
 	        return Ok(storesInBrandResponse);
         }
 
