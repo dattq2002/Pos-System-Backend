@@ -11,4 +11,7 @@ public interface IStoreService
     public Task<GetStoreDetailResponse> GetStoreById(Guid storeId);
 
     public Task<CreateNewStoreResponse> CreateNewStore(CreateNewStoreRequest newStoreRequest);
+
+    public Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size);
+
 }

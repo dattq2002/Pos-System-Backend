@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Stores;
@@ -55,5 +56,32 @@ public class StoreService : BaseService<StoreService>, IStoreService
             createNewStoreResponse = _mapper.Map<CreateNewStoreResponse>(newStore);
         }
         return createNewStoreResponse;
+        
+     }
+     
+    public async Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size)
+    {
+        if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+        IPaginate<GetStoreEmployeesResponse> storeEmployees = new Paginate<GetStoreEmployeesResponse>();
+        searchUserName = searchUserName?.Trim().ToLower();
+
+        storeEmployees = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
+            selector: x => new GetStoreEmployeesResponse()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Status = EnumUtil.ParseEnum<AccountStatus>(x.Status),
+                Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
+                Username = x.Username,
+            },
+            predicate: string.IsNullOrEmpty(searchUserName) ?
+                x => x.StoreAccount != null && x.StoreAccount.StoreId.Equals(storeId)
+                : x => x.StoreAccount != null && x.StoreAccount.StoreId.Equals(storeId) && x.Username.ToLower().Contains(searchUserName),
+            orderBy: x => x.OrderBy(x => x.Username),
+            include: x => x.Include(x => x.StoreAccount).Include(x => x.Role),
+            page: page,
+            size: size);
+
+        return storeEmployees;
     }
 }

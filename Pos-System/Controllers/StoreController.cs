@@ -6,6 +6,7 @@ using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
@@ -42,6 +43,15 @@ namespace Pos_System.API.Controllers
             }
             _logger.LogInformation($"Create new brand successful with {createNewStoreRequest.Name}");
             return CreatedAtAction(nameof(CreateNewStore), response);
+        }
+        
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager)]
+        [HttpGet(ApiEndPointConstant.Store.StoreGetEmployeeEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreEmployeesResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoreEmployees(Guid storeId, [FromQuery] string? username, [FromQuery] int page, [FromQuery] int size)
+        {
+            var storeResponse = await _storeService.GetStoreEmployees(storeId, username, page, size);
+            return Ok(storeResponse);
         }
     }
 }
