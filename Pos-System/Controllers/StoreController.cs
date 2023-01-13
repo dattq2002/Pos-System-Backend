@@ -31,9 +31,9 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager)]
         [HttpGet(ApiEndPointConstant.Store.StoreGetEmployeeEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetStoreEmployeesResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoreEmployees(Guid storeId, [FromQuery] string? searchUsername, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetStoreEmployees(Guid storeId, [FromQuery] string? username, [FromQuery] int page, [FromQuery] int size)
         {
-            var storeResponse = await _storeService.GetStoreEmployees(storeId, searchUsername, page, size);
+            var storeResponse = await _storeService.GetStoreEmployees(storeId, username, page, size);
             return Ok(storeResponse);
         }
     }

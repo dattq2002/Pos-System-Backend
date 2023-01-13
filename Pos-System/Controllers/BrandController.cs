@@ -62,20 +62,20 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetAccountResponse>),StatusCodes.Status200OK)]
-        public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? searchUsername, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
+        public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? username, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
         {
 
-	        var accountsInBrand = await _accountService.GetBrandAccounts(id, searchUsername, role, page, size);
+	        var accountsInBrand = await _accountService.GetBrandAccounts(id, username, role, page, size);
 	        return Ok(accountsInBrand);
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetBrandResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetBrands([FromQuery] string? searchBrandName, [FromQuery] int page,
+        public async Task<IActionResult> GetBrands([FromQuery] string? name, [FromQuery] int page,
 	        [FromQuery] int size)
         {
-			var brands = await _brandService.GetBrands(searchBrandName, page, size);
+			var brands = await _brandService.GetBrands(name, page, size);
 			return Ok(brands);
         }
 
