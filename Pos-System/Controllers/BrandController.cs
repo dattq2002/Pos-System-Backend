@@ -62,20 +62,20 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetAccountResponse>),StatusCodes.Status200OK)]
-        public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? searchUsername, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
+        public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? username, [FromQuery] RoleEnum role ,[FromQuery]int page, [FromQuery]int size)
         {
 
-	        var accountsInBrand = await _accountService.GetBrandAccounts(id, searchUsername, role, page, size);
+	        var accountsInBrand = await _accountService.GetBrandAccounts(id, username, role, page, size);
 	        return Ok(accountsInBrand);
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.BrandsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetBrandResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetBrands([FromQuery] string? searchBrandName, [FromQuery] int page,
+        public async Task<IActionResult> GetBrands([FromQuery] string? name, [FromQuery] int page,
 	        [FromQuery] int size)
         {
-			var brands = await _brandService.GetBrands(searchBrandName, page, size);
+			var brands = await _brandService.GetBrands(name, page, size);
 			return Ok(brands);
         }
 
@@ -91,10 +91,24 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Brand.StoresInBrandEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetStoreResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? searchShortName, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetStoresInBrand(Guid id, [FromQuery] string? shortName, [FromQuery] int page, [FromQuery] int size)
         {
-	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, searchShortName, page, size);
+	        var storesInBrandResponse = await _storeService.GetStoresInBrand(id, shortName, page, size);
 	        return Ok(storesInBrandResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.SysAdmin,RoleEnum.BrandManager)]
+        [HttpPut(ApiEndPointConstant.Brand.BrandEndpoint)]
+        public async Task<IActionResult> UpdateBrandInformation(Guid id,UpdateBrandRequest updateBrandRequest)
+        {
+            bool isSuccessful = await _brandService.UpdateBrandInformation(id, updateBrandRequest);
+            if (isSuccessful)
+            {
+                _logger.LogInformation($"Update Brand {id} information successfully");
+                return Ok(MessageConstant.Brand.UpdateBrandSuccessfulMessage);
+            }
+            _logger.LogInformation($"Update Brand {id} information failed");
+	        return Ok(MessageConstant.Brand.UpdateBrandFailedMessage);
         }
     }
 }

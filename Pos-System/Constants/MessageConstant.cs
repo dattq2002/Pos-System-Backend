@@ -11,8 +11,10 @@ public static class MessageConstant
     {
         public const string CreateBrandFailMessage = "Create new brand failed";
         public const string CreateBrandSucceedMessage = "Create new brand successful";
-        public const string BrandNotFoundMessage = "Brand does not exist in system";
+        public const string BrandNotFoundMessage = "Brand không tồn tại trong hệ thống";
         public const string EmptyBrandIdMessage = "Brand Id bị trống";
+        public const string UpdateBrandSuccessfulMessage = "Cập nhật thông tin brand thành công";
+        public const string UpdateBrandFailedMessage = "Cập nhật thông tin brand thất bại";
     }
     public static class Account
     {
