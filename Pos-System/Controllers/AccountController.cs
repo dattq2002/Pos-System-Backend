@@ -26,5 +26,13 @@ namespace Pos_System.API.Controllers
 			if (!isSuccessful) return Ok(MessageConstant.Account.UpdateAccountStatusFailedMessage);
 			return Ok(MessageConstant.Account.UpdateAccountStatusSuccessfulMessage);
 		}
+
+		[CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.Staff, RoleEnum.StoreManager)]
+		[HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
+		public async Task<IActionResult> GetAccountDetail(Guid id)
+		{
+			var accountDetails = await _accountService.GetAccountDetail(id);
+			return Ok(accountDetails);
+		}
 	}
 }

@@ -9,4 +9,17 @@ public class GetAccountResponse
 	public string Name { get; set; }
 	public RoleEnum Role { get; set; }
 	public AccountStatus Status { get; set; }
+
+	public GetAccountResponse()
+	{
+
+	}
+	public GetAccountResponse(Guid id, string username, string name, RoleEnum role, AccountStatus status)
+	{
+		Id = id;
+		Username = username;
+		Name = name;
+		Role = role;
+		Status = status;
+	}
 }

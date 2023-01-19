@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Security.Cryptography.Xml;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -27,7 +28,28 @@ namespace Pos_System.API.Services.Implements
 			Expression<Func<Account, bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(PasswordUtil.HashPassword(loginRequest.Password));
 			Account account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: searchFilter, include: p => p.Include(x => x.Role));
 			if (account == null) return null;
-			var token = JwtUtil.GenerateJwtToken(account);
+			RoleEnum role = EnumUtil.ParseEnum<RoleEnum>(account.Role.Name);
+			Tuple<string, Guid> guidClaim = null;
+			switch (role)
+			{
+				case RoleEnum.BrandAdmin:
+				case RoleEnum.BrandManager:
+					Guid brandId = await _unitOfWork.GetRepository<BrandAccount>().SingleOrDefaultAsync(
+						selector: x => x.BrandId,
+						predicate: x => x.AccountId.Equals(account.Id));
+					guidClaim = new Tuple<string, Guid>("brandId", brandId);
+					break;
+				case RoleEnum.StoreManager:
+				case RoleEnum.Staff:
+					Guid storeId = await _unitOfWork.GetRepository<StoreAccount>().SingleOrDefaultAsync(
+						selector: x => x.StoreId,
+						predicate: x => x.AccountId.Equals(account.Id));
+					guidClaim = new Tuple<string, Guid>("storeId", storeId);
+					break;
+				default:
+					break;
+			}
+			var token = JwtUtil.GenerateJwtToken(account, guidClaim);
 			var loginResponse = _mapper.Map<LoginResponse>(account);
 			loginResponse.AccessToken = token;
 			return loginResponse;
@@ -68,7 +90,7 @@ namespace Pos_System.API.Services.Implements
 				case RoleEnum.BrandManager:
 					accountsInBrand = await _unitOfWork.GetRepository<Account>()
 						.GetPagingListAsync(
-							selector: x => new GetAccountResponse()
+							selector: x => new GetAccountResponse
 							{
 								Id = x.Id, Username = x.Username, Name = x.Name,
 								Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
@@ -87,16 +109,14 @@ namespace Pos_System.API.Services.Implements
 						.GetListAsync(selector: x => x.Id,predicate: x => x.BrandId.Equals(brandId));
 					accountsInBrand = await _unitOfWork.GetRepository<Account>()
 						.GetPagingListAsync(
-							selector: x => new GetAccountResponse()
-							{
-								Id = x.Id,
-								Username = x.Username,
-								Name = x.Name,
-								Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
-								Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)
-							},
-							predicate: string.IsNullOrEmpty(searchUsername) ? x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) && x.Role.Name.Equals(role.GetDescriptionFromEnum()) 
-								: x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) && x.Role.Name.Equals(role.GetDescriptionFromEnum()) && x.Username.ToLower().Contains(searchUsername),
+							selector: x => new GetAccountResponse(x.Id, x.Username, x.Name,
+								EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
+							predicate: string.IsNullOrEmpty(searchUsername)
+								? x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) &&
+								       x.Role.Name.Equals(role.GetDescriptionFromEnum())
+								: x => x.StoreAccount != null && storeIds.OrEmpty().Contains(x.StoreAccount.StoreId) &&
+								       x.Role.Name.Equals(role.GetDescriptionFromEnum()) &&
+								       x.Username.ToLower().Contains(searchUsername),
 							orderBy: x => x.OrderBy(x => x.Username),
 							include: x => x.Include(x => x.StoreAccount),
 							page: page,
@@ -121,6 +141,16 @@ namespace Pos_System.API.Services.Implements
 			_unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
 			bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
 			return isSuccessful;
+		}
+
+		public async Task<GetAccountResponse> GetAccountDetail(Guid id)
+		{
+			if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
+			GetAccountResponse account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(
+				selector: x => new GetAccountResponse(x.Id, x.Username, x.Name, EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
+				predicate: x => x.Id.Equals(id)
+				);
+			return account;
 		}
 	}
 }
