@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -41,6 +42,23 @@ public class StoreService : BaseService<StoreService>, IStoreService
         return storeDetailResponse;
     }
 
+    public async Task<CreateNewStoreResponse> CreateNewStore(CreateNewStoreRequest newStoreRequest)
+    {
+        _logger.LogInformation($"Create new store with {newStoreRequest.Name}");
+        Store newStore = _mapper.Map<Store>(newStoreRequest);
+        newStore.Status = StoreStatus.Active.GetDescriptionFromEnum();
+        newStore.Id = Guid.NewGuid();
+        await _unitOfWork.GetRepository<Store>().InsertAsync(newStore);
+        bool isSuccessfull = await _unitOfWork.CommitAsync() > 0;
+        CreateNewStoreResponse createNewStoreResponse = null;
+        if (isSuccessfull)
+        {
+            createNewStoreResponse = _mapper.Map<CreateNewStoreResponse>(newStore);
+        }
+        return createNewStoreResponse;
+        
+     }
+     
     public async Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size)
     {
         if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
