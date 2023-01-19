@@ -16,5 +16,7 @@ namespace Pos_System.API.Services.Interfaces
 		Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum role, int page, int size);
 
 		Task<bool> UpdateAccountStatus (Guid accountId,UpdateAccountStatusRequest updateAccountStatusRequest);
+
+		Task<GetAccountResponse> GetAccountDetail(Guid id);
 	}
 }
