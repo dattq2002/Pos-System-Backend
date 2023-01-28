@@ -2,9 +2,11 @@
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Categories;
+using Pos_System.API.Payload.Response.Categories;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Services.Implements;
@@ -39,5 +41,35 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
 		await _unitOfWork.GetRepository<Category>().InsertAsync(newCategory);
 		bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
 		return isSuccessful;
+	}
+
+	public async Task<IPaginate<GetCategoryResponse>> GetCategories(string? name, int page, int size)
+	{
+		Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+		_logger.LogInformation($"Get Categories from Brand: {brandId}");
+		name = name?.Trim();
+		IPaginate<GetCategoryResponse> categoryResponse =
+			await _unitOfWork.GetRepository<Category>().GetPagingListAsync(
+				selector: x => new GetCategoryResponse(x.Id, x.Code, x.Name, x.Type, x.DisplayOrder, x.Description,
+					x.Status, x.BrandId.Value),
+				predicate: string.IsNullOrEmpty(name)
+					? x => x.BrandId.Equals(brandId)
+					: x => x.BrandId.Equals(brandId) && x.Name.Contains(name),
+				orderBy: x => x.OrderByDescending(x => x.DisplayOrder),
+				page: page,
+				size: size
+				);
+		return categoryResponse;
+	}
+
+	public async Task<GetCategoryResponse> GetCategoryById(Guid id)
+	{
+		if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Category.EmptyCategoryIdMessage);
+		Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+		GetCategoryResponse categoryResponse = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(
+		selector: x => new GetCategoryResponse(x.Id, x.Code, x.Name, x.Type, x.DisplayOrder, x.Description, x.Status, x.BrandId.Value),
+		predicate: x => x.Id.Equals(id) && x.BrandId.Equals(brandId)
+		);
+		return categoryResponse;
 	}
 }
