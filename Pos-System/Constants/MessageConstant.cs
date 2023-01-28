@@ -36,5 +36,6 @@ public static class MessageConstant
     public static class Category
     {
 	    public const string CreateNewCategoryFailedMessage = "Tạo mới Category bị failed";
+	    public const string EmptyCategoryIdMessage = "Category Id bị trống";
     }
 }
