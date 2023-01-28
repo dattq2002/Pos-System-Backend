@@ -32,5 +32,10 @@ namespace Pos_System.API.Services
 				.GetListAsync(predicate: s => s.StoreId.Equals(store.Id));
 			return storeAccount.Select(x => x.AccountId).Contains(account.Id);
 		}
+
+		protected string GetBrandIdFromJwt()
+		{
+			return _httpContextAccessor?.HttpContext?.User?.FindFirstValue("brandId");
+		}
 	}
 }

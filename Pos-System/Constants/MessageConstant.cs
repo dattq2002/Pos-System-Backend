@@ -32,4 +32,9 @@ public static class MessageConstant
         public const string EmptyStoreIdMessage = "Store Id bị trống";
         public const string CreateStoreFailMessage = "Create new store failed";
     }
+
+    public static class Category
+    {
+	    public const string CreateNewCategoryFailedMessage = "Tạo mới Category bị failed";
+    }
 }

@@ -22,6 +22,7 @@
     <Folder Include="Mappers\Brands\" />
     <Folder Include="Middlewares\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Payload\Request\Categories\" />
     <Folder Include="Payload\Response\Brands\" />
     <Folder Include="Payload\Request\Brands\" />
     <Folder Include="Payload\Response\Stores\" />
