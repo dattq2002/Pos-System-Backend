@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Stores;
+using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
@@ -14,10 +16,12 @@ namespace Pos_System.API.Controllers
     public class StoreController : BaseController<StoreController>
     {
         private readonly IStoreService _storeService;
+        private readonly IAccountService _accountService;
 
-        public StoreController(ILogger<StoreController> logger, IStoreService storeService) : base(logger)
+        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService) : base(logger)
         {
             _storeService = storeService;
+            _accountService = accountService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
@@ -52,6 +56,22 @@ namespace Pos_System.API.Controllers
         {
             var storeResponse = await _storeService.GetStoreEmployees(storeId, username, page, size);
             return Ok(storeResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
+        [ProducesResponseType(typeof(CreateNewStoreAccountResponse), StatusCodes.Status200OK)]
+        [ProducesErrorResponseType(typeof(ProblemDetails))]
+        public async Task<IActionResult> CreateNewStoreAccount(CreateNewStoreAccountRequest newStoreAccountRequest)
+        {
+            CreateNewStoreAccountResponse response = await _accountService.CreateNewStoreAccount(newStoreAccountRequest);
+            if (response == null)
+            {
+                _logger.LogError($"Create new store account failed: store {newStoreAccountRequest.StoreId} with account {newStoreAccountRequest.Username}");
+                return Problem(MessageConstant.Account.CreateStoreAccountFailMessage);
+            }
+            _logger.LogInformation($"Create store account successfully with store: {newStoreAccountRequest.StoreId}, account: {newStoreAccountRequest.Username}");
+            return CreatedAtAction(nameof(CreateNewStoreAccount), response);
         }
     }
 }
