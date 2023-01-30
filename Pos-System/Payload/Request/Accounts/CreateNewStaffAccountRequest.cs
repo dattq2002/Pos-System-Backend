@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pos_System.API.Payload.Request.Accounts
 {
-    public class CreateNewStoreAccountRequest
+    public class CreateNewStaffAccountRequest
     {
         [Required(ErrorMessage = "Store Id is missing")]
         public Guid StoreId { get; set; }
@@ -14,7 +14,7 @@ namespace Pos_System.API.Payload.Request.Accounts
         [Required(ErrorMessage = "Password is missing")]
         public string Password { get; set; }
 
-        public CreateNewStoreAccountRequest()
+        public CreateNewStaffAccountRequest()
         {
 
         }

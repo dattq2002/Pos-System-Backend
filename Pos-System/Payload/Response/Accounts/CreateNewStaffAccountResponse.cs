@@ -2,7 +2,7 @@
 
 namespace Pos_System.API.Payload.Response.Accounts
 {
-    public class CreateNewStoreAccountResponse
+    public class CreateNewStaffAccountResponse
     {
         public Guid StoreId { get; set; }
         public string Username { get; set; }

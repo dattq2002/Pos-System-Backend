@@ -155,7 +155,7 @@ namespace Pos_System.API.Services.Implements
 			return account;
 		}
 
-        public async Task<CreateNewStoreAccountResponse> CreateNewStoreAccount(CreateNewStoreAccountRequest createNewStoreAccountRequest)
+        public async Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(CreateNewStaffAccountRequest createNewStoreAccountRequest)
         {
             Store store = await _unitOfWork.GetRepository<Store>()
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(createNewStoreAccountRequest.StoreId));
@@ -174,7 +174,7 @@ namespace Pos_System.API.Services.Implements
             };
             await _unitOfWork.GetRepository<Account>().InsertAsync(newStoreAccount);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
-            CreateNewStoreAccountResponse response = isSuccessful ? _mapper.Map<CreateNewStoreAccountResponse>(newStoreAccount) : null;
+            CreateNewStaffAccountResponse response = isSuccessful ? _mapper.Map<CreateNewStaffAccountResponse>(newStoreAccount) : null;
 			if (response != null)
 			{
                 response.StoreId = store.Id;

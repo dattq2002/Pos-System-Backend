@@ -60,18 +60,18 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.StoreManager)]
         [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
-        [ProducesResponseType(typeof(CreateNewStoreAccountResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CreateNewStaffAccountResponse), StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
-        public async Task<IActionResult> CreateNewStoreAccount(CreateNewStoreAccountRequest newStoreAccountRequest)
+        public async Task<IActionResult> CreateNewStaffAccount(CreateNewStaffAccountRequest newStaffAccountRequest)
         {
-            CreateNewStoreAccountResponse response = await _accountService.CreateNewStoreAccount(newStoreAccountRequest);
+            CreateNewStaffAccountResponse response = await _accountService.CreateNewStaffAccount(newStaffAccountRequest);
             if (response == null)
             {
-                _logger.LogError($"Create new store account failed: store {newStoreAccountRequest.StoreId} with account {newStoreAccountRequest.Username}");
-                return Problem(MessageConstant.Account.CreateStoreAccountFailMessage);
+                _logger.LogError($"Create new staff account failed: store {newStaffAccountRequest.StoreId} with account {newStaffAccountRequest.Username}");
+                return Problem(MessageConstant.Account.CreateStaffAccountFailMessage);
             }
-            _logger.LogInformation($"Create store account successfully with store: {newStoreAccountRequest.StoreId}, account: {newStoreAccountRequest.Username}");
-            return CreatedAtAction(nameof(CreateNewStoreAccount), response);
+            _logger.LogInformation($"Create staff account successfully with store: {newStaffAccountRequest.StoreId}, account: {newStaffAccountRequest.Username}");
+            return CreatedAtAction(nameof(CreateNewStaffAccount), response);
         }
     }
 }
