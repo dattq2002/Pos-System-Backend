@@ -1,5 +1,6 @@
 ﻿using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request;
+using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
 using Pos_System.Domain.Models;
@@ -18,5 +19,7 @@ namespace Pos_System.API.Services.Interfaces
 		Task<bool> UpdateAccountStatus (Guid accountId,UpdateAccountStatusRequest updateAccountStatusRequest);
 
 		Task<GetAccountResponse> GetAccountDetail(Guid id);
+
+		Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest);
 	}
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request;
+using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
 using Pos_System.API.Services;
@@ -152,5 +153,20 @@ namespace Pos_System.API.Services.Implements
 				);
 			return account;
 		}
-	}
+
+        public async Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        {
+			if (accountId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
+            Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
+            if (updatedAccount == null)
+                throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+
+			updatedAccount.Name = string.IsNullOrEmpty(staffAccountInformationRequest.Name) ? updatedAccount.Name : staffAccountInformationRequest.Name;
+
+            _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+            bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+            return isSuccessful;
+        }
+    }
 }

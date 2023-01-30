@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
@@ -14,10 +15,12 @@ namespace Pos_System.API.Controllers
     public class StoreController : BaseController<StoreController>
     {
         private readonly IStoreService _storeService;
+        private readonly IAccountService _accountService;
 
-        public StoreController(ILogger<StoreController> logger, IStoreService storeService) : base(logger)
+        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService) : base(logger)
         {
             _storeService = storeService;
+            _accountService = accountService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
@@ -60,6 +63,14 @@ namespace Pos_System.API.Controllers
         {
             await _storeService.UpdateStoreInformation(id, updateStoreRequest);
             return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpPut(ApiEndPointConstant.Store.StoreUpdateEmployeeEndpoint)]
+        public async Task<IActionResult> UpdateStaffAccountInformation(Guid storeId, Guid id, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        {
+            await _accountService.UpdateStaffAccountInformation(id, staffAccountInformationRequest);
+            return Ok(MessageConstant.Store.UpdateStaffInformationSuccessfulMessage);
         }
     }
 }
