@@ -53,5 +53,13 @@ namespace Pos_System.API.Controllers
             var storeResponse = await _storeService.GetStoreEmployees(storeId, username, page, size);
             return Ok(storeResponse);
         }
+
+        [CustomAuthorize(RoleEnum.BrandManager)]
+        [HttpPut(ApiEndPointConstant.Store.StoreEndpoint)]
+        public async Task<IActionResult> UpdateSotreInformation(Guid id, UpdateStoreRequest updateStoreRequest)
+        {
+            await _storeService.UpdateStoreInformation(id, updateStoreRequest);
+            return Ok();
+        }
     }
 }

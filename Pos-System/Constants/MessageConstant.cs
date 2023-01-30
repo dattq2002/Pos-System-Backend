@@ -31,6 +31,7 @@ public static class MessageConstant
     {
         public const string EmptyStoreIdMessage = "Store Id bị trống";
         public const string CreateStoreFailMessage = "Create new store failed";
+        public const string StoreNotFoundMessage = "Không tìm thấy store";
     }
 
     public static class Category
