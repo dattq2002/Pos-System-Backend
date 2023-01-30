@@ -56,10 +56,10 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandManager)]
         [HttpPut(ApiEndPointConstant.Store.StoreEndpoint)]
-        public async Task<IActionResult> UpdateSotreInformation(Guid id, UpdateStoreRequest updateStoreRequest)
+        public async Task<IActionResult> UpdateStoreInformation(Guid id, UpdateStoreRequest updateStoreRequest)
         {
             await _storeService.UpdateStoreInformation(id, updateStoreRequest);
-            return Ok();
+            return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
         }
     }
 }
