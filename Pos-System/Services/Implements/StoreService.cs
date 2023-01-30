@@ -84,4 +84,25 @@ public class StoreService : BaseService<StoreService>, IStoreService
 
         return storeEmployees;
     }
+
+    public async Task<bool> UpdateStoreInformation(Guid storeId, UpdateStoreRequest updateStoreRequest)
+    {
+        if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+        Store storeForUpdate = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
+        if (storeForUpdate == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
+        _logger.LogInformation($"Start update store {storeId}");
+
+        updateStoreRequest.TrimString();
+        storeForUpdate.Name = string.IsNullOrEmpty(updateStoreRequest.Name) ? storeForUpdate.Name : updateStoreRequest.Name;
+        storeForUpdate.ShortName = string.IsNullOrEmpty(updateStoreRequest.ShortName) ? storeForUpdate.ShortName : updateStoreRequest.ShortName;
+        storeForUpdate.Email = string.IsNullOrEmpty(updateStoreRequest.Email) ? storeForUpdate.Email : updateStoreRequest.Email;
+        storeForUpdate.Phone = string.IsNullOrEmpty(updateStoreRequest.Phone) ? storeForUpdate.Phone : updateStoreRequest.Phone;
+        storeForUpdate.Code = string.IsNullOrEmpty(updateStoreRequest.Code) ? storeForUpdate.Code : updateStoreRequest.Code;
+        storeForUpdate.Address = string.IsNullOrEmpty(updateStoreRequest.Address) ? storeForUpdate.Address : updateStoreRequest.Address;
+
+        _unitOfWork.GetRepository<Store>().UpdateAsync(storeForUpdate);
+        bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
+
+        return isSuccesful;
+    }
 }

@@ -14,4 +14,6 @@ public interface IStoreService
 
     public Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size);
 
+    public Task<bool> UpdateStoreInformation(Guid storeId, UpdateStoreRequest updateStoreRequest);
+
 }

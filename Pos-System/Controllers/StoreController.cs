@@ -73,5 +73,13 @@ namespace Pos_System.API.Controllers
             _logger.LogInformation($"Create store account successfully with store: {newStoreAccountRequest.StoreId}, account: {newStoreAccountRequest.Username}");
             return CreatedAtAction(nameof(CreateNewStoreAccount), response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandManager)]
+        [HttpPut(ApiEndPointConstant.Store.StoreEndpoint)]
+        public async Task<IActionResult> UpdateStoreInformation(Guid id, UpdateStoreRequest updateStoreRequest)
+        {
+            await _storeService.UpdateStoreInformation(id, updateStoreRequest);
+            return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
+        }
     }
 }
