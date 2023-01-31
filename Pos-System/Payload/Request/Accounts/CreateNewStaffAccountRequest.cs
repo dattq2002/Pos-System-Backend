@@ -5,8 +5,6 @@ namespace Pos_System.API.Payload.Request.Accounts
 {
     public class CreateNewStaffAccountRequest
     {
-        [Required(ErrorMessage = "Store Id is missing")]
-        public Guid StoreId { get; set; }
         [Required(ErrorMessage = "Username is missing")]
         public string Username { get; set; }
         [Required(ErrorMessage = "Name is missing")]

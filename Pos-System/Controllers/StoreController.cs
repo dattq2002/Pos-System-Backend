@@ -59,10 +59,10 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.StoreManager)]
-        [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
+        [HttpPost(ApiEndPointConstant.Store.StoreCreateAccountEndpoint)]
         [ProducesResponseType(typeof(CreateNewStaffAccountResponse), StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
-        public async Task<IActionResult> CreateNewStaffAccount(CreateNewStaffAccountRequest newStaffAccountRequest)
+        public async Task<IActionResult> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest newStaffAccountRequest)
         {
             CreateNewStaffAccountResponse response = await _accountService.CreateNewStaffAccount(newStaffAccountRequest);
             if (response == null)
