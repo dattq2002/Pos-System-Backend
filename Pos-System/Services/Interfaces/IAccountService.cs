@@ -3,6 +3,7 @@ using Pos_System.API.Payload.Request;
 using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
+using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.Domain.Models;
 using Pos_System.Domain.Paginate;
 
@@ -21,5 +22,7 @@ namespace Pos_System.API.Services.Interfaces
 		Task<GetAccountResponse> GetAccountDetail(Guid id);
 
 		Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest);
+
+		Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(Guid storeId, CreateNewStaffAccountRequest createNewStaffAccountRequest);
 	}
 }
