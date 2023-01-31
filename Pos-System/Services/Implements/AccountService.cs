@@ -157,10 +157,10 @@ namespace Pos_System.API.Services.Implements
             return account;
         }
 
-        public async Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(CreateNewStaffAccountRequest createNewStoreAccountRequest)
+        public async Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest createNewStoreAccountRequest)
         {
             Store store = await _unitOfWork.GetRepository<Store>()
-                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(createNewStoreAccountRequest.StoreId));
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
             _logger.LogInformation($"Create new account for store {store.Name} with account {createNewStoreAccountRequest.Username}, role: {RoleEnum.Staff.GetDescriptionFromEnum()} ");
             createNewStoreAccountRequest.Password = PasswordUtil.HashPassword(createNewStoreAccountRequest.Password);

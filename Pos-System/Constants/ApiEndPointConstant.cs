@@ -29,7 +29,7 @@ public static class ApiEndPointConstant
     {
         public const string StoresEndpoint = ApiEndpoint + "/stores";
         public const string StoreEndpoint = StoresEndpoint + "/{id}";
-        public const string StoreCreateAccountEndpoint = StoresEndpoint + "{storeId}/users";
+        public const string StoreCreateAccountEndpoint = StoresEndpoint + "/{storeId}/users";
         public const string StoreGetEmployeeEndpoint = StoresEndpoint + "/{storeId}/employees";
     }
 

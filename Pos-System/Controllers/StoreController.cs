@@ -64,13 +64,13 @@ namespace Pos_System.API.Controllers
         [ProducesErrorResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest newStaffAccountRequest)
         {
-            CreateNewStaffAccountResponse response = await _accountService.CreateNewStaffAccount(newStaffAccountRequest);
+            CreateNewStaffAccountResponse response = await _accountService.CreateNewStaffAccount(storeId, newStaffAccountRequest);
             if (response == null)
             {
-                _logger.LogError($"Create new staff account failed: store {newStaffAccountRequest.StoreId} with account {newStaffAccountRequest.Username}");
+                _logger.LogError($"Create new staff account failed: store {storeId} with account {newStaffAccountRequest.Username}");
                 return Problem(MessageConstant.Account.CreateStaffAccountFailMessage);
             }
-            _logger.LogInformation($"Create staff account successfully with store: {newStaffAccountRequest.StoreId}, account: {newStaffAccountRequest.Username}");
+            _logger.LogInformation($"Create staff account successfully with store: {storeId}, account: {newStaffAccountRequest.Username}");
             return CreatedAtAction(nameof(CreateNewStaffAccount), response);
         }
 
