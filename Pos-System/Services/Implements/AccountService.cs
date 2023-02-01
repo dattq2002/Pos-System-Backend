@@ -81,7 +81,7 @@ namespace Pos_System.API.Services.Implements
             return response;
         }
 
-        public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum role, int page, int size)
+        public async Task<IPaginate<GetAccountResponse>> GetBrandAccounts(Guid brandId, string? searchUsername, RoleEnum? role, int page, int size)
         {
             if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
             IPaginate<GetAccountResponse> accountsInBrand = new Paginate<GetAccountResponse>();
@@ -126,6 +126,25 @@ namespace Pos_System.API.Services.Implements
                             page: page,
                             size: size);
                     break;
+                default:
+                    accountsInBrand = await _unitOfWork.GetRepository<Account>()
+                        .GetPagingListAsync(
+                            selector: x => new GetAccountResponse
+                            {
+                                Id = x.Id,
+                                Username = x.Username,
+                                Name = x.Name,
+                                Role = EnumUtil.ParseEnum<RoleEnum>(x.Role.Name),
+                                Status = EnumUtil.ParseEnum<AccountStatus>(x.Status)
+                            },
+                            predicate: string.IsNullOrEmpty(searchUsername) ? x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId)
+                                : x => x.BrandAccount != null && x.BrandAccount.BrandId.Equals(brandId) && x.Username.ToLower().Contains(searchUsername),
+                            orderBy: x => x.OrderBy(x => x.Username),
+                            include: x => x.Include(x => x.BrandAccount).Include(x => x.Role),
+                            page: page,
+                            size: size);
+                    break;
+
             }
             return accountsInBrand;
         }
