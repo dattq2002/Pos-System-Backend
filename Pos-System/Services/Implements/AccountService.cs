@@ -27,34 +27,44 @@ namespace Pos_System.API.Services.Implements
 
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
         {
-            Expression<Func<Account, bool>> searchFilter = p => p.Username.Equals(loginRequest.Username) && p.Password.Equals(PasswordUtil.HashPassword(loginRequest.Password));
-            Account account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: searchFilter, include: p => p.Include(x => x.Role));
-            if (account == null) return null;
-            RoleEnum role = EnumUtil.ParseEnum<RoleEnum>(account.Role.Name);
-            Tuple<string, Guid> guidClaim = null;
-            switch (role)
-            {
-                case RoleEnum.BrandAdmin:
-                case RoleEnum.BrandManager:
-                    Guid brandId = await _unitOfWork.GetRepository<BrandAccount>().SingleOrDefaultAsync(
-                        selector: x => x.BrandId,
-                        predicate: x => x.AccountId.Equals(account.Id));
-                    guidClaim = new Tuple<string, Guid>("brandId", brandId);
-                    break;
-                case RoleEnum.StoreManager:
-                case RoleEnum.Staff:
-                    Guid storeId = await _unitOfWork.GetRepository<StoreAccount>().SingleOrDefaultAsync(
-                        selector: x => x.StoreId,
-                        predicate: x => x.AccountId.Equals(account.Id));
-                    guidClaim = new Tuple<string, Guid>("storeId", storeId);
-                    break;
-                default:
-                    break;
-            }
-            var token = JwtUtil.GenerateJwtToken(account, guidClaim);
-            var loginResponse = _mapper.Map<LoginResponse>(account);
-            loginResponse.AccessToken = token;
-            return loginResponse;
+	        Expression<Func<Account, bool>> searchFilter = p =>
+		        p.Username.Equals(loginRequest.Username) &&
+		        p.Password.Equals(PasswordUtil.HashPassword(loginRequest.Password));
+	        Account account = await _unitOfWork.GetRepository<Account>()
+		        .SingleOrDefaultAsync(predicate: searchFilter, include: p => p.Include(x => x.Role));
+	        if (account == null) return null;
+	        RoleEnum role = EnumUtil.ParseEnum<RoleEnum>(account.Role.Name);
+	        Tuple<string, Guid> guidClaim = null;
+	        LoginResponse loginResponse = null;
+	        switch (role)
+	        {
+		        case RoleEnum.BrandAdmin:
+		        case RoleEnum.BrandManager:
+			        Guid brandId = await _unitOfWork.GetRepository<BrandAccount>().SingleOrDefaultAsync(
+				        selector: x => x.BrandId,
+				        predicate: x => x.AccountId.Equals(account.Id));
+			        guidClaim = new Tuple<string, Guid>("brandId", brandId);
+			        loginResponse = new BrandAccountLoginResponse(account.Id, account.Username, account.Name,
+				        account.Role.Name, account.Status, brandId);
+			        break;
+		        case RoleEnum.StoreManager:
+		        case RoleEnum.Staff:
+			        Guid storeId = await _unitOfWork.GetRepository<StoreAccount>().SingleOrDefaultAsync(
+				        selector: x => x.StoreId,
+				        predicate: x => x.AccountId.Equals(account.Id));
+			        guidClaim = new Tuple<string, Guid>("storeId", storeId);
+			        loginResponse = new StoreAccountLoginResponse(account.Id, account.Username, account.Name,
+				        account.Role.Name, account.Status, storeId);
+			        break;
+		        default:
+			        loginResponse = new LoginResponse(account.Id, account.Username, account.Name, account.Role.Name,
+				        account.Status);
+			        break;
+	        }
+
+	        var token = JwtUtil.GenerateJwtToken(account, guidClaim);
+	        loginResponse.AccessToken = token;
+	        return loginResponse;
         }
 
         public async Task<CreateNewBrandAccountResponse> CreateNewBrandAccount(CreateNewBrandAccountRequest createNewBrandAccountRequest)
