@@ -81,5 +81,13 @@ namespace Pos_System.API.Controllers
             await _storeService.UpdateStoreInformation(id, updateStoreRequest);
             return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
         }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpPut(ApiEndPointConstant.Store.StoreUpdateEmployeeEndpoint)]
+        public async Task<IActionResult> UpdateStaffAccountInformation(Guid storeId, Guid id, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        {
+            await _accountService.UpdateStaffAccountInformation(id, staffAccountInformationRequest);
+            return Ok(MessageConstant.Store.UpdateStaffInformationSuccessfulMessage);
+        }
     }
 }

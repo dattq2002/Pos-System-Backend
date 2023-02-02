@@ -21,6 +21,8 @@ namespace Pos_System.API.Services.Interfaces
 
 		Task<GetAccountResponse> GetAccountDetail(Guid id);
 
+		Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest);
+
 		Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(Guid storeId, CreateNewStaffAccountRequest createNewStaffAccountRequest);
 	}
 }

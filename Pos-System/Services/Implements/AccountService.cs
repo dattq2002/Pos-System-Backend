@@ -166,16 +166,32 @@ namespace Pos_System.API.Services.Implements
             return isSuccessful;
         }
 
-        public async Task<GetAccountResponse> GetAccountDetail(Guid id)
-        {
-            if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
-            GetAccountResponse account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(
-                selector: x => new GetAccountResponse(x.Id, x.Username, x.Name, EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
-                predicate: x => x.Id.Equals(id)
-                );
-            return account;
-        }
+		public async Task<GetAccountResponse> GetAccountDetail(Guid id)
+		{
+			if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
+			GetAccountResponse account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(
+				selector: x => new GetAccountResponse(x.Id, x.Username, x.Name, EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
+				predicate: x => x.Id.Equals(id)
+				);
+			return account;
+		}
 
+        public async Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        {
+			if (accountId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
+            Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
+            if (updatedAccount == null)
+                throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+
+			updatedAccount.Name = string.IsNullOrEmpty(staffAccountInformationRequest.Name) ? updatedAccount.Name : staffAccountInformationRequest.Name;
+
+            _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+            bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+            return isSuccessful;
+         }
+        
+        
         public async Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest createNewStoreAccountRequest)
         {
             Store store = await _unitOfWork.GetRepository<Store>()

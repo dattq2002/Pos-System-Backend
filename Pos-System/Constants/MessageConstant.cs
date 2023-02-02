@@ -34,6 +34,7 @@ public static class MessageConstant
         public const string CreateStoreFailMessage = "Create new store failed";
         public const string StoreNotFoundMessage = "Store không tồn tại trong hệ thống";
         public const string UpdateStoreInformationSuccessfulMessage = "Cập nhật thông tin store thành công";
+        public const string UpdateStaffInformationSuccessfulMessage = "Cập nhật thông tin staff thành công";
     }
 
     public static class Category
