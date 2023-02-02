@@ -45,4 +45,10 @@ public static class ApiEndPointConstant
 	    public const string CategoriesEndpoint = ApiEndpoint + "/categories";
 	    public const string CategoryEndpoint = CategoriesEndpoint + "/{id}";
     }
+
+    public static class Collection
+    {
+        public const string CollectionsEndPoint = ApiEndpoint + "/collections";
+        public const string CollectionEndPoint = CollectionsEndPoint + "/{id}";
+    }
 }

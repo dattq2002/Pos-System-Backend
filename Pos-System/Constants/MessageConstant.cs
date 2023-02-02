@@ -42,4 +42,10 @@ public static class MessageConstant
 	    public const string CreateNewCategoryFailedMessage = "Tạo mới Category bị failed";
 	    public const string EmptyCategoryIdMessage = "Category Id bị trống";
     }
+
+    public static class Collection
+    {
+        public const string EmptyCollectionIdMessage = "Collection Id bị trống";
+        public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
+    }
 }

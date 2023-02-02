@@ -40,7 +40,8 @@ public static class DependencyServices
         services.AddScoped<IBrandService, BrandService>();
         services.AddScoped<IStoreService, StoreService>();
         services.AddScoped<ICategoryService, CategoryService>();
-		return services;
+        services.AddScoped<ICollectionService, CollectionService>();
+        return services;
 	}
 
 	public static IServiceCollection AddJwtValidation(this IServiceCollection services)
