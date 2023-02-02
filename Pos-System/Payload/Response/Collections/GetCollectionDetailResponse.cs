@@ -39,18 +39,18 @@ namespace Pos_System.API.Payload.Response.Collections
     public class ProductOfCollection
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string ProductName { get; set; }
         public string? Description { get; set; }
-        public string Code { get; set; }
+        public string ProductCode { get; set; }
         public string? PicUrl { get; set; }
         public double SellingPrice { get; set; }
 
-        public ProductOfCollection(Guid id, string name, string? description, string code, string? picUrl, double sellingPrice)
+        public ProductOfCollection(Guid id, string productName, string? description, string productCode, string? picUrl, double sellingPrice)
         {
             Id = id;
-            Name = name;
+            ProductName = productName;
             Description = description;
-            Code = code;
+            ProductCode = productCode;
             PicUrl = picUrl;
             SellingPrice = sellingPrice;
         }
