@@ -79,7 +79,7 @@ namespace Pos_System.API.Controllers
 			return Ok(brands);
         }
 
-        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
         [HttpGet(ApiEndPointConstant.Brand.BrandEndpoint)]
         [ProducesResponseType(typeof(GetBrandResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBrandById(Guid id)
