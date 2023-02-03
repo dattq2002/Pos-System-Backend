@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -47,6 +48,40 @@ namespace Pos_System.API.Services.Implements
                              size: size);
 
             return collectionResponse;
+        }
+
+        public async Task<Guid> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest)
+        {
+            if (collectionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Collection.EmptyCollectionIdMessage);
+
+            Collection collectionForupdate = await _unitOfWork.GetRepository<Collection>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
+
+            if (collectionForupdate == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
+            
+            _logger.LogInformation($"Updating Collection with collection: {collectionId}");
+            collectionInformationRequest.TrimString();
+            collectionForupdate.Name = string.IsNullOrEmpty(collectionInformationRequest.Name) ? collectionForupdate.Name : collectionInformationRequest.Name;
+            collectionForupdate.Code = string.IsNullOrEmpty(collectionInformationRequest.Code) ? collectionForupdate.Code : collectionInformationRequest.Code;
+            collectionForupdate.Description = string.IsNullOrEmpty(collectionInformationRequest.Description) ? collectionForupdate.Description : collectionInformationRequest.Description;
+            collectionForupdate.PicUrl = collectionInformationRequest.PicUrl;
+
+
+            if(collectionInformationRequest.ProductIds != null)
+            {
+                List<Guid> currentProductIds = (List<Guid>)await _unitOfWork.GetRepository<CollectionProduct>().GetListAsync(
+                    selector: x => x.ProductId,
+                    predicate: x => x.CollectionId.Equals(collectionId)
+                    );
+
+                List<Guid> productIdsRequest = new List<Guid>(collectionInformationRequest.ProductIds);
+
+                (List<Guid> idsToRemove, List<Guid> idsToAdd) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(currentProductIds, productIdsRequest);
+                //Handle add and remove to database
+            }
+
+
+            throw new NotImplementedException();
         }
     }
 }
