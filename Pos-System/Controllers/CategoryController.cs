@@ -48,5 +48,14 @@ namespace Pos_System.API.Controllers
 			var response = await _categoryService.GetCategoryById(id);
 			return Ok(response);
 		}
+
+		[CustomAuthorize(RoleEnum.BrandAdmin)]
+		[HttpPut(ApiEndPointConstant.Category.CategoryEndpoint)]
+		public async Task<IActionResult> UpdateCategoryInformation(Guid id,UpdateCategoryRequest updateCategoryRequest)
+		{
+			bool isSuccessfuly = await _categoryService.UpdateCategory(id, updateCategoryRequest);
+			if (!isSuccessfuly) return BadRequest(MessageConstant.Category.UpdateCategoryFailedMessage);
+			return Ok(MessageConstant.Category.UpdateCategorySuccessfulMessage);
+		}
 	}
 }
