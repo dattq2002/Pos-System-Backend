@@ -50,7 +50,7 @@ namespace Pos_System.API.Controllers
         }
         
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager)]
-        [HttpGet(ApiEndPointConstant.Store.StoreGetEmployeeEndpoint)]
+        [HttpGet(ApiEndPointConstant.Store.StoreAccountEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetStoreEmployeesResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStoreEmployees(Guid storeId, [FromQuery] string? username, [FromQuery] int page, [FromQuery] int size)
         {
@@ -59,7 +59,7 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.StoreManager)]
-        [HttpPost(ApiEndPointConstant.Store.StoreCreateAccountEndpoint)]
+        [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
         [ProducesResponseType(typeof(CreateNewStaffAccountResponse), StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest newStaffAccountRequest)

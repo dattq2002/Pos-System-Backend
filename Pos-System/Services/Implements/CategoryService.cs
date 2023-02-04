@@ -72,4 +72,21 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
 		);
 		return categoryResponse;
 	}
+
+	public async Task<bool> UpdateCategory(Guid id,UpdateCategoryRequest request)
+	{
+		if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Category.EmptyCategoryIdMessage);
+		Category category = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(
+			predicate: x => x.Id.Equals(id)
+			);
+		if (category == null) throw new BadHttpRequestException(MessageConstant.Category.CategoryNotFoundMessage);
+		_logger.LogInformation($"Start to update category {category.Id}");
+		request.TrimString();
+		category.Name = string.IsNullOrEmpty(request.Name) ? category.Name : request.Name;
+		category.Description = string.IsNullOrEmpty(request.Description) ? category.Description : request.Description;
+		category.DisplayOrder = (int) (request.DisplayOrder.HasValue ? request.DisplayOrder : category.DisplayOrder);
+		_unitOfWork.GetRepository<Category>().UpdateAsync(category);
+		bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+		return isSuccessful;
+	}
 }
