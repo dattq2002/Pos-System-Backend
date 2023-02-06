@@ -24,7 +24,7 @@ namespace Pos_System.API.Controllers
             _accountService = accountService;
         }
 
-        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager)]
         [HttpGet(ApiEndPointConstant.Store.StoreEndpoint)]
         [ProducesResponseType(typeof(GetStoreDetailResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStoreById(Guid id)
