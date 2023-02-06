@@ -144,6 +144,12 @@ namespace Pos_System.Domain.Models
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.Status).HasMaxLength(20);
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.Collections)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Collection_Brand");
             });
 
             modelBuilder.Entity<CollectionProduct>(entity =>
