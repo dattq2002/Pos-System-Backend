@@ -33,14 +33,16 @@ namespace Pos_System.API.Controllers
         [ProducesResponseType(typeof(GetCollectionDetailResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
         {
-            _logger.LogInformation($"Start to create new collection with {createNewCollectionRequest}");
+	        _logger.LogInformation($"Start to create new collection with {createNewCollectionRequest}");
 	        var response = await _collectionService.CreateNewCollection(createNewCollectionRequest);
 	        if (response == null)
 	        {
-                _logger.LogInformation($"Create new collection failed: {createNewCollectionRequest.Name}, {createNewCollectionRequest.Code}");
+		        _logger.LogInformation(
+			        $"Create new collection failed: {createNewCollectionRequest.Name}, {createNewCollectionRequest.Code}");
 		        return Ok(MessageConstant.Collection.CreateNewCollectionFailedMessage);
 	        }
-            return Ok(response);
+
+	        return Ok(response);
         }
 
     }
