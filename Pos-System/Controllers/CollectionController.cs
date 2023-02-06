@@ -30,7 +30,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Collection.CollectionsEndPoint)]
-        [ProducesResponseType(typeof(GetCollectionDetailResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CreateNewCollectionResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
         {
 	        _logger.LogInformation($"Start to create new collection with {createNewCollectionRequest}");
