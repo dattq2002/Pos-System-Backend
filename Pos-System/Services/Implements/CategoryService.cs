@@ -51,7 +51,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
 		IPaginate<GetCategoryResponse> categoryResponse =
 			await _unitOfWork.GetRepository<Category>().GetPagingListAsync(
 				selector: x => new GetCategoryResponse(x.Id, x.Code, x.Name, x.Type, x.DisplayOrder, x.Description,
-					x.Status, x.BrandId.Value),
+					x.Status, x.BrandId.Value, x.PicUrl),
 				predicate: string.IsNullOrEmpty(name)
 					? x => x.BrandId.Equals(brandId)
 					: x => x.BrandId.Equals(brandId) && x.Name.Contains(name),
@@ -67,7 +67,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
 		if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Category.EmptyCategoryIdMessage);
 		Guid brandId = Guid.Parse(GetBrandIdFromJwt());
 		GetCategoryResponse categoryResponse = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(
-		selector: x => new GetCategoryResponse(x.Id, x.Code, x.Name, x.Type, x.DisplayOrder, x.Description, x.Status, x.BrandId.Value),
+		selector: x => new GetCategoryResponse(x.Id, x.Code, x.Name, x.Type, x.DisplayOrder, x.Description, x.Status, x.BrandId.Value, x.PicUrl),
 		predicate: x => x.Id.Equals(id) && x.BrandId.Equals(brandId)
 		);
 		return categoryResponse;
