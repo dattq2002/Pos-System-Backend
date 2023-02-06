@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -16,7 +17,7 @@ namespace Pos_System.API.Services.Implements
         {
 
         }
-        public async Task<GetCollectionDetailResponse> getCollectionById(Guid collectionId, string? productName, string? productCode, int page, int size)
+        public async Task<GetCollectionDetailResponse> GetCollectionById(Guid collectionId, string? productName, string? productCode, int page, int size)
         {
             if (collectionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Collection.EmptyCollectionIdMessage);
 
@@ -47,6 +48,27 @@ namespace Pos_System.API.Services.Implements
                              size: size);
 
             return collectionResponse;
+        }
+
+        public async Task<CreateNewCollectionResponse> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
+        {
+	        createNewCollectionRequest.TrimString();
+	        var brandId = Guid.Parse(GetBrandIdFromJwt());
+	        Collection newCollection = new Collection()
+	        {
+				Id = Guid.NewGuid(),
+                Code = createNewCollectionRequest.Code,
+                Name = createNewCollectionRequest.Name,
+                BrandId = brandId,
+                Description = createNewCollectionRequest?.Description,
+                PicUrl = createNewCollectionRequest?.PicUrl,
+                Status = CollectionStatus.Deactivate.GetDescriptionFromEnum(),
+
+	        };
+	        await _unitOfWork.GetRepository<Collection>().InsertAsync(newCollection);
+	        bool isSuccessful =  await _unitOfWork.CommitAsync() > 0;
+	        if (!isSuccessful) return null;
+	        return new CreateNewCollectionResponse(newCollection.Id,newCollection.Name, newCollection.Code, newCollection.Status, newCollection.Description, newCollection.PicUrl, newCollection.BrandId);
         }
     }
 }
