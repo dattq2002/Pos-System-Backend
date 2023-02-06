@@ -16,7 +16,9 @@ namespace Pos_System.Domain.Models
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
         public string? PicUrl { get; set; }
+        public Guid BrandId { get; set; }
 
+        public virtual Brand Brand { get; set; } = null!;
         public virtual ICollection<CollectionProduct> CollectionProducts { get; set; }
     }
 }

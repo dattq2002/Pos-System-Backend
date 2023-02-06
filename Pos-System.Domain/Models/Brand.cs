@@ -9,6 +9,7 @@ namespace Pos_System.Domain.Models
         {
             BrandAccounts = new HashSet<BrandAccount>();
             Categories = new HashSet<Category>();
+            Collections = new HashSet<Collection>();
             OrderSources = new HashSet<OrderSource>();
             Products = new HashSet<Product>();
             Stores = new HashSet<Store>();
@@ -24,6 +25,7 @@ namespace Pos_System.Domain.Models
 
         public virtual ICollection<BrandAccount> BrandAccounts { get; set; }
         public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<Collection> Collections { get; set; }
         public virtual ICollection<OrderSource> OrderSources { get; set; }
         public virtual ICollection<Product> Products { get; set; }
         public virtual ICollection<Store> Stores { get; set; }

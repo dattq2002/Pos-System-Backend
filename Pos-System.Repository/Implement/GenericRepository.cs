@@ -123,6 +123,16 @@ namespace Pos_System.Repository.Implement
 			_dbSet.UpdateRange(entities);
 		}
 
+		public void DeleteAsync(T entity)
+		{
+			_dbSet.Remove(entity);
+		}
+
+		public void DeleteRangeAsync(IEnumerable<T> entities)
+		{
+			_dbSet.RemoveRange(entities);
+		}
+
 		#endregion
 	}
 }

@@ -11,4 +11,6 @@ public interface ICategoryService
 	Task<IPaginate<GetCategoryResponse>> GetCategories(string? name, int page, int size);
 
 	Task<GetCategoryResponse> GetCategoryById(Guid id);
+
+	Task<bool> UpdateCategory(Guid id,UpdateCategoryRequest request);
 }

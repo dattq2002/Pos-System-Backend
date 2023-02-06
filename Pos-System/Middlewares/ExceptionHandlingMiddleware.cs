@@ -45,6 +45,7 @@ public class ExceptionHandlingMiddleware
 				break;
 			default:
 				//unhandled error
+				response.StatusCode = (int) HttpStatusCode.InternalServerError;
 				errorResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
 				_logger.LogError(exception.ToString());
 				break;

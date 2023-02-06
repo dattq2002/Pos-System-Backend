@@ -15,7 +15,7 @@ public class GetCategoryResponse
 	public CategoryStatus Status { get; set; }
 	public Guid BrandId { get; set; }
 
-	public GetCategoryResponse(Guid id, string code, string name, string type, int displayOrder, string description, string status, Guid brandId)
+	public GetCategoryResponse(Guid id, string code, string name, string type, int displayOrder, string description, string status, Guid brandId, string picUrl)
 	{
 		Id = id;
 		Code = code;
@@ -25,5 +25,6 @@ public class GetCategoryResponse
 		Description = description;
 		Status = EnumUtil.ParseEnum<CategoryStatus>(status);
 		BrandId = brandId;
+		PicUrl = picUrl;
 	}
 }
