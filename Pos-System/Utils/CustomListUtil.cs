@@ -4,7 +4,7 @@
     {
         public static (List<Guid> idsToRemove, List<Guid> idsToAdd) splitIdsToAddAndRemove(List<Guid> oldIds, List<Guid> newIds)
         {
-            List<Guid> idsToAdd = new List<Guid>();
+            List<Guid> idsToAdd = new List<Guid>(newIds);
             List<Guid> idsToRemove = new List<Guid>(oldIds);
 
             //A list of Id that is contain deleted ids but does not contain new ids added
@@ -14,8 +14,10 @@
             newIds.ForEach(x => {
                 oldIds.ForEach(y =>
                 {
-                    if (x.Equals(y)) listWithOutIdsToAdd.Add(x);
-                    else idsToAdd.Add(x);
+                    if (x.Equals(y)) {
+                        listWithOutIdsToAdd.Add(x);
+                        idsToAdd.Remove(x);
+                    }
                 });
             });
 

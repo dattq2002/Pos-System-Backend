@@ -7,6 +7,6 @@ namespace Pos_System.API.Services.Interfaces
     {
         Task<GetCollectionDetailResponse> getCollectionById(Guid collectionId, string? productName, string? productCode, int page, int size);
 
-        Task<Guid> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest);
+        Task<bool> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest);
     }
 }

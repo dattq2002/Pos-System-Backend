@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
@@ -25,6 +26,15 @@ namespace Pos_System.API.Controllers
         {
             var collectionResponse = await _collectionService.getCollectionById(id, productName, productCode, page, size);
             return Ok(collectionResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPut(ApiEndPointConstant.Collection.CollectionEndPoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCollectionInformation(Guid id, UpdateCollectionInformationRequest collectionInformationRequest)
+        {
+            await _collectionService.UpdateCollectionInformation(id, collectionInformationRequest);
+            return Ok(id);
         }
 
 

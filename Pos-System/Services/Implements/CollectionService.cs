@@ -29,7 +29,7 @@ namespace Pos_System.API.Services.Implements
                 selector: x => new GetCollectionDetailResponse(x.Id, x.Name, x.Code, EnumUtil.ParseEnum<CollectionStatus>(x.Status), x.PicUrl, x.Description),
                 predicate: x => x.Id.Equals(collectionId));
 
-            if(collectionResponse == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
+            if (collectionResponse == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
 
             List<Guid> productIds = (List<Guid>)await _unitOfWork.GetRepository<CollectionProduct>().GetListAsync(
                 selector: x => x.ProductId,
@@ -50,7 +50,7 @@ namespace Pos_System.API.Services.Implements
             return collectionResponse;
         }
 
-        public async Task<Guid> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest)
+        public async Task<bool> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest)
         {
             if (collectionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Collection.EmptyCollectionIdMessage);
 
@@ -58,7 +58,7 @@ namespace Pos_System.API.Services.Implements
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
 
             if (collectionForupdate == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
-            
+
             _logger.LogInformation($"Updating Collection with collection: {collectionId}");
             collectionInformationRequest.TrimString();
             collectionForupdate.Name = string.IsNullOrEmpty(collectionInformationRequest.Name) ? collectionForupdate.Name : collectionInformationRequest.Name;
@@ -66,8 +66,10 @@ namespace Pos_System.API.Services.Implements
             collectionForupdate.Description = string.IsNullOrEmpty(collectionInformationRequest.Description) ? collectionForupdate.Description : collectionInformationRequest.Description;
             collectionForupdate.PicUrl = collectionInformationRequest.PicUrl;
 
+            _unitOfWork.GetRepository<Collection>().UpdateAsync(collectionForupdate);
 
-            if(collectionInformationRequest.ProductIds != null)
+
+            if (collectionInformationRequest.ProductIds != null)
             {
                 List<Guid> currentProductIds = (List<Guid>)await _unitOfWork.GetRepository<CollectionProduct>().GetListAsync(
                     selector: x => x.ProductId,
@@ -78,10 +80,32 @@ namespace Pos_System.API.Services.Implements
 
                 (List<Guid> idsToRemove, List<Guid> idsToAdd) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(currentProductIds, productIdsRequest);
                 //Handle add and remove to database
+                if (splittedProductIds.idsToAdd.Count > 0)
+                {
+                    List<CollectionProduct> collectionProductsToInsert = new List<CollectionProduct>();
+                    splittedProductIds.idsToAdd.ForEach(id => collectionProductsToInsert.Add(new CollectionProduct
+                    {
+                        Id = Guid.NewGuid(),
+                        CollectionId = collectionId,
+                        ProductId = id,
+                        Status = CollectionStatus.Active.GetDescriptionFromEnum()
+                    }));
+                    await _unitOfWork.GetRepository<CollectionProduct>().InsertRangeAsync(collectionProductsToInsert);
+                }
+
+                if(splittedProductIds.idsToRemove.Count > 0)
+                {
+                    List<CollectionProduct> collectionProductsToDelete = new List<CollectionProduct>();
+                    collectionProductsToDelete = (List<CollectionProduct>)await _unitOfWork.GetRepository<CollectionProduct>()
+                        .GetListAsync(predicate: x => x.CollectionId.Equals(collectionId) && splittedProductIds.idsToRemove.Contains(x.ProductId));
+
+                    _unitOfWork.GetRepository<CollectionProduct>().DeleteRangeAsync(collectionProductsToDelete);
+                }
+                
+                
             }
-
-
-            throw new NotImplementedException();
+            bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
+            return isSuccesful;
         }
     }
 }
