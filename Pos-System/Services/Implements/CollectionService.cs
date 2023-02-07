@@ -7,6 +7,7 @@ using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Services.Implements
@@ -137,6 +138,20 @@ namespace Pos_System.API.Services.Implements
 	        bool isSuccessful =  await _unitOfWork.CommitAsync() > 0;
 	        if (!isSuccessful) return null;
 	        return new CreateNewCollectionResponse(newCollection.Id,newCollection.Name, newCollection.Code, newCollection.Status, newCollection.Description, newCollection.PicUrl, newCollection.BrandId);
+        }
+
+        public async Task<IPaginate<GetCollectionResponse>> GetCollections(string? name, int page, int size)
+        {
+	        Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+            name = name?.Trim();
+	        if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+			IPaginate<GetCollectionResponse> collectionsResponse = await _unitOfWork.GetRepository<Collection>().GetPagingListAsync(
+				selector: x => new GetCollectionResponse(x.Id, x.Name, x.Code, x.Status, x.Description, x.PicUrl, x.BrandId),
+                predicate: string.IsNullOrEmpty(name) ? x => x.BrandId.Equals(brandId) : x => x.Name.ToLower().Contains(name.ToLower()) && x.BrandId.Equals(brandId),
+                page: page,
+                size: size
+				);
+            return collectionsResponse;
         }
     }
 }
