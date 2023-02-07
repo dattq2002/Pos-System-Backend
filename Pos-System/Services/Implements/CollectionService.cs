@@ -25,17 +25,26 @@ namespace Pos_System.API.Services.Implements
             productCode = productCode?.Trim();
 
             _logger.LogInformation($"Get Collection with collection: {collectionId}");
-            GetCollectionDetailResponse collectionResponse = await _unitOfWork.GetRepository<Collection>().SingleOrDefaultAsync(
-                selector: x => new GetCollectionDetailResponse(x.Id, x.Name, x.Code, EnumUtil.ParseEnum<CollectionStatus>(x.Status), x.PicUrl, x.Description),
-                predicate: x => x.Id.Equals(collectionId));
 
-            if(collectionResponse == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
+            Collection collectionData = await _unitOfWork.GetRepository<Collection>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
+            GetCollectionDetailResponse collectionResponse = new GetCollectionDetailResponse(
+                collectionData.Id,
+                collectionData.Name,
+                collectionData.Code,
+                EnumUtil.ParseEnum<CollectionStatus>(collectionData.Status),
+                collectionData.PicUrl,
+                collectionData.Description);
+
+            if (collectionResponse == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
 
             List<Guid> productIds = (List<Guid>)await _unitOfWork.GetRepository<CollectionProduct>().GetListAsync(
                 selector: x => x.ProductId,
                 predicate: x => x.CollectionId.Equals(collectionId) && x.Status.Equals(CollectionStatus.Active.GetDescriptionFromEnum())
                 );
 
+            collectionResponse.brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+                selector: x => new BrandOfCollection(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, x.Status),
+                predicate: x => x.Id.Equals(collectionData.BrandId));
 
             collectionResponse.Products = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
                              selector: x => new ProductOfCollection(x.Id, x.Name, x.Description, x.Code, x.PicUrl, x.SellingPrice),
@@ -48,6 +57,65 @@ namespace Pos_System.API.Services.Implements
                              size: size);
 
             return collectionResponse;
+        }
+
+        public async Task<bool> UpdateCollectionInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest)
+        {
+            if (collectionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Collection.EmptyCollectionIdMessage);
+
+            Collection collectionForupdate = await _unitOfWork.GetRepository<Collection>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
+
+            if (collectionForupdate == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
+
+            _logger.LogInformation($"Updating Collection with collection: {collectionId}");
+            collectionInformationRequest.TrimString();
+            collectionForupdate.Name = string.IsNullOrEmpty(collectionInformationRequest.Name) ? collectionForupdate.Name : collectionInformationRequest.Name;
+            collectionForupdate.Code = string.IsNullOrEmpty(collectionInformationRequest.Code) ? collectionForupdate.Code : collectionInformationRequest.Code;
+            collectionForupdate.Description = string.IsNullOrEmpty(collectionInformationRequest.Description) ? collectionForupdate.Description : collectionInformationRequest.Description;
+            collectionForupdate.PicUrl = collectionInformationRequest.PicUrl;
+            collectionForupdate.BrandId = (Guid)((collectionInformationRequest.brandId == Guid.Empty || collectionInformationRequest.brandId == null) ? collectionForupdate.BrandId : collectionInformationRequest.brandId);
+
+            _unitOfWork.GetRepository<Collection>().UpdateAsync(collectionForupdate);
+
+
+            if (collectionInformationRequest.ProductIds != null)
+            {
+                List<Guid> currentProductIds = (List<Guid>)await _unitOfWork.GetRepository<CollectionProduct>().GetListAsync(
+                    selector: x => x.ProductId,
+                    predicate: x => x.CollectionId.Equals(collectionId)
+                    );
+
+                List<Guid> productIdsRequest = new List<Guid>(collectionInformationRequest.ProductIds);
+
+                (List<Guid> idsToRemove, List<Guid> idsToAdd) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(currentProductIds, productIdsRequest);
+                //Handle add and remove to database
+                if (splittedProductIds.idsToAdd.Count > 0)
+                {
+                    List<CollectionProduct> collectionProductsToInsert = new List<CollectionProduct>();
+                    splittedProductIds.idsToAdd.ForEach(id => collectionProductsToInsert.Add(new CollectionProduct
+                    {
+                        Id = Guid.NewGuid(),
+                        CollectionId = collectionId,
+                        ProductId = id,
+                        Status = CollectionStatus.Active.GetDescriptionFromEnum()
+                    }));
+                    await _unitOfWork.GetRepository<CollectionProduct>().InsertRangeAsync(collectionProductsToInsert);
+                }
+
+                if (splittedProductIds.idsToRemove.Count > 0)
+                {
+                    List<CollectionProduct> collectionProductsToDelete = new List<CollectionProduct>();
+                    collectionProductsToDelete = (List<CollectionProduct>)await _unitOfWork.GetRepository<CollectionProduct>()
+                        .GetListAsync(predicate: x => x.CollectionId.Equals(collectionId) && splittedProductIds.idsToRemove.Contains(x.ProductId));
+
+                    _unitOfWork.GetRepository<CollectionProduct>().DeleteRangeAsync(collectionProductsToDelete);
+                }
+
+
+            }
+            bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
+            return isSuccesful;
         }
 
         public async Task<CreateNewCollectionResponse> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)

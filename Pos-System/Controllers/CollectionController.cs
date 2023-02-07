@@ -29,6 +29,15 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPut(ApiEndPointConstant.Collection.CollectionEndPoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCollectionInformation(Guid id, UpdateCollectionInformationRequest collectionInformationRequest)
+        {
+            await _collectionService.UpdateCollectionInformation(id, collectionInformationRequest);
+            return Ok(id);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Collection.CollectionsEndPoint)]
         [ProducesResponseType(typeof(CreateNewCollectionResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
