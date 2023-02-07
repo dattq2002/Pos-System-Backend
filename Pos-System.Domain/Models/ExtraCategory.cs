@@ -6,11 +6,11 @@ namespace Pos_System.Domain.Models
     public partial class ExtraCategory
     {
         public Guid Id { get; set; }
-        public string ExtraCategoryCode { get; set; } = null!;
-        public string ProductCategoryCode { get; set; } = null!;
         public string Status { get; set; } = null!;
+        public Guid ExtraCategoryId { get; set; }
+        public Guid ProductCategoryId { get; set; }
 
-        public virtual Category ExtraCategoryCodeNavigation { get; set; } = null!;
-        public virtual Category ProductCategoryCodeNavigation { get; set; } = null!;
+        public virtual Category ExtraCategoryNavigation { get; set; } = null!;
+        public virtual Category ProductCategory { get; set; } = null!;
     }
 }

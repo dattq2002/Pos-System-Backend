@@ -179,22 +179,17 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.ExtraCategoryCode).HasMaxLength(20);
-
-                entity.Property(e => e.ProductCategoryCode).HasMaxLength(20);
-
                 entity.Property(e => e.Status).HasMaxLength(20);
 
-                entity.HasOne(d => d.ExtraCategoryCodeNavigation)
-                    .WithMany(p => p.ExtraCategoryExtraCategoryCodeNavigations)
-                    .HasPrincipalKey(p => p.Code)
-                    .HasForeignKey(d => d.ExtraCategoryCode)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.ExtraCategoryNavigation)
+                    .WithMany(p => p.ExtraCategoryExtraCategoryNavigations)
+                    .HasForeignKey(d => d.ExtraCategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ExtraCategory_Category");
 
-                entity.HasOne(d => d.ProductCategoryCodeNavigation)
-                    .WithMany(p => p.ExtraCategoryProductCategoryCodeNavigations)
-                    .HasPrincipalKey(p => p.Code)
-                    .HasForeignKey(d => d.ProductCategoryCode)
+                entity.HasOne(d => d.ProductCategory)
+                    .WithMany(p => p.ExtraCategoryProductCategories)
+                    .HasForeignKey(d => d.ProductCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });
 

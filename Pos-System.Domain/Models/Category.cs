@@ -7,8 +7,8 @@ namespace Pos_System.Domain.Models
     {
         public Category()
         {
-            ExtraCategoryExtraCategoryCodeNavigations = new HashSet<ExtraCategory>();
-            ExtraCategoryProductCategoryCodeNavigations = new HashSet<ExtraCategory>();
+            ExtraCategoryExtraCategoryNavigations = new HashSet<ExtraCategory>();
+            ExtraCategoryProductCategories = new HashSet<ExtraCategory>();
             Products = new HashSet<Product>();
         }
 
@@ -23,8 +23,8 @@ namespace Pos_System.Domain.Models
         public Guid? BrandId { get; set; }
 
         public virtual Brand? Brand { get; set; }
-        public virtual ICollection<ExtraCategory> ExtraCategoryExtraCategoryCodeNavigations { get; set; }
-        public virtual ICollection<ExtraCategory> ExtraCategoryProductCategoryCodeNavigations { get; set; }
+        public virtual ICollection<ExtraCategory> ExtraCategoryExtraCategoryNavigations { get; set; }
+        public virtual ICollection<ExtraCategory> ExtraCategoryProductCategories { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }
