@@ -42,7 +42,9 @@ namespace Pos_System.API.Services.Implements
                 predicate: x => x.CollectionId.Equals(collectionId) && x.Status.Equals(CollectionStatus.Active.GetDescriptionFromEnum())
                 );
 
-            collectionResponse.brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionData.BrandId));
+            collectionResponse.brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+                selector: x => new BrandOfCollection(x.Id, x.Name, x.Email, x.Address, x.Phone, x.PicUrl, x.Status),
+                predicate: x => x.Id.Equals(collectionData.BrandId));
 
             collectionResponse.Products = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
                              selector: x => new ProductOfCollection(x.Id, x.Name, x.Description, x.Code, x.PicUrl, x.SellingPrice),
