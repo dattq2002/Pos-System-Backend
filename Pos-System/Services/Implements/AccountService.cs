@@ -195,6 +195,7 @@ namespace Pos_System.API.Services.Implements
                 throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
 
 			updatedAccount.Name = string.IsNullOrEmpty(staffAccountInformationRequest.Name) ? updatedAccount.Name : staffAccountInformationRequest.Name;
+			updatedAccount.Password = string.IsNullOrEmpty(staffAccountInformationRequest.Password) ? updatedAccount.Password : staffAccountInformationRequest.Password.Trim();
 
             _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
