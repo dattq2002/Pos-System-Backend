@@ -25,9 +25,15 @@ namespace Pos_System.API.Services.Implements
             productCode = productCode?.Trim();
 
             _logger.LogInformation($"Get Collection with collection: {collectionId}");
-            GetCollectionDetailResponse collectionResponse = await _unitOfWork.GetRepository<Collection>().SingleOrDefaultAsync(
-                selector: x => new GetCollectionDetailResponse(x.Id, x.Name, x.Code, EnumUtil.ParseEnum<CollectionStatus>(x.Status), x.PicUrl, x.Description),
-                predicate: x => x.Id.Equals(collectionId));
+
+            Collection collectionData = await _unitOfWork.GetRepository<Collection>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
+            GetCollectionDetailResponse collectionResponse = new GetCollectionDetailResponse(
+                collectionData.Id,
+                collectionData.Name,
+                collectionData.Code,
+                EnumUtil.ParseEnum<CollectionStatus>(collectionData.Status),
+                collectionData.PicUrl,
+                collectionData.Description);
 
             if (collectionResponse == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
 
@@ -36,6 +42,7 @@ namespace Pos_System.API.Services.Implements
                 predicate: x => x.CollectionId.Equals(collectionId) && x.Status.Equals(CollectionStatus.Active.GetDescriptionFromEnum())
                 );
 
+            collectionResponse.brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionData.BrandId));
 
             collectionResponse.Products = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
                              selector: x => new ProductOfCollection(x.Id, x.Name, x.Description, x.Code, x.PicUrl, x.SellingPrice),
@@ -65,6 +72,7 @@ namespace Pos_System.API.Services.Implements
             collectionForupdate.Code = string.IsNullOrEmpty(collectionInformationRequest.Code) ? collectionForupdate.Code : collectionInformationRequest.Code;
             collectionForupdate.Description = string.IsNullOrEmpty(collectionInformationRequest.Description) ? collectionForupdate.Description : collectionInformationRequest.Description;
             collectionForupdate.PicUrl = collectionInformationRequest.PicUrl;
+            collectionForupdate.BrandId = (Guid)((collectionInformationRequest.brandId == Guid.Empty || collectionInformationRequest.brandId == null) ? collectionForupdate.BrandId : collectionInformationRequest.brandId);
 
             _unitOfWork.GetRepository<Collection>().UpdateAsync(collectionForupdate);
 
@@ -93,7 +101,7 @@ namespace Pos_System.API.Services.Implements
                     await _unitOfWork.GetRepository<CollectionProduct>().InsertRangeAsync(collectionProductsToInsert);
                 }
 
-                if(splittedProductIds.idsToRemove.Count > 0)
+                if (splittedProductIds.idsToRemove.Count > 0)
                 {
                     List<CollectionProduct> collectionProductsToDelete = new List<CollectionProduct>();
                     collectionProductsToDelete = (List<CollectionProduct>)await _unitOfWork.GetRepository<CollectionProduct>()
@@ -101,13 +109,13 @@ namespace Pos_System.API.Services.Implements
 
                     _unitOfWork.GetRepository<CollectionProduct>().DeleteRangeAsync(collectionProductsToDelete);
                 }
-                
-                
+
+
             }
             bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
             return isSuccesful;
         }
-        
+
         public async Task<CreateNewCollectionResponse> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
         {
 	        createNewCollectionRequest.TrimString();

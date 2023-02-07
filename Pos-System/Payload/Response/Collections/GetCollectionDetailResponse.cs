@@ -1,4 +1,5 @@
 ﻿using Pos_System.API.Enums;
+using Pos_System.Domain.Models;
 using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Payload.Response.Collections
@@ -13,6 +14,8 @@ namespace Pos_System.API.Payload.Response.Collections
         public string? Description { get; set; }
 
         public IPaginate<ProductOfCollection> Products { get; set; }
+
+        public Brand brand { get; set; }
 
         public GetCollectionDetailResponse(Guid id, string name, string code, CollectionStatus status, string? picUrl, string? description)
         {

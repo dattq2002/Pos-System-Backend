@@ -8,6 +8,8 @@
         public string? Description { get; set; }
         public List<Guid>? ProductIds { get; set; }
 
+        public Guid? brandId { get; set; }
+
         public void TrimString()
         {
             Name = Name?.Trim();
