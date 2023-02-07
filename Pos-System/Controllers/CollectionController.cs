@@ -19,6 +19,15 @@ namespace Pos_System.API.Controllers
             _collectionService = collectionService;
         }
 
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Collection.CollectionsEndPoint)]
+        public async Task<IActionResult> GetCollections([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
+        {
+	        var collectionsResponse = await _collectionService.GetCollections(name, page, size);
+	        return Ok(collectionsResponse);
+        }
+
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Collection.CollectionEndPoint)]
         [ProducesResponseType(typeof(GetCollectionDetailResponse), StatusCodes.Status200OK)]
@@ -53,6 +62,6 @@ namespace Pos_System.API.Controllers
 
 	        return Ok(response);
         }
-
+		
     }
 }
