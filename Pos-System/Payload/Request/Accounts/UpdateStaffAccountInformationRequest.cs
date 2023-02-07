@@ -6,5 +6,7 @@ namespace Pos_System.API.Payload.Request.Accounts
     {
         [MaxLength(50, ErrorMessage = "Account name max length is 50 characters")]
         public string Name { get; set; }
+
+        public string? Password { get; set; }
     }
 }
