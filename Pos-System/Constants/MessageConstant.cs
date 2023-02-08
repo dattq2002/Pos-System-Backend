@@ -23,6 +23,7 @@ public static class MessageConstant
 		public const string CreateAccountWithWrongRoleMessage = "Please create with acceptent role";
 		public const string CreateBrandAccountFailMessage = "Create brand account failed";
 		public const string CreateStaffAccountFailMessage = "Create staff account failed";
+		public const string UserUnauthorizedMessage = "Bạn không được phép cập nhật status cho tài khoản này";
 
 		public const string UpdateAccountStatusRequestWrongFormatMessage =
 			"Cập nhật status tài khoản request sai format";

@@ -25,6 +25,12 @@ namespace Pos_System.API.Services
 			return username;
 		}
 
+		protected string GetRoleFromJwt()
+		{
+			string role = _httpContextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+			return role;
+		}
+
 		//Use for employee and store manager
 		protected async Task<bool> CheckIsUserInStore(Account account, Store store)
 		{
