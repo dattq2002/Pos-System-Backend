@@ -18,7 +18,7 @@ namespace Pos_System.API.Controllers
 			_accountService = accountService;
 		}
 
-		[CustomAuthorize(RoleEnum.SysAdmin)]
+		[CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.StoreManager, RoleEnum.BrandManager)]
 		[HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
 		public async Task<IActionResult> UpdateAccountStatus(Guid id,[FromBody] UpdateAccountStatusRequest updateAccountStatusRequest)
 		{

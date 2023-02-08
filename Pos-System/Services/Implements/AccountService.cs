@@ -166,12 +166,40 @@ namespace Pos_System.API.Services.Implements
             bool isValidValue = Enum.TryParse(updateAccountStatusRequest.Value, out AccountStatus newStatus);
             if (!isValidValue)
                 throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
-            Account updatedAccount = await _unitOfWork.GetRepository<Account>()
-                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
-            if (updatedAccount == null)
-                throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
-            updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
-            _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+
+            RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
+            switch (userRole)
+            {
+                case RoleEnum.StoreManager:
+                    {
+
+                        Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                            .SingleOrDefaultAsync(
+                            predicate: x => x.Id.Equals(accountId) && x.Role.Name.Equals(RoleEnum.Staff.GetDescriptionFromEnum()),
+                            include: x => x.Include(x => x.Role)
+                            );
+                        if (updatedAccount == null)
+                            throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+                        updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+                        _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+                        break;
+                    }
+                case RoleEnum.SysAdmin:
+                    {
+                        Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                            .SingleOrDefaultAsync(predicate: x => x.Id.Equals(accountId));
+                        if (updatedAccount == null)
+                            throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+                        updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+                        _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+                        break;
+                    }
+                default:
+                    {
+                        throw new BadHttpRequestException(MessageConstant.Account.UserUnauthorizedMessage);
+                    }
+
+            }
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
             return isSuccessful;
         }
