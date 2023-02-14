@@ -59,7 +59,7 @@ namespace Pos_System.API.Controllers
 	        return CreatedAtAction(nameof(CreateBrandAccount),response);
         }
 
-        [CustomAuthorize(RoleEnum.SysAdmin)]
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager)]
         [HttpGet(ApiEndPointConstant.Brand.BrandAccountEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetAccountResponse>),StatusCodes.Status200OK)]
         public async Task<IActionResult> ViewBrandsAccounts(Guid id,[FromQuery] string? username, [FromQuery] RoleEnum? role ,[FromQuery]int page, [FromQuery]int size)
