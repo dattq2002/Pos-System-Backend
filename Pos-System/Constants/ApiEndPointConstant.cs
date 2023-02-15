@@ -41,13 +41,18 @@ public static class ApiEndPointConstant
 
     public static class Category
     {
-	    public const string CategoriesEndpoint = ApiEndpoint + "/categories";
-	    public const string CategoryEndpoint = CategoriesEndpoint + "/{id}";
+        public const string CategoriesEndpoint = ApiEndpoint + "/categories";
+        public const string CategoryEndpoint = CategoriesEndpoint + "/{id}";
     }
 
     public static class Collection
     {
         public const string CollectionsEndPoint = ApiEndpoint + "/collections";
         public const string CollectionEndPoint = CollectionsEndPoint + "/{id}";
+    }
+
+    public static class Menu
+    {
+        public const string MenuEndPoint = ApiEndpoint + "/menus";
     }
 }
