@@ -7,7 +7,6 @@
     <RootNamespace>Pos_System.API</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Pos_System_Backend' " />
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
@@ -35,8 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
-	  <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
+    <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
+    <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>
