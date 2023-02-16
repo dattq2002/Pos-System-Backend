@@ -22,8 +22,6 @@ namespace Pos_System.API.Controllers
             _productService = productService;
         }
 
-        // POST api/v1/products
-        [HttpPost]
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Product.ProductsEndPoint)]
         [ProducesResponseType(typeof(CreateNewProductResponse), StatusCodes.Status200OK)]
@@ -37,11 +35,9 @@ namespace Pos_System.API.Controllers
                     $"Create new product failed: {createNewProductRequest.Name}, {createNewProductRequest.Code}");
                 return Ok(MessageConstant.Product.CreateNewProductFailedMessage);
             }
-
             return Ok(response);
         }
 
-        // GET: api/v1/products
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.ProductsEndPoint)]
         public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
