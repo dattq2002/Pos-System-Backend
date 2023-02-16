@@ -10,8 +10,9 @@ namespace Pos_System.Domain.Models
         public Guid StoreId { get; set; }
         public int? Priority { get; set; }
         public int? DateFilter { get; set; }
-        public int? TimeFilter { get; set; }
+        public int? StartTime { get; set; }
         public string Status { get; set; } = null!;
+        public int? EndTime { get; set; }
 
         public virtual Menu Menu { get; set; } = null!;
         public virtual Store Store { get; set; } = null!;

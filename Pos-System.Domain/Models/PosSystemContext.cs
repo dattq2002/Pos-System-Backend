@@ -378,8 +378,6 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CategoryCode).HasMaxLength(20);
-
                 entity.Property(e => e.Code).HasMaxLength(20);
 
                 entity.Property(e => e.Description).HasMaxLength(150);
@@ -400,10 +398,9 @@ namespace Pos_System.Domain.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Brand");
 
-                entity.HasOne(d => d.CategoryCodeNavigation)
+                entity.HasOne(d => d.Category)
                     .WithMany(p => p.Products)
-                    .HasPrincipalKey(p => p.Code)
-                    .HasForeignKey(d => d.CategoryCode)
+                    .HasForeignKey(d => d.CategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Category");
 
