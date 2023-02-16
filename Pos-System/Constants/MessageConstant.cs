@@ -58,4 +58,10 @@ public static class MessageConstant
 		public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
 		public const string CreateNewCollectionFailedMessage = "Tạo mới collection thất bại";
 	}
+    public static class Product
+    {
+        public const string EmptyCategoryCodeMessage = "Category không đúng ";
+        public const string CategoryNotFoundMessage = "Category không tồn tại trong hệ thống";
+        public const string CreateNewProductFailedMessage = "Tạo mới product thất bại";
+    }
 }
