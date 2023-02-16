@@ -21,12 +21,12 @@ namespace Pos_System.Domain.Models
         public string Status { get; set; } = null!;
         public string CategoryCode { get; set; } = null!;
         public double HistoricalPrice { get; set; }
-        public double? DiscountPrice { get; set; }
+        public double DiscountPrice { get; set; }
         public string? Description { get; set; }
         public int DisplayOrder { get; set; }
         public string? Size { get; set; }
         public string Type { get; set; } = null!;
-        public Guid? ParentProductId { get; set; } = null;
+        public Guid? ParentProductId { get; set; }
         public Guid BrandId { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;

@@ -35,7 +35,6 @@ namespace Pos_System.API.Services.Implements
             //{
             //    throw new BadHttpRequestException(MessageConstant.Product.EmptyCategoryCodeMessage);
             //}
-
             Product newProduct = new Product()
             {
                 Id = Guid.NewGuid(),
@@ -45,10 +44,11 @@ namespace Pos_System.API.Services.Implements
                 Description = createNewProductRequest?.Description,
                 PicUrl = createNewProductRequest?.PicUrl,
                 Status = EnumUtil.GetDescriptionFromEnum(ProductStatus.Active),
+                CategoryCode= createNewProductRequest.CategoryCode,
                 Size = createNewProductRequest?.Size,
                 HistoricalPrice = createNewProductRequest.HistoricalPrice == null ? 0 : createNewProductRequest.HistoricalPrice,
                 SellingPrice = createNewProductRequest.SellingPrice,
-                DiscountPrice = createNewProductRequest?.DiscountPrice,
+                DiscountPrice = (double)(createNewProductRequest.DiscountPrice == null ? 0 : createNewProductRequest.DiscountPrice),
                 DisplayOrder = createNewProductRequest.DisplayOrder,
                 Type = EnumUtil.GetDescriptionFromEnum(createNewProductRequest.Type),
                 ParentProductId = createNewProductRequest.ParentProductId != null ? Guid.Parse(createNewProductRequest?.ParentProductId) : null

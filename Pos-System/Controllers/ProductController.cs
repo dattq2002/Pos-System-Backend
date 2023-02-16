@@ -24,22 +24,6 @@ namespace Pos_System.API.Controllers
             _productService = productService;
         }
 
-        // GET: api/v1/products
-        [CustomAuthorize(RoleEnum.BrandAdmin)]
-        [HttpGet(ApiEndPointConstant.Product.ProductsEndPoint)]
-        public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
-        {
-            var productsResponse = await _productService.GetProducts(name, page, size);
-            return Ok(productsResponse);
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/v1/products
         [HttpPost]
         [CustomAuthorize(RoleEnum.BrandAdmin)]
@@ -59,16 +43,13 @@ namespace Pos_System.API.Controllers
             return Ok(response);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // GET: api/v1/products
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Product.ProductsEndPoint)]
+        public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
         {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var productsResponse = await _productService.GetProducts(name, page, size);
+            return Ok(productsResponse);
         }
     }
 }
