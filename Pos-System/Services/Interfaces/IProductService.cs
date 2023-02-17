@@ -6,11 +6,9 @@ using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Services.Interfaces
 {
-	public interface IProductService
-	{
-        //Task<GetProductDetailsResponse> GetProductById(Guid productId, int page, int size);
-
-        //Task<bool> UpdateProductInformation(Guid collectionId, UpdateCollectionInformationRequest collectionInformationRequest);
+    public interface IProductService
+    {
+        Task<GetProductDetailsResponse> GetProductById(Guid productId);
 
         Task<CreateNewProductResponse> CreateNewProduct(CreateNewProductRequest createNewProductRequest);
 

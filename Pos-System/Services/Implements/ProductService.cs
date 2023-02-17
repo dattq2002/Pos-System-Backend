@@ -5,6 +5,7 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Request.Products;
 using Pos_System.API.Payload.Response;
+using Pos_System.API.Payload.Response.Categories;
 using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Interfaces;
@@ -30,7 +31,7 @@ namespace Pos_System.API.Services.Implements
             Brand brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
                 predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
-            Category category = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(createNewProductRequest.CategoryId));
+            Category category = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(Guid.Parse(createNewProductRequest.CategoryId)));
             if (category == null)
             {
                 throw new BadHttpRequestException(MessageConstant.Category.CategoryNotFoundMessage);
@@ -72,6 +73,17 @@ namespace Pos_System.API.Services.Implements
                 size: size
                 );
             return productsResponse;
+        }
+        public async Task<GetProductDetailsResponse> GetProductById(Guid id)
+        {
+            if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Product.EmptyProductIdMessage);
+            Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+            GetProductDetailsResponse productResponse = await _unitOfWork.GetRepository<Product>().SingleOrDefaultAsync(
+            selector: x => new GetProductDetailsResponse(x.Id, x.Code, x.Name, x.SellingPrice, x.PicUrl, x.Status, x.HistoricalPrice, x.DiscountPrice, x.Description, x.DisplayOrder, x.Size, x.Type, x.ParentProductId, x.BrandId, x.CategoryId),
+            predicate: x => x.Id.Equals(id) && x.BrandId.Equals(brandId)
+            );
+            if (productResponse == null) throw new BadHttpRequestException(MessageConstant.Product.ProductNotFoundMessage);
+            return productResponse;
         }
     }
 }

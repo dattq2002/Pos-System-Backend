@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Products;
+using Pos_System.API.Payload.Response.Categories;
 using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
@@ -25,7 +26,7 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Product.ProductsEndPoint)]
         [ProducesResponseType(typeof(CreateNewProductResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateNewCollection(CreateNewProductRequest createNewProductRequest)
+        public async Task<IActionResult> CreateNewProduct(CreateNewProductRequest createNewProductRequest)
         {
             _logger.LogInformation($"Start to create new product with {createNewProductRequest}");
             var response = await _productService.CreateNewProduct(createNewProductRequest);
@@ -44,6 +45,16 @@ namespace Pos_System.API.Controllers
         {
             var productsResponse = await _productService.GetProducts(name, page, size);
             return Ok(productsResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Product.ProductEndPoint)]
+        [ProducesResponseType(typeof(GetProductDetailsResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProductById(Guid id)
+        {
+            _logger.LogInformation($"Get Category by Id: {id}");
+            var response = await _productService.GetProductById(id);
+            return Ok(response);
         }
     }
 }
