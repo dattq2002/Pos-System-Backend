@@ -13,7 +13,7 @@ namespace Pos_System.API.Payload.Request.Products
         public double SellingPrice { get; set; }
         public string? PicUrl { get; set; }
         [Required]
-        public string CategoryCode { get; set; }
+        public string CategoryId { get; set; }
         [Required]
         public double HistoricalPrice { get; set; }
         public double? DiscountPrice { get; set; }

@@ -30,11 +30,11 @@ namespace Pos_System.API.Services.Implements
             Brand brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
                 predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
-            //Category category = _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(predicate: x => x.Code.Equals(createNewProductRequest.CategoryCode));
-            //if (category == null)
-            //{
-            //    throw new BadHttpRequestException(MessageConstant.Product.EmptyCategoryCodeMessage);
-            //}
+            Category category = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(createNewProductRequest.CategoryId));
+            if (category == null)
+            {
+                throw new BadHttpRequestException(MessageConstant.Category.CategoryNotFoundMessage);
+            }
             Product newProduct = new Product()
             {
                 Id = Guid.NewGuid(),
@@ -44,7 +44,7 @@ namespace Pos_System.API.Services.Implements
                 Description = createNewProductRequest?.Description,
                 PicUrl = createNewProductRequest?.PicUrl,
                 Status = EnumUtil.GetDescriptionFromEnum(ProductStatus.Active),
-                CategoryCode= createNewProductRequest.CategoryCode,
+                CategoryId = Guid.Parse(createNewProductRequest.CategoryId),
                 Size = createNewProductRequest?.Size,
                 HistoricalPrice = createNewProductRequest.HistoricalPrice == null ? 0 : createNewProductRequest.HistoricalPrice,
                 SellingPrice = createNewProductRequest.SellingPrice,

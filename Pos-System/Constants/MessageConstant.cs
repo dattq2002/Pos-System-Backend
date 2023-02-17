@@ -60,8 +60,6 @@ public static class MessageConstant
 	}
     public static class Product
     {
-        public const string EmptyCategoryCodeMessage = "Category không đúng ";
-        public const string CategoryNotFoundMessage = "Category không tồn tại trong hệ thống";
         public const string CreateNewProductFailedMessage = "Tạo mới product thất bại";
     }
 }
