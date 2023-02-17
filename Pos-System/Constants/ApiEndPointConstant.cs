@@ -50,6 +50,11 @@ public static class ApiEndPointConstant
         public const string CollectionsEndPoint = ApiEndpoint + "/collections";
         public const string CollectionEndPoint = CollectionsEndPoint + "/{id}";
     }
+    public static class Product
+    {
+        public const string ProductsEndPoint = ApiEndpoint + "/products";
+        public const string ProductEndPoint = ProductsEndPoint + "/{id}";
+    }
 
     public static class Menu
     {

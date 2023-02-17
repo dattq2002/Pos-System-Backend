@@ -29,11 +29,17 @@
     <Folder Include="Payload\Response\Categories\" />
     <Folder Include="Payload\Response\Stores\" />
     <Folder Include="Validators\" />
+    <Folder Include="Payload\Request\Products\" />
+    <Folder Include="Payload\Response\Products\" />
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
-	  <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
+    <ProjectReference Include="..\Pos-System.Domain\Pos-System.Domain.csproj" />
+    <ProjectReference Include="..\Pos-System.Repository\Pos-System.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Payload\Request\Products\" />
+    <None Remove="Payload\Response\Products\" />
+  </ItemGroup>
 </Project>

@@ -52,11 +52,18 @@ public static class MessageConstant
         public const string UpdateCategoryFailedMessage = "Category cập nhật thất bại";
     }
 
-    public static class Collection
+	public static class Collection
+	{
+		public const string EmptyCollectionIdMessage = "Collection Id bị trống";
+		public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
+		public const string CreateNewCollectionFailedMessage = "Tạo mới collection thất bại";
+	}
+
+    public static class Product
     {
-        public const string EmptyCollectionIdMessage = "Collection Id bị trống";
-        public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
-        public const string CreateNewCollectionFailedMessage = "Tạo mới collection thất bại";
+        public const string CreateNewProductFailedMessage = "Tạo mới product thất bại";
+        public const string EmptyProductIdMessage = "Product Id bị trống";
+        public const string ProductNotFoundMessage = "Product không tồn tại trong hệ thống";
     }
 
     public static class Menu
