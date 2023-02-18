@@ -12,6 +12,8 @@ namespace Pos_System.API.Services.Interfaces
 
         Task<CreateNewProductResponse> CreateNewProduct(CreateNewProductRequest createNewProductRequest);
 
+        Task<Guid> UpdateProduct(Guid productId, UpdateProductRequest updateProductRequest);
+
         Task<IPaginate<GetProductResponse>> GetProducts(string? name, int page, int size);
     }
 }
