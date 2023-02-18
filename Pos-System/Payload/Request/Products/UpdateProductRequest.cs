@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Pos_System.API.Enums;
+﻿using Pos_System.API.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pos_System.API.Payload.Request.Products
 {
-    public class CreateNewProductRequest
+    public class UpdateProductRequest
     {
         [MaxLength(50, ErrorMessage = "Tên của product phải dưới 50 kí tự")]
         public string Name { get; set; }
@@ -13,7 +13,7 @@ namespace Pos_System.API.Payload.Request.Products
         public double SellingPrice { get; set; }
         public string? PicUrl { get; set; }
         [Required]
-        public string CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
         [Required]
         public double HistoricalPrice { get; set; }
         public double? DiscountPrice { get; set; }
@@ -23,7 +23,6 @@ namespace Pos_System.API.Payload.Request.Products
         public ProductSize? Size { get; set; }
         [Required]
         public ProductType Type { get; set; }
-        public string? ParentProductId { get; set; }
+        public Guid? ParentProductId { get; set; }
     }
 }
-
