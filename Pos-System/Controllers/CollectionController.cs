@@ -14,9 +14,10 @@ namespace Pos_System.API.Controllers
     {
         private readonly ICollectionService _collectionService;
 
-        public CollectionController(ILogger<CollectionController> logger, ICollectionService collectionService) : base(logger)
+        public CollectionController(ILogger<CollectionController> logger, ICollectionService collectionService) :
+	        base(logger)
         {
-            _collectionService = collectionService;
+	        _collectionService = collectionService;
         }
 
 
