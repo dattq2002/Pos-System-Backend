@@ -46,8 +46,8 @@ namespace Pos_System.API.Services.Implements
                 PicUrl = createNewProductRequest?.PicUrl,
                 Status = EnumUtil.GetDescriptionFromEnum(ProductStatus.Active),
                 CategoryId = Guid.Parse(createNewProductRequest.CategoryId),
-                Size = createNewProductRequest?.Size,
-                HistoricalPrice = createNewProductRequest.HistoricalPrice == null ? 0 : createNewProductRequest.HistoricalPrice,
+                Size = createNewProductRequest?.Size.GetDescriptionFromEnum(),
+                HistoricalPrice = createNewProductRequest.HistoricalPrice,
                 SellingPrice = createNewProductRequest.SellingPrice,
                 DiscountPrice = (double)(createNewProductRequest.DiscountPrice == null ? 0 : createNewProductRequest.DiscountPrice),
                 DisplayOrder = createNewProductRequest.DisplayOrder,
@@ -84,6 +84,38 @@ namespace Pos_System.API.Services.Implements
             );
             if (productResponse == null) throw new BadHttpRequestException(MessageConstant.Product.ProductNotFoundMessage);
             return productResponse;
+        }
+
+        public async Task<Guid> UpdateProduct(Guid productId, UpdateProductRequest updateProductRequest)
+        {
+            _logger.LogInformation($"Start updating product: {productId}");
+            Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+            if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            Brand brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
+            if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+
+            Category category = await _unitOfWork.GetRepository<Category>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(updateProductRequest.CategoryId));
+            if (category == null) throw new BadHttpRequestException(MessageConstant.Category.CategoryNotFoundMessage);
+
+            Product updateProduct = await _unitOfWork.GetRepository<Product>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(productId));
+            if (updateProduct == null) throw new BadHttpRequestException(MessageConstant.Product.ProductNotFoundMessage);
+
+            updateProduct.Code = updateProductRequest.Code;
+            updateProduct.Name = updateProductRequest.Name;
+            updateProduct.Description = updateProductRequest.Description;
+            updateProduct.PicUrl= updateProductRequest.PicUrl;
+            updateProduct.CategoryId = updateProductRequest.CategoryId;
+            updateProduct.Size = updateProductRequest.Size != null ? updateProductRequest.Size.GetDescriptionFromEnum() : null;
+            updateProduct.HistoricalPrice = updateProductRequest.HistoricalPrice;
+            updateProduct.SellingPrice = updateProductRequest.SellingPrice;
+            updateProduct.DiscountPrice = (double)(updateProductRequest.DiscountPrice == null ? 0 : updateProductRequest.DiscountPrice);
+            updateProduct.DisplayOrder = updateProductRequest.DisplayOrder;
+            updateProduct.Type = updateProductRequest.Type.GetDescriptionFromEnum();
+            updateProduct.ParentProductId = updateProductRequest.ParentProductId;
+          
+            _unitOfWork.GetRepository<Product>().UpdateAsync(updateProduct);
+            await _unitOfWork.CommitAsync();
+            return productId;
         }
     }
 }

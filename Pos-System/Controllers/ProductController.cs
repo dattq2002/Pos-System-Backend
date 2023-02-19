@@ -56,6 +56,22 @@ namespace Pos_System.API.Controllers
             var response = await _productService.GetProductById(id);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPut(ApiEndPointConstant.Product.ProductEndPoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateProductInformation(Guid id, UpdateProductRequest updateProductRequest)
+        {
+            _logger.LogInformation($"Start to update product with product id: {id}");
+            Guid response = await _productService.UpdateProduct(id , updateProductRequest);
+            if (response == Guid.Empty)
+            {
+                _logger.LogInformation(
+                    $"Update product failed: {updateProductRequest.Name}, {updateProductRequest.Code}");
+                return Ok(MessageConstant.Product.UpdateProductFailedMessage);
+            }
+            return Ok(response);
+        }
     }
 }
 
