@@ -69,7 +69,6 @@ public static class MessageConstant
 
     public static class Menu
     {
-        public const string ProductNotFoundMessage = "Danh sách product bạn gửi có product không tồn tại trong hệ thống với id: ";
-        public const string StoreNotFoundMessage = "Danh sách store bạn gửi có store không tồn tại trong hệ thống với id: ";
+	    public const string CreateNewMenuFailedMessage = "Tạo mới Menu thất bại";
     }
 }

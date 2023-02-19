@@ -21,6 +21,11 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> CreateNewMenu(CreateNewMenuRequest createNewMenuRequest)
         {
             Guid newMenuIdResponse = await _menuService.CreateNewMenu(createNewMenuRequest);
+            if (newMenuIdResponse == Guid.Empty)
+            {
+                _logger.LogInformation($"Create menu failed with menuCode: {createNewMenuRequest.Code}");
+                return BadRequest(MessageConstant.Menu.CreateNewMenuFailedMessage);
+            }
             _logger.LogInformation($"Create menu successfully with menuCode: {createNewMenuRequest.Code}");
             return Ok(newMenuIdResponse);
         }

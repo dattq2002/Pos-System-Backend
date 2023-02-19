@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.Repository.Implement;
@@ -33,11 +34,27 @@ public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbCon
 
 	public int Commit()
 	{
+		TrackChanges();
 		return Context.SaveChanges();
 	}
 
 	public async Task<int> CommitAsync()
 	{
+		TrackChanges();
 		return await Context.SaveChangesAsync();
+	}
+
+	private void TrackChanges()
+	{
+		var validationErrors = Context.ChangeTracker.Entries<IValidatableObject>()
+			.SelectMany(e => e.Entity.Validate(null))
+			.Where(e => e != ValidationResult.Success)
+			.ToArray();
+		if (validationErrors.Any())
+		{
+			var exceptionMessage = string.Join(Environment.NewLine,
+				validationErrors.Select(error => $"Properties {error.MemberNames} Error: {error.ErrorMessage}"));
+			throw new Exception(exceptionMessage);
+		}
 	}
 }

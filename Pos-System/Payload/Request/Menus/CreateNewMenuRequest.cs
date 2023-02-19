@@ -3,22 +3,23 @@
     public class CreateNewMenuRequest
     {
         public string Code { get; set; }
-        public List<ProductOfMenu> ProductOfMenu { get; set; } = new List<ProductOfMenu>();
-        public List<StoreMenuAdditionInformation> StoreMenuAdditionInformation { get; set; } = new List<StoreMenuAdditionInformation>();
+        public List<ProductInMenu> ProductsInMenu { get; set; } = new List<ProductInMenu>();
+        public List<StoreInMenu> StoresInMenu { get; set; } = new List<StoreInMenu>();
     }
 
-    public class ProductOfMenu
+    public class ProductInMenu
     {
         public Guid Id { get; set; }
         public double SellingPrice { get; set; }
         public double? DiscountPrice { get; set; }
     }
 
-    public class StoreMenuAdditionInformation
+    public class StoreInMenu
     {
         public Guid Id { get; set; }
         public int? Priority { get; set; }
         public int? DateFilter { get; set; }
-        public int? TimeFilter { get; set; }
+        public int? StartTime { get; set; }
+        public int? EndTime { get; set; }
     }
 }
