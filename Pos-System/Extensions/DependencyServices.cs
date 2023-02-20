@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Pos_System.API.Extensions;
 
@@ -96,6 +97,12 @@ public static class DependencyServices
 					},
 					new string[] { }
 				}
+			});
+			options.MapType<TimeOnly>(() => new OpenApiSchema
+			{
+				Type = "string",
+				Format = "time",
+				Example = OpenApiAnyFactory.CreateFromJson("\"13:45:42.0000000\"")
 			});
 		});
 		return services;
