@@ -206,7 +206,15 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
+                entity.Property(e => e.Status).HasMaxLength(20);
+
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.Menus)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Menu_Brand");
             });
 
             modelBuilder.Entity<MenuProduct>(entity =>
@@ -239,8 +247,6 @@ namespace Pos_System.Domain.Models
                 entity.ToTable("MenuStore");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Status).HasMaxLength(20);
 
                 entity.HasOne(d => d.Menu)
                     .WithMany(p => p.MenuStores)
