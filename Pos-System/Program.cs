@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
 using Pos_System.API.Constants;
+using Pos_System.API.Converter;
 using Pos_System.API.Extensions;
 using Pos_System.API.Middlewares;
 
@@ -23,6 +24,7 @@ try
 	builder.Services.AddControllers().AddJsonOptions(x =>
 	{
 		x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+		x.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
 	});
 	builder.Services.AddDatabase();
 	builder.Services.AddUnitOfWork();

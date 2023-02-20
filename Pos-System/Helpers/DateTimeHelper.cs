@@ -1,4 +1,5 @@
 ﻿using Pos_System.API.Enums;
+using Pos_System.API.Utils;
 
 namespace Pos_System.API.Helpers;
 
@@ -26,5 +27,31 @@ public static class DateTimeHelper
 			default:
 				return DateFilter.Monday;
 		}
+	}
+
+	public static List<DateFilter> GetDatesFromDateFilter(int? dateFilter)
+	{
+		List<DateFilter> dateFilters = new List<DateFilter>();
+		if (dateFilter.HasValue)
+		{
+			foreach (var date in EnumUtil.GetValues<DateFilter>())
+			{
+				if ((dateFilter.Value & (int)date) > 0) dateFilters.Add(date);
+			}
+		}
+
+		return dateFilters;
+	}
+
+	public static TimeOnly? ConvertIntToTimeOnly(int? timeIntFormat)
+	{
+		if (timeIntFormat.HasValue)
+		{
+			int hour = (int)timeIntFormat.Value / 60;
+			int minute = ((int) timeIntFormat.Value % 60) * 60;
+			return new TimeOnly(hour, minute);
+		}
+
+		return null;
 	}
 }

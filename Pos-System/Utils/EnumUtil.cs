@@ -24,4 +24,9 @@ public static class EnumUtil
 
 		return value.ToString();
 	}
+
+	public static IEnumerable<T> GetValues<T>()
+	{
+		return Enum.GetValues(typeof(T)).Cast<T>();
+	}
 }
