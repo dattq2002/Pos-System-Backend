@@ -1,6 +1,6 @@
 ﻿namespace Pos_System.API.Enums;
 
-public enum MenuStoreStatus
+public enum MenuStatus
 {
 	Active,
 	Deactivate
