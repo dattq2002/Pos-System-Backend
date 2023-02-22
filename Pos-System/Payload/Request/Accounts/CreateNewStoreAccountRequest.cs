@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pos_System.API.Payload.Request.Accounts
 {
-    public class CreateNewStaffAccountRequest
+    public class CreateNewStoreAccountRequest
     {
         [Required(ErrorMessage = "Username is missing")]
         public string Username { get; set; }
@@ -12,7 +12,7 @@ namespace Pos_System.API.Payload.Request.Accounts
         [Required(ErrorMessage = "Password is missing")]
         public string Password { get; set; }
 
-        public CreateNewStaffAccountRequest()
+        public CreateNewStoreAccountRequest()
         {
 
         }

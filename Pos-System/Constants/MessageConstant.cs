@@ -41,6 +41,8 @@ public static class MessageConstant
         public const string StoreNotFoundMessage = "Store không tồn tại trong hệ thống";
         public const string UpdateStoreInformationSuccessfulMessage = "Cập nhật thông tin store thành công";
         public const string UpdateStaffInformationSuccessfulMessage = "Cập nhật thông tin staff thành công";
+        public const string CreateNewStoreAccountUnauthorizedMessage = "Bạn không có quyền tạo tài khoản cho một store";
+        public const string StoreNotInBrandMessage = "Bạn không được phép tạo account nằm ngoài brand đang quản lí";
     }
 
     public static class Category
