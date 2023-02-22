@@ -7,6 +7,7 @@ using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
+using Pos_System.API.Utils;
 using Pos_System.API.Validators;
 using Pos_System.Domain.Paginate;
 
@@ -58,20 +59,20 @@ namespace Pos_System.API.Controllers
             return Ok(storeResponse);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager)]
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandManager)]
         [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
-        [ProducesResponseType(typeof(CreateNewStaffAccountResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CreateNewStoreAccountResponse), StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
-        public async Task<IActionResult> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest newStaffAccountRequest)
+        public async Task<IActionResult> CreateNewStoreAccount(Guid storeId,CreateNewStoreAccountRequest newStoreAccountRequest)
         {
-            CreateNewStaffAccountResponse response = await _accountService.CreateNewStaffAccount(storeId, newStaffAccountRequest);
+            CreateNewStoreAccountResponse response = await _accountService.CreateNewStoreAccount(storeId, newStoreAccountRequest);
             if (response == null)
             {
-                _logger.LogError($"Create new staff account failed: store {storeId} with account {newStaffAccountRequest.Username}");
+                _logger.LogError($"Create new store account failed: store {storeId} with account {newStoreAccountRequest.Username}");
                 return Problem(MessageConstant.Account.CreateStaffAccountFailMessage);
             }
-            _logger.LogInformation($"Create staff account successfully with store: {storeId}, account: {newStaffAccountRequest.Username}");
-            return CreatedAtAction(nameof(CreateNewStaffAccount), response);
+            _logger.LogInformation($"Create staff account successfully with store: {storeId}, account: {newStoreAccountRequest.Username}, role {response.Role.GetDescriptionFromEnum()}");
+            return CreatedAtAction(nameof(CreateNewStoreAccount), response);
         }
 
         [CustomAuthorize(RoleEnum.BrandManager)]
