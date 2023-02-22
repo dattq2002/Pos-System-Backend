@@ -58,6 +58,8 @@ public static class ApiEndPointConstant
 
     public static class Menu
     {
-        public const string MenuEndPoint = ApiEndpoint + "/menus";
+        public const string MenusEndPoint = ApiEndpoint + "/menus";
+        public const string MenuEndPoint = MenusEndPoint + "/{id}";
+        public const string HasBaseMenuEndpoint = Brand.BrandEndpoint + "/menus/hasBaseMenu";
     }
 }

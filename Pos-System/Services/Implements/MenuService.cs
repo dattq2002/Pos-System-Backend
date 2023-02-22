@@ -2,6 +2,7 @@
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
+using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
@@ -58,6 +59,38 @@ namespace Pos_System.API.Services.Implements
 			bool isSuccessfully = await _unitOfWork.CommitAsync() > 0;
 			if (isSuccessfully) return newMenu.Id;
 			return Guid.Empty;
+        }
+
+        public async Task<HasBaseMenuResponse> CheckHasBaseMenuInBrand(Guid brandId)
+        {
+	        if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+	        Brand brand = await _unitOfWork.GetRepository<Brand>()
+		        .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
+	        if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+	        IEnumerable<Menu> menus = await _unitOfWork.GetRepository<Menu>()
+		        .GetListAsync(predicate: x => x.BrandId.Equals(brand.Id));
+	        if (menus == null)
+	        {
+				return new HasBaseMenuResponse()
+				{
+					HasBaseMenu = false
+				};
+	        }// brand đó chưa có menu nào
+
+	        if (menus.Any(x => x.Priority == 0))
+	        {
+		        return new HasBaseMenuResponse()
+		        {
+			        HasBaseMenu = true
+		        };
+	        }
+	        else
+	        {
+		        return new HasBaseMenuResponse()
+		        {
+			        HasBaseMenu = false
+		        };
+	        }
         }
     }
 }
