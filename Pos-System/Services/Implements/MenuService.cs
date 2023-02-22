@@ -68,11 +68,11 @@ namespace Pos_System.API.Services.Implements
                         Id = Guid.NewGuid(),
                         MenuId = newMenu.Id,
                         StoreId = store.Id,
-                        Status = EnumUtil.GetDescriptionFromEnum(MenuProductStatus.Deactivate),
-                        Priority = storeInMenu.Priority,
-                        DateFilter = storeInMenu.DateFilter,
-                        StartTime = storeInMenu.StartTime,
-                        EndTime = storeInMenu.EndTime,
+                        //Status = EnumUtil.GetDescriptionFromEnum(MenuProductStatus.Deactivate),
+                        //Priority = storeInMenu.Priority,
+                        //DateFilter = storeInMenu.DateFilter,
+                        //StartTime = storeInMenu.StartTime,
+                        //EndTime = storeInMenu.EndTime,
                     });
 		        }
             };

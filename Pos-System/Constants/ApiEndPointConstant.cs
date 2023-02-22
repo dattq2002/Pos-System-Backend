@@ -43,6 +43,7 @@ public static class ApiEndPointConstant
     {
         public const string CategoriesEndpoint = ApiEndpoint + "/categories";
         public const string CategoryEndpoint = CategoriesEndpoint + "/{id}";
+        public const string ExtraCategoryEndpoint = CategoriesEndpoint + "/{categoryId}/extra-categories";
     }
 
     public static class Collection

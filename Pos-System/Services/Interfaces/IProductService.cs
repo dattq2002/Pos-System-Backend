@@ -3,6 +3,7 @@
 using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Payload.Request.Products;
 using Pos_System.Domain.Paginate;
+using Pos_System.API.Enums;
 
 namespace Pos_System.API.Services.Interfaces
 {
@@ -14,7 +15,7 @@ namespace Pos_System.API.Services.Interfaces
 
         Task<Guid> UpdateProduct(Guid productId, UpdateProductRequest updateProductRequest);
 
-        Task<IPaginate<GetProductResponse>> GetProducts(string? name, int page, int size);
+        Task<IPaginate<GetProductResponse>> GetProducts(string? name, ProductType? type, int page, int size);
     }
 }
 

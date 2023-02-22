@@ -10,52 +10,72 @@ using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
-	[ApiController]
-	public class CategoryController : BaseController<CategoryController>
-	{
-		private readonly ICategoryService _categoryService;
+    [ApiController]
+    public class CategoryController : BaseController<CategoryController>
+    {
+        private readonly ICategoryService _categoryService;
 
-		public CategoryController(ILogger<CategoryController> logger, ICategoryService categoryService) : base(logger)
-		{
-			_categoryService = categoryService;
-		}
+        public CategoryController(ILogger<CategoryController> logger, ICategoryService categoryService) : base(logger)
+        {
+            _categoryService = categoryService;
+        }
 
-		[CustomAuthorize(RoleEnum.BrandAdmin)]
-		[HttpPost(ApiEndPointConstant.Category.CategoriesEndpoint)]
-		[ProducesResponseType(typeof(CreateNewCategoryRequest),StatusCodes.Status200OK)]
-		public async Task<IActionResult> CreateNewCategory(CreateNewCategoryRequest request)
-		{
-			bool isSuccessful = await _categoryService.CreateNewCategoryRequest(request);
-			if (!isSuccessful) return Ok(MessageConstant.Category.CreateNewCategoryFailedMessage);
-			return Ok(request);
-		}
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Category.CategoriesEndpoint)]
+        [ProducesResponseType(typeof(CreateNewCategoryRequest), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateNewCategory(CreateNewCategoryRequest request)
+        {
+            bool isSuccessful = await _categoryService.CreateNewCategoryRequest(request);
+            if (!isSuccessful) return Ok(MessageConstant.Category.CreateNewCategoryFailedMessage);
+            return Ok(request);
+        }
 
-		[CustomAuthorize(RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
-		[HttpGet(ApiEndPointConstant.Category.CategoriesEndpoint)]
-		[ProducesResponseType(typeof(IPaginate<GetCategoryResponse>), StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetCategories([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
-		{
-			var response = await _categoryService.GetCategories(name, page, size);
-			return Ok(response);
-		}
+        [CustomAuthorize(RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
+        [HttpGet(ApiEndPointConstant.Category.CategoriesEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetCategoryResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCategories([FromQuery] string? name, [FromQuery] CategoryType? type, [FromQuery] int page, [FromQuery] int size)
+        {
+            var response = await _categoryService.GetCategories(name, type, page, size);
+            return Ok(response);
+        }
 
-		[CustomAuthorize(RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
-		[HttpGet(ApiEndPointConstant.Category.CategoryEndpoint)]
-		[ProducesResponseType(typeof(GetCategoryResponse), StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetCategoryById(Guid id)
-		{
-			_logger.LogInformation($"Get Category by Id: {id}");
-			var response = await _categoryService.GetCategoryById(id);
-			return Ok(response);
-		}
+        [CustomAuthorize(RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
+        [HttpGet(ApiEndPointConstant.Category.CategoryEndpoint)]
+        [ProducesResponseType(typeof(GetCategoryResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCategoryById(Guid id)
+        {
+            _logger.LogInformation($"Get Category by Id: {id}");
+            var response = await _categoryService.GetCategoryById(id);
+            return Ok(response);
+        }
 
-		[CustomAuthorize(RoleEnum.BrandAdmin)]
-		[HttpPut(ApiEndPointConstant.Category.CategoryEndpoint)]
-		public async Task<IActionResult> UpdateCategoryInformation(Guid id,UpdateCategoryRequest updateCategoryRequest)
-		{
-			bool isSuccessfuly = await _categoryService.UpdateCategory(id, updateCategoryRequest);
-			if (!isSuccessfuly) return BadRequest(MessageConstant.Category.UpdateCategoryFailedMessage);
-			return Ok(MessageConstant.Category.UpdateCategorySuccessfulMessage);
-		}
-	}
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPut(ApiEndPointConstant.Category.CategoryEndpoint)]
+        public async Task<IActionResult> UpdateCategoryInformation(Guid id, UpdateCategoryRequest updateCategoryRequest)
+        {
+            bool isSuccessfuly = await _categoryService.UpdateCategory(id, updateCategoryRequest);
+            if (!isSuccessfuly) return BadRequest(MessageConstant.Category.UpdateCategoryFailedMessage);
+            return Ok(MessageConstant.Category.UpdateCategorySuccessfulMessage);
+        }
+
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Category.ExtraCategoryEndpoint)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddExtraCategoriesToNormalCategory(Guid categoryId, List<Guid> request)
+        {
+            bool isSuccessful = await _categoryService.AddExtraCategoriesToNormalCategoryRequest(categoryId, request);
+            if (!isSuccessful) return Ok(MessageConstant.Category.UpdateExtraCategoryFailedMessage);
+            return Ok(MessageConstant.Category.UpdateExtraCategorySuccessfulMessage);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Category.ExtraCategoryEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetCategoryResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetExtraCategoriesByCategoryId(Guid categoryId, [FromQuery] int page, [FromQuery] int size)
+        {
+            var response = await _categoryService.GetExtraCategoriesByCategoryId(categoryId, page, size);
+            return Ok(response);
+        }
+    }
 }
