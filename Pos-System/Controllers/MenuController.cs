@@ -29,5 +29,13 @@ namespace Pos_System.API.Controllers
             _logger.LogInformation($"Create menu successfully with menuCode: {createNewMenuRequest.Code}");
             return Ok(newMenuIdResponse);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.HasBaseMenuEndpoint)]
+        public async Task<IActionResult> CheckHasBaseMenu(Guid id)
+        {
+	        var response = await _menuService.CheckHasBaseMenuInBrand(id);
+            return Ok(response);
+        }
     }
 }
