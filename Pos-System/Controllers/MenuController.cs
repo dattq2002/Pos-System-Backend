@@ -17,7 +17,7 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
-        [HttpPost(ApiEndPointConstant.Menu.MenuEndPoint)]
+        [HttpPost(ApiEndPointConstant.Menu.MenusEndPoint)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewMenu(CreateNewMenuRequest createNewMenuRequest)
         {
