@@ -229,18 +229,33 @@ namespace Pos_System.API.Services.Implements
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
             return isSuccessful;
          }
-        
-        
-        public async Task<CreateNewStaffAccountResponse> CreateNewStaffAccount(Guid storeId,CreateNewStaffAccountRequest createNewStoreAccountRequest)
+
+
+        public async Task<CreateNewStoreAccountResponse> CreateNewStoreAccount(Guid storeId, CreateNewStoreAccountRequest createNewStoreAccountRequest)
         {
             Store store = await _unitOfWork.GetRepository<Store>()
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
-            _logger.LogInformation($"Create new account for store {store.Name} with account {createNewStoreAccountRequest.Username}, role: {RoleEnum.Staff.GetDescriptionFromEnum()} ");
+            RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
+            RoleEnum newAccountRole;
+            switch (userRole)
+            {
+                case RoleEnum.BrandManager:
+                    newAccountRole = RoleEnum.StoreManager;
+                    Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
+                    if (!store.BrandId.Equals(userBrandId)) throw new BadHttpRequestException(MessageConstant.Store.StoreNotInBrandMessage);
+                    break;
+                case RoleEnum.StoreManager:
+                    newAccountRole = RoleEnum.Staff;
+                    break;
+                default:
+                    throw new BadHttpRequestException(MessageConstant.Store.CreateNewStoreAccountUnauthorizedMessage);
+            }
+            _logger.LogInformation($"Create new account for store {store.Name} with account {createNewStoreAccountRequest.Username}, role: {newAccountRole} ");
             createNewStoreAccountRequest.Password = PasswordUtil.HashPassword(createNewStoreAccountRequest.Password);
             Account newStoreAccount = _mapper.Map<Account>(createNewStoreAccountRequest);
             newStoreAccount.Id = Guid.NewGuid();
-            newStoreAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(RoleEnum.Staff.GetDescriptionFromEnum()));
+            newStoreAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(newAccountRole.GetDescriptionFromEnum()));
             newStoreAccount.Status = AccountStatus.Active.GetDescriptionFromEnum();
             newStoreAccount.StoreAccount = new StoreAccount()
             {
@@ -250,11 +265,11 @@ namespace Pos_System.API.Services.Implements
             };
             await _unitOfWork.GetRepository<Account>().InsertAsync(newStoreAccount);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
-            CreateNewStaffAccountResponse response = isSuccessful ? _mapper.Map<CreateNewStaffAccountResponse>(newStoreAccount) : null;
+            CreateNewStoreAccountResponse response = isSuccessful ? _mapper.Map<CreateNewStoreAccountResponse>(newStoreAccount) : null;
             if (response != null)
             {
                 response.StoreId = store.Id;
-                response.Role = RoleEnum.Staff;
+                response.Role = newAccountRole;
             }
             return response;
         }

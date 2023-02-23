@@ -2,6 +2,7 @@
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
+using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
 
@@ -28,6 +29,23 @@ namespace Pos_System.API.Controllers
             }
             _logger.LogInformation($"Create menu successfully with menuCode: {createNewMenuRequest.Code}");
             return Ok(newMenuIdResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.HasBaseMenuEndPoint)]
+        [ProducesResponseType(typeof(HasBaseMenuResponse),StatusCodes.Status200OK)]
+        public async Task<IActionResult> CheckHasBaseMenu(Guid id)
+        {
+	        var response = await _menuService.CheckHasBaseMenuInBrand(id);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.MenusInBrandEndPoint)]
+        public async Task<IActionResult> GetMenusInBrand(Guid id, [FromQuery] string? code, [FromQuery] int page, [FromQuery] int size)
+        {
+	        var response = await _menuService.GetMenus(id, code, page, size);
+	        return Ok(response);
         }
     }
 }

@@ -43,15 +43,12 @@ public static class DateTimeHelper
 		return dateFilters;
 	}
 
-	public static TimeOnly? ConvertIntToTimeOnly(int? timeIntFormat)
+	public static TimeOnly ConvertIntToTimeOnly(int timeIntFormat)
 	{
-		if (timeIntFormat.HasValue)
-		{
-			int hour = (int)timeIntFormat.Value / 60;
-			int minute = ((int) timeIntFormat.Value % 60) * 60;
-			return new TimeOnly(hour, minute);
-		}
-
-		return null;
+		int hour = (int)timeIntFormat / 60;
+		decimal minuteInDecimal = (decimal)timeIntFormat / 60;
+		decimal minuteHasDecimal = minuteInDecimal - Math.Floor(minuteInDecimal);
+		int minute = (int)Math.Ceiling((minuteHasDecimal * 60));
+		return new TimeOnly(hour, minute);
 	}
 }

@@ -21,7 +21,7 @@ public class AccountMapper : Profile
 	        .ForMember(des => des.Role, src => src.Ignore());
         CreateMap<Account, CreateNewBrandAccountResponse>();
 
-        CreateMap<CreateNewStaffAccountRequest, Account>();
-        CreateMap<Account, CreateNewStaffAccountResponse>();
+        CreateMap<CreateNewStoreAccountRequest, Account>();
+        CreateMap<Account, CreateNewStoreAccountResponse>();
     }
 }
