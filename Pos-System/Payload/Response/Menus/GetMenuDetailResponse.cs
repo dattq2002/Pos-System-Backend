@@ -48,7 +48,7 @@ public class GetMenuDetailResponse
 		{
 			foreach (var product in products)
 			{
-				ProductsInMenu.Add(new ProductInMenu(product.ProductId, product.SellingPrice, product.DiscountPrice, product.HistoricalPrice, product.CreatedBy, product.CreatedAt, product.UpdatedBy, product.UpdatedAt));
+				ProductsInMenu.Add(new ProductInMenu(product.ProductId, product.SellingPrice, product.DiscountPrice, product.HistoricalPrice, product.CreatedBy, product.CreatedAt, product.UpdatedBy, product.UpdatedAt, product.Product.Type, product.Product.Category.Name));
 			}
 		}
 	}
@@ -72,12 +72,14 @@ public class ProductInMenu
 	public double SellingPrice { get; set; }
 	public double DiscountPrice { get; set; }
 	public double HistoricalPrice { get; set; }
+	public ProductType Type { get; set; }
+	public string CategoryName { get; set; }
 	public string? CreatedBy { get; set; }
 	public DateTime? CreatedAt { get; set; }
 	public string? UpdatedBy { get; set; }
 	public DateTime? UpdatedAt { get; set; }
 
-	public ProductInMenu(Guid id, double sellingPrice, double discountPrice, double historicalPrice, string? createdBy, DateTime? createdAt, string? updatedBy, DateTime? updatedAt)
+	public ProductInMenu(Guid id, double sellingPrice, double discountPrice, double historicalPrice, string? createdBy, DateTime? createdAt, string? updatedBy, DateTime? updatedAt, string productType, string categoryName)
 	{
 		Id = id;
 		SellingPrice = sellingPrice;
@@ -87,6 +89,8 @@ public class ProductInMenu
 		CreatedAt = createdAt;
 		UpdatedBy = updatedBy;
 		UpdatedAt = updatedAt;
+		Type = EnumUtil.ParseEnum<ProductType>(productType);
+		CategoryName = categoryName;
 	}
 }
 
