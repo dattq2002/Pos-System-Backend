@@ -61,14 +61,20 @@ namespace Pos_System.API.Services.Implements
             return new CreateNewProductResponse(newProduct.Id);
         }
 
-        public async Task<IPaginate<GetProductResponse>> GetProducts(string? name, int page, int size)
+        public async Task<IPaginate<GetProductResponse>> GetProducts(string? name, ProductType? type, int page, int size)
         {
             Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             name = name?.Trim();
             if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
             IPaginate<GetProductResponse> productsResponse = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
                 selector: x => new GetProductResponse(x.Id, x.Code, x.Name, x.PicUrl, x.Status, x.Type),
-                predicate: string.IsNullOrEmpty(name) ? x => x.BrandId.Equals(brandId) : x => x.Name.ToLower().Contains(name.ToLower()) && x.BrandId.Equals(brandId),
+                predicate: string.IsNullOrEmpty(name) && (type == null)
+                    ? x => x.BrandId.Equals(brandId)
+                    : ((type == null)
+                    ? x => x.BrandId.Equals(brandId) && x.Name.Contains(name)
+                    : (string.IsNullOrEmpty(name)
+                    ? x => x.BrandId.Equals(brandId) && x.Type.Equals(type.GetDescriptionFromEnum())
+                    : x => x.BrandId.Equals(brandId) && x.Name.ToLower().Contains(name) && x.Type.Equals(type.GetDescriptionFromEnum()))),
                 page: page,
                 size: size
                 );
@@ -103,7 +109,7 @@ namespace Pos_System.API.Services.Implements
             updateProduct.Code = updateProductRequest.Code;
             updateProduct.Name = updateProductRequest.Name;
             updateProduct.Description = updateProductRequest.Description;
-            updateProduct.PicUrl= updateProductRequest.PicUrl;
+            updateProduct.PicUrl = updateProductRequest.PicUrl;
             updateProduct.CategoryId = updateProductRequest.CategoryId;
             updateProduct.Size = updateProductRequest.Size != null ? updateProductRequest.Size.GetDescriptionFromEnum() : null;
             updateProduct.HistoricalPrice = updateProductRequest.HistoricalPrice;
@@ -112,7 +118,7 @@ namespace Pos_System.API.Services.Implements
             updateProduct.DisplayOrder = updateProductRequest.DisplayOrder;
             updateProduct.Type = updateProductRequest.Type.GetDescriptionFromEnum();
             updateProduct.ParentProductId = updateProductRequest.ParentProductId;
-          
+
             _unitOfWork.GetRepository<Product>().UpdateAsync(updateProduct);
             await _unitOfWork.CommitAsync();
             return productId;

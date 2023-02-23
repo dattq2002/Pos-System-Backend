@@ -41,9 +41,9 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.ProductsEndPoint)]
-        public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] ProductType? type, [FromQuery] int page, [FromQuery] int size)
         {
-            var productsResponse = await _productService.GetProducts(name, page, size);
+            var productsResponse = await _productService.GetProducts(name, type, page, size);
             return Ok(productsResponse);
         }
 

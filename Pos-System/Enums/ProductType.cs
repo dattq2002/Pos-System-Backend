@@ -3,7 +3,7 @@
 public enum ProductType
 {
 	SINGLE,
-	MASTER,
+	PARENT,
 	EXTRA,
-	HAS_EXTRA
+	CHILD
 }
