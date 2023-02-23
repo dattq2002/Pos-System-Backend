@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
@@ -6,6 +7,7 @@ using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 
 namespace Pos_System.API.Services.Implements
@@ -91,6 +93,23 @@ namespace Pos_System.API.Services.Implements
 			        HasBaseMenu = false
 		        };
 	        }
+        }
+
+        public async Task<IPaginate<GetMenuDetailResponse>> GetMenus(Guid brandId,string? code, int page = 1, int size = 10)
+        {
+	        if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+	        Brand brand = await _unitOfWork.GetRepository<Brand>()
+		        .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
+	        if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+	        code = code?.Trim();
+	        IPaginate<GetMenuDetailResponse> menusInBrand = await _unitOfWork.GetRepository<Menu>().GetPagingListAsync(
+				selector: x => new GetMenuDetailResponse(x.Id, x.Code, x.Priority, x.DateFilter, x.StartTime, x.EndTime, x.Status, x.CreatedBy, x.CreatedAt, x.UpdatedBy, x.UpdatedAt, x.MenuProducts.ToList(), x.MenuStores.ToList()),
+				predicate: string.IsNullOrEmpty(code) ? x => x.BrandId.Equals(brandId) : x => x.Code.ToLower().Equals(code) && x.BrandId.Equals(brandId),
+				include: x => x.Include(x => x.MenuStores).ThenInclude(x => x.Store).Include(x => x.MenuProducts).ThenInclude(x => x.Product).ThenInclude(x => x.Category),
+				page: page,
+				size: size
+	        );
+			return menusInBrand;
         }
     }
 }
