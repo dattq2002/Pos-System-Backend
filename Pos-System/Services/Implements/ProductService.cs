@@ -123,6 +123,21 @@ namespace Pos_System.API.Services.Implements
             await _unitOfWork.CommitAsync();
             return productId;
         }
+
+        public async Task<IEnumerable<GetProductDetailsResponse>> GetProductsInBrand(Guid brandId)
+        {
+            
+            if(brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            Brand brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+                predicate: x => x.Id.Equals(brandId)
+            );
+            if(brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+            IEnumerable<GetProductDetailsResponse> products = await _unitOfWork.GetRepository<Product>().GetListAsync(
+                selector: x => new GetProductDetailsResponse(x.Id, x.Code, x.Name, x.SellingPrice, x.PicUrl, x.Status, x.HistoricalPrice, x.DiscountPrice, x.Description, x.DisplayOrder, x.Size, x.Type, x.ParentProductId, x.BrandId, x.CategoryId),
+                predicate: x => x.Id.Equals(brandId) && x.BrandId.Equals(brandId)
+            );
+            return products;
+        }
     }
 }
 

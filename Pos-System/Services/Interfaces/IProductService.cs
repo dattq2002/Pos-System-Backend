@@ -16,6 +16,8 @@ namespace Pos_System.API.Services.Interfaces
         Task<Guid> UpdateProduct(Guid productId, UpdateProductRequest updateProductRequest);
 
         Task<IPaginate<GetProductResponse>> GetProducts(string? name, ProductType? type, int page, int size);
+
+        Task<IEnumerable<GetProductDetailsResponse>> GetProductsInBrand(Guid brandId);
     }
 }
 

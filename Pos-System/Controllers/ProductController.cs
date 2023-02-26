@@ -72,6 +72,13 @@ namespace Pos_System.API.Controllers
             }
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Product.ProductsInBrandEndPoint)]
+        public async Task<IActionResult> GetProductsInBrand(Guid id){
+            var response = await _productService.GetProductsInBrand(id);
+            return Ok(response);
+        }
     }
 }
 
