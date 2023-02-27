@@ -204,15 +204,31 @@ namespace Pos_System.API.Services.Implements
             return isSuccessful;
         }
 
-		public async Task<GetAccountResponse> GetAccountDetail(Guid id)
-		{
-			if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
-			GetAccountResponse account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(
-				selector: x => new GetAccountResponse(x.Id, x.Username, x.Name, EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
-				predicate: x => x.Id.Equals(id)
-				);
-			return account;
-		}
+        public async Task<GetAccountResponse> GetAccountDetail(Guid id)
+        {
+            if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
+            GetAccountResponse account = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(
+                selector: x => new GetAccountResponse(x.Id, x.Username, x.Name, EnumUtil.ParseEnum<RoleEnum>(x.Role.Name), EnumUtil.ParseEnum<AccountStatus>(x.Status)),
+                predicate: x => x.Id.Equals(id)
+                );
+            switch (account.Role)
+            {
+                case RoleEnum.Staff:
+                case RoleEnum.StoreManager:
+                    {
+                        account.storeId = await _unitOfWork.GetRepository<StoreAccount>().SingleOrDefaultAsync(selector: x => x.StoreId, predicate: x => x.AccountId.Equals(account.Id));
+                        account.brandId = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(account.storeId));
+                        break;
+                    }
+                case RoleEnum.BrandManager:
+                case RoleEnum.BrandAdmin:
+                    {
+                        account.brandId = await _unitOfWork.GetRepository<BrandAccount>().SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.AccountId.Equals(account.Id));
+                        break;
+                    }
+            }
+            return account;
+        }
 
         public async Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
         {
