@@ -83,9 +83,9 @@ namespace Pos_System.API.Controllers
             return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager)]
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandAdmin, RoleEnum.BrandManager)]
         [HttpPut(ApiEndPointConstant.Store.StoreUpdateEmployeeEndpoint)]
-        public async Task<IActionResult> UpdateStaffAccountInformation(Guid storeId, Guid id, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        public async Task<IActionResult> UpdateAccountInformation(Guid storeId, Guid id, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
         {
             await _accountService.UpdateStaffAccountInformation(id, staffAccountInformationRequest);
             return Ok(MessageConstant.Store.UpdateStaffInformationSuccessfulMessage);
