@@ -11,6 +11,7 @@ public class GetMenuDetailResponse
 	public Guid Id { get; set; }
 	public string Code { get; set; }
 	public int Priority { get; set; }
+	public bool IsBaseMenu { get; set; }
 	public List<DateFilter> DateFilter { get; set; }
 	public TimeOnly StartTime { get; set; }
 	public TimeOnly EndTime { get; set; }
@@ -29,6 +30,7 @@ public class GetMenuDetailResponse
 		Id = id;
 		Code = code;
 		Priority = priority;
+        IsBaseMenu = priority.Equals(0) ? true : false;
 		DateFilter = DateTimeHelper.GetDatesFromDateFilter(dateFilter);
 		StartTime = DateTimeHelper.ConvertIntToTimeOnly(startTime);
 		EndTime = DateTimeHelper.ConvertIntToTimeOnly(endTime);

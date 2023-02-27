@@ -11,5 +11,6 @@ namespace Pos_System.API.Services.Interfaces
 
         public Task<HasBaseMenuResponse> CheckHasBaseMenuInBrand(Guid brandId);
         public Task<IPaginate<GetMenuDetailResponse>> GetMenus(Guid brandId, string? code, int page = 1, int size = 10);
+        public Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid brandId, Guid menuId);
     }
 }
