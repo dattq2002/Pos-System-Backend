@@ -9,6 +9,8 @@ public class GetAccountResponse
 	public string Name { get; set; }
 	public RoleEnum Role { get; set; }
 	public AccountStatus Status { get; set; }
+	public Guid? storeId { get; set; }
+	public Guid? brandId { get; set; }
 
 	public GetAccountResponse()
 	{
