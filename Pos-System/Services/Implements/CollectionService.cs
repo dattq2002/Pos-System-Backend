@@ -89,7 +89,7 @@ namespace Pos_System.API.Services.Implements
 
                 List<Guid> productIdsRequest = new List<Guid>(collectionInformationRequest.ProductIds);
 
-                (List<Guid> idsToRemove, List<Guid> idsToAdd) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(currentProductIds, productIdsRequest);
+                (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(currentProductIds, productIdsRequest);
                 //Handle add and remove to database
                 if (splittedProductIds.idsToAdd.Count > 0)
                 {
