@@ -112,9 +112,9 @@ namespace Pos_System.API.Services.Implements
             return menusInBrand;
         }
 
-        public async Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid brandId, Guid menuId)
+        public async Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid menuId)
         {
-            if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+            Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             Brand brand = await _unitOfWork.GetRepository<Brand>()
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);

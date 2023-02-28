@@ -49,12 +49,12 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
-        [HttpGet(ApiEndPointConstant.Menu.MenuDetailInBrandEndPoint)]
+        [HttpGet(ApiEndPointConstant.Menu.MenuEndPoint)]
         [ProducesResponseType(typeof(GetMenuDetailResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetMenuDetailInBrand(Guid id, Guid menuId)
+        public async Task<IActionResult> GetMenuDetailInBrand(Guid menuId)
         {
-            var response = await _menuService.GetMenuDetailInBrand(id, menuId);
-            _logger.LogInformation($"Get menu detail with menuId: {menuId} and brandId: {id}");
+            var response = await _menuService.GetMenuDetailInBrand(menuId);
+            _logger.LogInformation($"Get menu detail with menuId: {menuId}");
             return Ok(response);
         }
     }
