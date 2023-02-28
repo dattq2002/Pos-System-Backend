@@ -3,8 +3,10 @@ using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Response.Menus;
+using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
@@ -33,10 +35,10 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Menu.HasBaseMenuEndPoint)]
-        [ProducesResponseType(typeof(HasBaseMenuResponse),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(HasBaseMenuResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CheckHasBaseMenu(Guid id)
         {
-	        var response = await _menuService.CheckHasBaseMenuInBrand(id);
+            var response = await _menuService.CheckHasBaseMenuInBrand(id);
             return Ok(response);
         }
 
@@ -44,8 +46,8 @@ namespace Pos_System.API.Controllers
         [HttpGet(ApiEndPointConstant.Menu.MenusInBrandEndPoint)]
         public async Task<IActionResult> GetMenusInBrand(Guid id, [FromQuery] string? code, [FromQuery] int page, [FromQuery] int size)
         {
-	        var response = await _menuService.GetMenus(id, code, page, size);
-	        return Ok(response);
+            var response = await _menuService.GetMenus(id, code, page, size);
+            return Ok(response);
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
@@ -72,6 +74,15 @@ namespace Pos_System.API.Controllers
         {
             var response = await _menuService.GetMenuDetailInBrand(menuId);
             _logger.LogInformation($"Get menu detail with menuId: {menuId}");
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.MenuProductsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetProductInMenuResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProductInMenu(Guid menuId, [FromQuery] string? productName, [FromQuery] int page, [FromQuery] int size)
+        {
+            var response = await _menuService.GetProductsInMenu(menuId, productName, page, size);
             return Ok(response);
         }
     }

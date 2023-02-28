@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Response.Menus;
+using Pos_System.API.Payload.Response.Products;
 using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Services.Interfaces
@@ -13,5 +14,6 @@ namespace Pos_System.API.Services.Interfaces
         public Task<Guid> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest);
         public Task<GetMenuDetailForStaffResponse> GetMenuDetailForStaff();
         public Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid menuId);
+        public Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, int page, int size);
     }
 }
