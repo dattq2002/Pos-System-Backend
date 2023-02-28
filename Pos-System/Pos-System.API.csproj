@@ -31,7 +31,6 @@
     <Folder Include="Payload\Response\Stores\" />
     <Folder Include="Validators\" />
     <Folder Include="Payload\Request\Products\" />
-    <Folder Include="Payload\Response\Products\" />
   </ItemGroup>
 
   <ItemGroup>
