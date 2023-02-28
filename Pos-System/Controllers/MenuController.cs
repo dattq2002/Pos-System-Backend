@@ -64,5 +64,15 @@ namespace Pos_System.API.Controllers
             GetMenuDetailForStaffResponse response = await _menuService.GetMenuDetailForStaff();
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.MenuEndPoint)]
+        [ProducesResponseType(typeof(GetMenuDetailResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMenuDetailInBrand(Guid menuId)
+        {
+            var response = await _menuService.GetMenuDetailInBrand(menuId);
+            _logger.LogInformation($"Get menu detail with menuId: {menuId}");
+            return Ok(response);
+        }
     }
 }

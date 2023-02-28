@@ -78,5 +78,6 @@ public static class MessageConstant
         public const string MenuNotFoundMessage = "Menu không tồn tại trong hệ thống";
         public const string ProductNotInBrandMessage = "Bạn không thể thêm product của brand khác, product id: ";
         public const string MissingStoreIdMessage = "Bạn đang không thuộc về một store, không thể lấy menu";
+        public const string BrandIdWithMenuIdIsNotExistedMessage = "BrandId và MenuId không tồn tại trong hệ thống";
     }
 }
