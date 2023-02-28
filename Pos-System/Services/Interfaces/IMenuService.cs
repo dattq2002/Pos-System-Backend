@@ -13,6 +13,7 @@ namespace Pos_System.API.Services.Interfaces
         public Task<HasBaseMenuResponse> CheckHasBaseMenuInBrand(Guid brandId);
         public Task<IPaginate<GetMenuDetailResponse>> GetMenus(Guid brandId, string? code, int page = 1, int size = 10);
         public Task<Guid> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest);
-        public Task<IPaginate<GetProductInMenuResponse>> GetProductInMenu(Guid menuId, string? productName, int page, int size);
+        public Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid menuId);
+        public Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, int page, int size);
     }
 }

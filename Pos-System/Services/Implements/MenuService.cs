@@ -113,6 +113,29 @@ namespace Pos_System.API.Services.Implements
             return menusInBrand;
         }
 
+        public async Task<GetMenuDetailResponse> GetMenuDetailInBrand(Guid menuId)
+        {
+            Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+            Brand brand = await _unitOfWork.GetRepository<Brand>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
+            if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+
+            GetMenuDetailResponse menuDetailResponse = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
+                selector: menu => new GetMenuDetailResponse(menu.Id, menu.Code, menu.Priority, menu.DateFilter,
+                    menu.StartTime, menu.EndTime,
+                    menu.Status, menu.CreatedBy, menu.CreatedAt, menu.UpdatedBy, menu.UpdatedAt,
+                    menu.MenuProducts.ToList(), menu.MenuStores.ToList()),  
+                predicate: menu => menu.Id.Equals(menuId) && menu.BrandId.Equals(brandId),
+                include: menu => menu.Include(menu => menu.MenuProducts).ThenInclude(menu => menu.Product).ThenInclude(menu => menu.Category).Include(menu => menu.MenuStores).ThenInclude(menu => menu.Store)
+            );
+                
+            if (menuDetailResponse == null)
+            {
+                throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
+            }
+            return menuDetailResponse;
+        }
+
         public async Task<Guid> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest)
         {
             if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
@@ -192,7 +215,7 @@ namespace Pos_System.API.Services.Implements
             return menuId;
         }
 
-        public async Task<IPaginate<GetProductInMenuResponse>> GetProductInMenu(Guid menuId, string? productName, int page, int size)
+        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, int page, int size)
         {
             Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             Brand brand = await _unitOfWork.GetRepository<Brand>()
