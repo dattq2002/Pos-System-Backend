@@ -2,11 +2,7 @@
 using AutoMapper;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
-using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Request.Products;
-using Pos_System.API.Payload.Response;
-using Pos_System.API.Payload.Response.Categories;
-using Pos_System.API.Payload.Response.Collections;
 using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -46,7 +42,7 @@ namespace Pos_System.API.Services.Implements
                 PicUrl = createNewProductRequest?.PicUrl,
                 Status = EnumUtil.GetDescriptionFromEnum(ProductStatus.Active),
                 CategoryId = Guid.Parse(createNewProductRequest.CategoryId),
-                Size = createNewProductRequest?.Size.GetDescriptionFromEnum(),
+                Size = createNewProductRequest.Size != null ? createNewProductRequest.Size.GetDescriptionFromEnum() : null,
                 HistoricalPrice = createNewProductRequest.HistoricalPrice,
                 SellingPrice = createNewProductRequest.SellingPrice,
                 DiscountPrice = (double)(createNewProductRequest.DiscountPrice == null ? 0 : createNewProductRequest.DiscountPrice),

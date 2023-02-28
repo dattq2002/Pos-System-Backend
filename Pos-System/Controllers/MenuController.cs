@@ -55,5 +55,14 @@ namespace Pos_System.API.Controllers
             Guid response = await _menuService.UpdateMenuProducts(menuId, updateMenuProductsRequest);
             return Ok(response);
         }
+        
+        [CustomAuthorize(RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Menu.MenuProductsForStaffEndPoint)]
+        [ProducesResponseType(typeof(GetMenuDetailForStaffResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMenuDetailForStaff()
+        {
+            GetMenuDetailForStaffResponse response = await _menuService.GetMenuDetailForStaff();
+            return Ok(response);
+        }
     }
 }
