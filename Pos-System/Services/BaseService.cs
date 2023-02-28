@@ -43,5 +43,9 @@ namespace Pos_System.API.Services
 		{
 			return _httpContextAccessor?.HttpContext?.User?.FindFirstValue("brandId");
 		}
+		protected string GetStoreIdFromJwt()
+		{
+			return _httpContextAccessor?.HttpContext?.User?.FindFirstValue("storeId");
+		}
 	}
 }
