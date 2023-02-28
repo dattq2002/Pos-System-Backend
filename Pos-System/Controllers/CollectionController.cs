@@ -15,9 +15,9 @@ namespace Pos_System.API.Controllers
         private readonly ICollectionService _collectionService;
 
         public CollectionController(ILogger<CollectionController> logger, ICollectionService collectionService) :
-	        base(logger)
+            base(logger)
         {
-	        _collectionService = collectionService;
+            _collectionService = collectionService;
         }
 
 
@@ -25,14 +25,14 @@ namespace Pos_System.API.Controllers
         [HttpGet(ApiEndPointConstant.Collection.CollectionsEndPoint)]
         public async Task<IActionResult> GetCollections([FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
         {
-	        var collectionsResponse = await _collectionService.GetCollections(name, page, size);
-	        return Ok(collectionsResponse);
+            var collectionsResponse = await _collectionService.GetCollections(name, page, size);
+            return Ok(collectionsResponse);
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Collection.CollectionEndPoint)]
         [ProducesResponseType(typeof(GetCollectionDetailResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCollectionById(Guid id, [FromQuery]string? productName, [FromQuery]string? productCode, [FromQuery]int page, [FromQuery]int size)
+        public async Task<IActionResult> GetCollectionById(Guid id, [FromQuery] string? productName, [FromQuery] string? productCode, [FromQuery] int page, [FromQuery] int size)
         {
             var collectionResponse = await _collectionService.GetCollectionById(id, productName, productCode, page, size);
             return Ok(collectionResponse);
@@ -52,17 +52,35 @@ namespace Pos_System.API.Controllers
         [ProducesResponseType(typeof(CreateNewCollectionResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewCollection(CreateNewCollectionRequest createNewCollectionRequest)
         {
-	        _logger.LogInformation($"Start to create new collection with {createNewCollectionRequest}");
-	        var response = await _collectionService.CreateNewCollection(createNewCollectionRequest);
-	        if (response == null)
-	        {
-		        _logger.LogInformation(
-			        $"Create new collection failed: {createNewCollectionRequest.Name}, {createNewCollectionRequest.Code}");
-		        return Ok(MessageConstant.Collection.CreateNewCollectionFailedMessage);
-	        }
+            _logger.LogInformation($"Start to create new collection with {createNewCollectionRequest}");
+            var response = await _collectionService.CreateNewCollection(createNewCollectionRequest);
+            if (response == null)
+            {
+                _logger.LogInformation(
+                    $"Create new collection failed: {createNewCollectionRequest.Name}, {createNewCollectionRequest.Code}");
+                return Ok(MessageConstant.Collection.CreateNewCollectionFailedMessage);
+            }
 
-	        return Ok(response);
+            return Ok(response);
         }
-		
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Collection.ProductsInCollectionEndpoint)]
+        public async Task<IActionResult> GetProductInCollection(Guid collectionId, [FromQuery] string? name, [FromQuery] int page, [FromQuery] int size)
+        {
+            var productsInCollectionResponse = await _collectionService.GetProductInCollection(collectionId, name, page, size);
+            return Ok(productsInCollectionResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Collection.ProductsInCollectionEndpoint)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddProductToCollection(Guid collectionId, List<Guid> request)
+        {
+            _logger.LogInformation($"Start to create new collection with {request}");
+            bool isSuccessful = await _collectionService.AddProductsToCollection(collectionId, request);
+            if (!isSuccessful) return Ok(MessageConstant.Collection.UpdateProductInCollectionFailedMessage);
+            return Ok(MessageConstant.Collection.UpdateProductInCollectionSuccessfulMessage);
+        }
     }
 }
