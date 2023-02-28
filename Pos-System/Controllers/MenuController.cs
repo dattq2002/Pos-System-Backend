@@ -49,6 +49,14 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Menu.MenuProductsEndpoint)]
+        public async Task<IActionResult> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest)
+        {
+            Guid response = await _menuService.UpdateMenuProducts(menuId, updateMenuProductsRequest);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Menu.MenuEndPoint)]
         [ProducesResponseType(typeof(GetMenuDetailResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMenuDetailInBrand(Guid menuId)

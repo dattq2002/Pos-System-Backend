@@ -134,5 +134,84 @@ namespace Pos_System.API.Services.Implements
             }
             return menuDetailResponse;
         }
+
+        public async Task<Guid> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest)
+        {
+            if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
+            Menu menu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(menuId));
+            if (menu == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
+
+            string currentUserName = GetUsernameFromJwt();
+            Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
+            DateTime currentTime = DateTime.Now;
+
+            List<MenuProduct> productsInMenu = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(predicate: x => x.MenuId.Equals(menuId));
+            List<Product> currentProductsInSystem = (List<Product>)await _unitOfWork
+                    .GetRepository<Product>()
+                    .GetListAsync(predicate: x => x.BrandId.Equals(userBrandId));
+
+            List<Guid> newProductIds = updateMenuProductsRequest.Products.Select(x => x.ProductId).ToList();
+            List<Guid> oldProductIds = productsInMenu.Select(x => x.ProductId).ToList();
+            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(oldProductIds, newProductIds);
+
+            if (splittedProductIds.idsToAdd.Count > 0)
+            {
+                List<ProductToUpdate> productsToInsert = updateMenuProductsRequest.Products
+                    .Where(x => splittedProductIds.idsToAdd.Contains(x.ProductId)).ToList();
+
+                List<MenuProduct> prepareDataToInsert = new List<MenuProduct>();
+				productsToInsert.ForEach(x =>
+				{
+				Product referenceProductData = currentProductsInSystem.Find(y => y.Id.Equals(x.ProductId));
+				if (referenceProductData == null) throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
+                    prepareDataToInsert.Add(new MenuProduct
+                    {
+                        Id = Guid.NewGuid(),
+                        Status = ProductStatus.Active.GetDescriptionFromEnum(),
+                        SellingPrice = x.SellingPrice,
+                        DiscountPrice = x.DiscountPrice,
+                        HistoricalPrice = referenceProductData.SellingPrice,
+                        MenuId = menuId,
+                        ProductId = x.ProductId,
+                        CreatedBy = currentUserName,
+                        CreatedAt = currentTime,
+                    });
+                });
+
+                await _unitOfWork.GetRepository<MenuProduct>().InsertRangeAsync(prepareDataToInsert);
+            }
+
+			if(splittedProductIds.idsToKeep.Count > 0)
+			{
+                List<ProductToUpdate> productDataFromRequest = updateMenuProductsRequest.Products
+                    .Where(x => splittedProductIds.idsToKeep.Contains(x.ProductId)).ToList();
+                List<MenuProduct> productsToUpdate = productsInMenu
+                    .Where(x => splittedProductIds.idsToKeep.Contains(x.ProductId)).ToList();
+
+                productsToUpdate.ForEach(x =>
+                {
+                    ProductToUpdate requestProductData = productDataFromRequest.Find(y => y.ProductId.Equals(x.ProductId));
+					if (requestProductData == null) return;
+					x.SellingPrice = requestProductData.SellingPrice;
+					x.DiscountPrice = requestProductData.DiscountPrice;
+					x.UpdatedBy = currentUserName;
+					x.UpdatedAt = currentTime;
+                });
+
+                _unitOfWork.GetRepository<MenuProduct>().UpdateRange(productsToUpdate);
+            }
+
+            if (splittedProductIds.idsToRemove.Count > 0)
+            {
+                List<MenuProduct> prepareDataToRemove = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
+                    predicate: x => splittedProductIds.idsToRemove.Contains(x.ProductId)
+                    && x.MenuId.Equals(menuId));
+
+				_unitOfWork.GetRepository<MenuProduct>().DeleteRangeAsync(prepareDataToRemove);
+            }
+
+			await _unitOfWork.CommitAsync();
+			return menuId;
+        }
     }
 }
