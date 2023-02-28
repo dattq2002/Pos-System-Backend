@@ -109,7 +109,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
             predicate: x => x.ProductCategoryId.Equals(categoryId)
             );
 
-        (List<Guid> idsToRemove, List<Guid> idsToAdd) splittedExtraCategoriesIds = CustomListUtil.splitIdsToAddAndRemove(currentExtraCategoriesId, request);
+        (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedExtraCategoriesIds = CustomListUtil.splitIdsToAddAndRemove(currentExtraCategoriesId, request);
         //Handle add and remove to database
         if (splittedExtraCategoriesIds.idsToAdd.Count > 0)
         {
