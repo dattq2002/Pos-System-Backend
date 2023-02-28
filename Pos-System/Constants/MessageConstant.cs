@@ -56,12 +56,14 @@ public static class MessageConstant
         public const string UpdateExtraCategoryFailedMessage = "Extra Category cập nhật thất bại";
     }
 
-	public static class Collection
-	{
-		public const string EmptyCollectionIdMessage = "Collection Id bị trống";
-		public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
-		public const string CreateNewCollectionFailedMessage = "Tạo mới collection thất bại";
-	}
+    public static class Collection
+    {
+        public const string EmptyCollectionIdMessage = "Collection Id bị trống";
+        public const string CollectionNotFoundMessage = "Collection không tồn tại trong hệ thống";
+        public const string CreateNewCollectionFailedMessage = "Tạo mới collection thất bại";
+        public const string UpdateProductInCollectionSuccessfulMessage = "Product collection trong được cập nhật thành công";
+        public const string UpdateProductInCollectionFailedMessage = "Product collection cập nhật thất bại";
+    }
 
     public static class Product
     {
@@ -73,7 +75,7 @@ public static class MessageConstant
 
     public static class Menu
     {
-	    public const string CreateNewMenuFailedMessage = "Tạo mới Menu thất bại";
+        public const string CreateNewMenuFailedMessage = "Tạo mới Menu thất bại";
         public const string EmptyMenuIdMessage = "Id của menu không hợp lệ.";
         public const string MenuNotFoundMessage = "Menu không tồn tại trong hệ thống";
         public const string ProductNotInBrandMessage = "Bạn không thể thêm product của brand khác, product id: ";

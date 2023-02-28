@@ -3,6 +3,6 @@
     public enum CollectionStatus
     {
         Active,
-        Deactivate
+        Deactive
     }
 }
