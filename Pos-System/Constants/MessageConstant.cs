@@ -74,5 +74,8 @@ public static class MessageConstant
     public static class Menu
     {
 	    public const string CreateNewMenuFailedMessage = "Tạo mới Menu thất bại";
+        public const string EmptyMenuIdMessage = "Id của menu không hợp lệ.";
+        public const string MenuNotFoundMessage = "Menu không tồn tại trong hệ thống";
+        public const string ProductNotInBrandMessage = "Bạn không thể thêm product của brand khác, product id: ";
     }
 }
