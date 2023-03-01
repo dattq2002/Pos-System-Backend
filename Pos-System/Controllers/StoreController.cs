@@ -5,7 +5,9 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Accounts;
+using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Stores;
+using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.API.Validators;
@@ -89,6 +91,15 @@ namespace Pos_System.API.Controllers
         {
             await _accountService.UpdateStaffAccountInformation(id, staffAccountInformationRequest);
             return Ok(MessageConstant.Store.UpdateStaffInformationSuccessfulMessage);
+        }
+
+        [CustomAuthorize(RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Store.MenuProductsForStaffEndPoint)]
+        [ProducesResponseType(typeof(GetMenuDetailForStaffResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMenuDetailForStaff()
+        {
+            GetMenuDetailForStaffResponse response = await _storeService.GetMenuDetailForStaff();
+            return Ok(response);
         }
     }
 }
