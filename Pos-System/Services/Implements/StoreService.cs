@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Stores;
+using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -104,5 +105,80 @@ public class StoreService : BaseService<StoreService>, IStoreService
         bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
 
         return isSuccesful;
+    }
+
+    public async Task<GetMenuDetailForStaffResponse> GetMenuDetailForStaff()
+    {
+        Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
+        if (userStoreId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.MissingStoreIdMessage);
+
+        Guid menuOfStoreId = await _unitOfWork.GetRepository<MenuStore>()
+            .SingleOrDefaultAsync(selector: x => x.MenuId, predicate: x => x.StoreId.Equals(userStoreId));
+
+        Guid userBrandId = await _unitOfWork.GetRepository<Store>()
+            .SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(userStoreId));
+
+        GetMenuDetailForStaffResponse menuOfStore = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(selector: x => new GetMenuDetailForStaffResponse(
+            x.Id,
+            x.BrandId,
+            x.Code,
+            x.Priority,
+            true,
+            x.DateFilter,
+            x.StartTime,
+            x.EndTime),
+            predicate: x => x.Id.Equals(menuOfStoreId));
+
+        menuOfStore.ProductsInMenu = (List<ProductDataForStaff>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
+            selector: x => new ProductDataForStaff
+            (
+                x.ProductId,
+                x.Product.Code,
+                x.Product.Name,
+                x.SellingPrice,
+                x.Product.PicUrl,
+                x.Product.Status,
+                x.HistoricalPrice,
+                x.DiscountPrice,
+                x.Product.Description,
+                x.Product.DisplayOrder,
+                x.Product.Size,
+                x.Product.Type,
+                x.Product.ParentProductId,
+                x.Product.BrandId,
+                x.Product.CategoryId,
+                (List<Guid>)x.Product.CollectionProducts.Select(x => x.CollectionId),
+                (List<Guid>)x.Product.Category.ExtraCategoryProductCategories.Select(x => x.ExtraCategoryId)
+            ),
+            predicate: x => x.MenuId.Equals(menuOfStoreId),
+            include: menuProduct => menuProduct
+                .Include(menuProduct => menuProduct.Product)
+                .ThenInclude(product => product.CollectionProducts)
+                .Include(menuProduct => menuProduct.Product)
+                .ThenInclude(product => product.Category)
+                .ThenInclude(category => category.ExtraCategoryProductCategories)
+            );
+
+        menuOfStore.CollectionsOfBrand = (List<CollectionOfBrand>)await _unitOfWork.GetRepository<Collection>()
+            .GetListAsync(selector: x => new CollectionOfBrand(
+                x.Id,
+                x.Name,
+                x.Code,
+                x.PicUrl,
+                x.Description
+                ), predicate: x => x.BrandId.Equals(userBrandId));
+
+        menuOfStore.CategoriesOfBrand = (List<CategoryOfBrand>)await _unitOfWork.GetRepository<Category>()
+            .GetListAsync(selector: x => new CategoryOfBrand(
+                x.Id,
+                x.Code,
+                x.Name,
+                EnumUtil.ParseEnum<CategoryType>(x.Type),
+                x.DisplayOrder,
+                x.Description,
+                x.PicUrl
+                ), predicate: x => x.BrandId.Equals(userBrandId));
+
+        return menuOfStore;
     }
 }

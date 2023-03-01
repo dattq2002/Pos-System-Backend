@@ -58,15 +58,6 @@ namespace Pos_System.API.Controllers
             return Ok(response);
         }
         
-        [CustomAuthorize(RoleEnum.Staff)]
-        [HttpGet(ApiEndPointConstant.Menu.MenuProductsForStaffEndPoint)]
-        [ProducesResponseType(typeof(GetMenuDetailForStaffResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetMenuDetailForStaff()
-        {
-            GetMenuDetailForStaffResponse response = await _menuService.GetMenuDetailForStaff();
-            return Ok(response);
-        }
-
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Menu.MenuEndPoint)]
         [ProducesResponseType(typeof(GetMenuDetailResponse), StatusCodes.Status200OK)]
