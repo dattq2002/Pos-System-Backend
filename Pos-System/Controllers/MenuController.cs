@@ -57,7 +57,7 @@ namespace Pos_System.API.Controllers
             Guid response = await _menuService.UpdateMenuProducts(menuId, updateMenuProductsRequest);
             return Ok(response);
         }
-        
+
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Menu.MenuEndPoint)]
         [ProducesResponseType(typeof(GetMenuDetailResponse), StatusCodes.Status200OK)]
@@ -75,6 +75,20 @@ namespace Pos_System.API.Controllers
         {
             var response = await _menuService.GetProductsInMenu(menuId, productName, page, size);
             return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin, RoleEnum.StoreManager)]
+        [HttpPut(ApiEndPointConstant.Menu.MenuEndPoint)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateMenuInformation(Guid menuId, UpdateMenuInformationRequest updateMenuInformationRequest)
+        {
+            bool isUpdateSuccessful = await _menuService.UpdateMenuInformation(menuId, updateMenuInformationRequest);
+            if (isUpdateSuccessful)
+            {
+                return Ok(MessageConstant.Menu.UpdateMenuInformationSuccessfulMessage);
+            }
+
+            return BadRequest(MessageConstant.Menu.UpdateMenuInformationFailedMessage);
         }
     }
 }
