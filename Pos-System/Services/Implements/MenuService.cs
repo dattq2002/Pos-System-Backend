@@ -215,24 +215,63 @@ namespace Pos_System.API.Services.Implements
             return menuId;
         }
 
-        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, int page, int size)
+        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, string? code, int page, int size)
         {
             Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             Brand brand = await _unitOfWork.GetRepository<Brand>()
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+            IPaginate<GetProductInMenuResponse> productsInMenu;
 
-            IPaginate<GetProductInMenuResponse> productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
-                .GetPagingListAsync(
-                    selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
-                         product.HistoricalPrice, product.DiscountPrice),
-                    predicate: product => string.IsNullOrEmpty(productName) ? product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) : product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName),
-                    include: product => product.Include(product => product.Product),
-                    page: page,
-                    size: size
-                );
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(code))
+            {
+                productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
+                    .GetPagingListAsync(
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                            product.HistoricalPrice, product.DiscountPrice),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(code),
+                        include: product => product.Include(product => product.Product),
+                        page: page,
+                        size: size
+                    );
+            }
+            else if (!string.IsNullOrEmpty(productName))
+            {
+                productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
+                    .GetPagingListAsync(
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                            product.HistoricalPrice, product.DiscountPrice),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName),
+                        include: product => product.Include(product => product.Product),
+                        page: page,
+                        size: size
+                    );
+            }
+            else if (!string.IsNullOrEmpty(code))
+            {
+                productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
+                    .GetPagingListAsync(
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                            product.HistoricalPrice, product.DiscountPrice),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(code),
+                        include: product => product.Include(product => product.Product),
+                        page: page,
+                        size: size
+                    );
+            }
+            else
+            {
+                productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
+                    .GetPagingListAsync(
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                            product.HistoricalPrice, product.DiscountPrice),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId),
+                        include: product => product.Include(product => product.Product),
+                        page: page,
+                        size: size
+                    );
+            }
             return productsInMenu;
-
         }
 
         public async Task<bool> UpdateMenuInformation(Guid menuId, UpdateMenuInformationRequest updateMenuInformationRequest)
@@ -260,7 +299,7 @@ namespace Pos_System.API.Services.Implements
                 throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
             }
 
-            if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue 
+            if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue
                 && updateMenuInformationRequest.StartTime > updateMenuInformationRequest.EndTime)
             {
                 _logger.LogInformation($"Failed to update menu {menuId} because endtime is lower than starttime");
