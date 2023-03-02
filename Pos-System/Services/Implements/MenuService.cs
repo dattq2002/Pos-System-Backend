@@ -124,11 +124,11 @@ namespace Pos_System.API.Services.Implements
                 selector: menu => new GetMenuDetailResponse(menu.Id, menu.Code, menu.Priority, menu.DateFilter,
                     menu.StartTime, menu.EndTime,
                     menu.Status, menu.CreatedBy, menu.CreatedAt, menu.UpdatedBy, menu.UpdatedAt,
-                    menu.MenuProducts.ToList(), menu.MenuStores.ToList()),  
+                    menu.MenuProducts.ToList(), menu.MenuStores.ToList()),
                 predicate: menu => menu.Id.Equals(menuId) && menu.BrandId.Equals(brandId),
                 include: menu => menu.Include(menu => menu.MenuProducts).ThenInclude(menu => menu.Product).ThenInclude(menu => menu.Category).Include(menu => menu.MenuStores).ThenInclude(menu => menu.Store)
             );
-                
+
             if (menuDetailResponse == null)
             {
                 throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
@@ -235,6 +235,46 @@ namespace Pos_System.API.Services.Implements
 
         }
 
-        
+        public async Task<bool> UpdateMenuInformation(Guid menuId, UpdateMenuInformationRequest updateMenuInformationRequest)
+        {
+            Guid branId = Guid.Parse(GetBrandIdFromJwt());
+
+            if (updateMenuInformationRequest.Priority.Equals(0))
+            {
+                Menu brandBaseMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
+                    predicate: menu => menu.BrandId.Equals(branId) && menu.Priority.Equals(0)
+                );
+                if (brandBaseMenu != null)
+                {
+                    _logger.LogInformation($"Failed to update menu {menuId} because brand has base menu already");
+                    throw new BadHttpRequestException(MessageConstant.Menu.BaseMenuIsExistedInBrandMessage);
+                }
+            }
+
+            Menu currentMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
+                predicate: menu => menu.BrandId.Equals(branId) && menu.Id.Equals(menuId)
+            );
+            if (currentMenu == null)
+            {
+                _logger.LogInformation($"Failed to update menu {menuId} because of wrong menuId or brandId from JWT");
+                throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
+            }
+
+            if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue 
+                && updateMenuInformationRequest.StartTime > updateMenuInformationRequest.EndTime)
+            {
+                _logger.LogInformation($"Failed to update menu {menuId} because endtime is lower than starttime");
+                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
+            }
+
+            _logger.LogInformation($"Start update menu information of menu's {menuId} id");
+            currentMenu.Priority = updateMenuInformationRequest.Priority ?? currentMenu.Priority;
+            currentMenu.DateFilter = updateMenuInformationRequest.DateFilter ?? currentMenu.DateFilter;
+            currentMenu.StartTime = updateMenuInformationRequest.StartTime ?? currentMenu.StartTime;
+            currentMenu.EndTime = updateMenuInformationRequest.EndTime ?? currentMenu.EndTime;
+            _unitOfWork.GetRepository<Menu>().UpdateAsync(currentMenu);
+            bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+            return isSuccessful;
+        }
     }
 }
