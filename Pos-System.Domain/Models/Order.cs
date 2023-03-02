@@ -18,7 +18,6 @@ namespace Pos_System.Domain.Models
         public string InvoiceId { get; set; } = null!;
         public double TotalAmount { get; set; }
         public double Discount { get; set; }
-        public double? DiscountOrderDetail { get; set; }
         public double FinalAmount { get; set; }
         public double Vat { get; set; }
         public double Vatamount { get; set; }

@@ -311,8 +311,6 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Notes).HasMaxLength(200);
 
-                entity.Property(e => e.Status).HasMaxLength(20);
-
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
@@ -370,9 +368,13 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Icon).HasMaxLength(50);
-
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.PaymentTypes)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Payment_Brand");
             });
 
             modelBuilder.Entity<Product>(entity =>

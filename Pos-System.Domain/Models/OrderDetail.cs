@@ -12,7 +12,6 @@ namespace Pos_System.Domain.Models
         public double TotalAmount { get; set; }
         public double FinalAmount { get; set; }
         public string? Notes { get; set; }
-        public string Status { get; set; } = null!;
         public Guid ProductId { get; set; }
         public double SellingPrice { get; set; }
 
