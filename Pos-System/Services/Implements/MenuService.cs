@@ -215,7 +215,7 @@ namespace Pos_System.API.Services.Implements
             return menuId;
         }
 
-        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, string? code, int page, int size)
+        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, string? productCode, int page, int size)
         {
             Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             Brand brand = await _unitOfWork.GetRepository<Brand>()
@@ -223,13 +223,13 @@ namespace Pos_System.API.Services.Implements
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
             IPaginate<GetProductInMenuResponse> productsInMenu;
 
-            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(code))
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productCode))
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(code),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(productCode),
                         include: product => product.Include(product => product.Product),
                         page: page,
                         size: size
@@ -247,13 +247,13 @@ namespace Pos_System.API.Services.Implements
                         size: size
                     );
             }
-            else if (!string.IsNullOrEmpty(code))
+            else if (!string.IsNullOrEmpty(productCode))
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(code),
+                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(productCode),
                         include: product => product.Include(product => product.Product),
                         page: page,
                         size: size
