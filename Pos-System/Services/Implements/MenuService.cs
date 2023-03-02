@@ -293,10 +293,21 @@ namespace Pos_System.API.Services.Implements
             Menu currentMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
                 predicate: menu => menu.BrandId.Equals(branId) && menu.Id.Equals(menuId)
             );
+
             if (currentMenu == null)
             {
                 _logger.LogInformation($"Failed to update menu {menuId} because of wrong menuId or brandId from JWT");
                 throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
+            }
+
+            if (updateMenuInformationRequest.StartTime.HasValue && (updateMenuInformationRequest.StartTime > currentMenu.EndTime))
+            {
+                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
+            }
+
+            if (updateMenuInformationRequest.EndTime.HasValue && (updateMenuInformationRequest.EndTime < currentMenu.StartTime))
+            {
+                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
             }
 
             if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue
