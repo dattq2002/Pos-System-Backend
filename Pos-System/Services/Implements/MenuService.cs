@@ -239,10 +239,10 @@ namespace Pos_System.API.Services.Implements
         {
             Guid branId = Guid.Parse(GetBrandIdFromJwt());
 
-            if (updateMenuInformationRequest.Priority.Equals(0))
+            if (updateMenuInformationRequest.Priority == 0)
             {
                 Menu brandBaseMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
-                    predicate: menu => menu.BrandId.Equals(branId) && menu.Priority.Equals(0)
+                    predicate: menu => menu.BrandId.Equals(branId) && menu.Priority == 0
                 );
                 if (brandBaseMenu != null)
                 {
