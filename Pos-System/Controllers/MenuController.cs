@@ -71,9 +71,9 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Menu.MenuProductsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetProductInMenuResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProductInMenu(Guid menuId, [FromQuery] string? productName, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetProductInMenu(Guid menuId, [FromQuery] string? name, [FromQuery] string? code, [FromQuery] int page, [FromQuery] int size)
         {
-            var response = await _menuService.GetProductsInMenu(menuId, productName, page, size);
+            var response = await _menuService.GetProductsInMenu(menuId, name, code, page, size);
             return Ok(response);
         }
 
