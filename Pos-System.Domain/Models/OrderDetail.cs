@@ -12,10 +12,10 @@ namespace Pos_System.Domain.Models
         public double TotalAmount { get; set; }
         public double FinalAmount { get; set; }
         public string? Notes { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid MenuProductId { get; set; }
         public double SellingPrice { get; set; }
 
+        public virtual MenuProduct MenuProduct { get; set; } = null!;
         public virtual Order Order { get; set; } = null!;
-        public virtual Product Product { get; set; } = null!;
     }
 }

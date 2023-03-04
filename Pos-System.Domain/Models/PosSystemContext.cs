@@ -290,10 +290,9 @@ namespace Pos_System.Domain.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Account");
 
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.Order)
-                    .HasForeignKey<Order>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.OrderSource)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.OrderSourceId)
                     .HasConstraintName("FK_Order_OrderSource");
 
                 entity.HasOne(d => d.Session)
@@ -311,17 +310,17 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Notes).HasMaxLength(200);
 
+                entity.HasOne(d => d.MenuProduct)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.MenuProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderDetail_Product");
+
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderDetail_Order");
-
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.OrderDetails)
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_OrderDetail_Product");
             });
 
             modelBuilder.Entity<OrderSource>(entity =>
