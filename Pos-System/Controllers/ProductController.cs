@@ -11,6 +11,7 @@ using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Controllers
 {
@@ -41,6 +42,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.ProductsEndPoint)]
+        [ProducesResponseType(typeof(IPaginate<GetProductResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] ProductType? type, [FromQuery] int page, [FromQuery] int size)
         {
             var productsResponse = await _productService.GetProducts(name, type, page, size);
@@ -75,6 +77,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.ProductsInBrandEndPoint)]
+        [ProducesResponseType(typeof(GetProductDetailsResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProductsInBrand(Guid id){
             var response = await _productService.GetProductsInBrand(id);
             return Ok(response);
