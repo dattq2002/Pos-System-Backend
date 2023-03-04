@@ -27,6 +27,7 @@
     <Folder Include="Payload\Response\Brands\" />
     <Folder Include="Payload\Request\Brands\" />
     <Folder Include="Payload\Response\Categories\" />
+    <Folder Include="Payload\Response\PaymentTypes\" />
     <Folder Include="Payload\Response\Stores\" />
     <Folder Include="Validators\" />
     <Folder Include="Payload\Request\Products\" />

@@ -68,4 +68,9 @@ public static class ApiEndPointConstant
         public const string HasBaseMenuEndPoint = MenusInBrandEndPoint + "/hasBaseMenu";
         public const string MenuProductsEndpoint = MenusEndPoint + "/{menuId}/products";
     }
+
+    public static class PaymentType
+    {
+	    public const string PaymentTypesEndPoint = ApiEndpoint + "/payment-types";
+    }
 }
