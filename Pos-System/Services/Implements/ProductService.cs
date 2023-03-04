@@ -63,7 +63,7 @@ namespace Pos_System.API.Services.Implements
             name = name?.Trim();
             if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
             IPaginate<GetProductResponse> productsResponse = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
-                selector: x => new GetProductResponse(x.Id, x.Code, x.Name, x.PicUrl, x.Status, x.Type),
+                selector: x => new GetProductResponse(x.Id, x.Code, x.Name, x.PicUrl, x.SellingPrice, x.DiscountPrice, x.HistoricalPrice, x.Status, x.Type),
                 predicate: string.IsNullOrEmpty(name) && (type == null)
                     ? x => x.BrandId.Equals(brandId)
                     : ((type == null)
