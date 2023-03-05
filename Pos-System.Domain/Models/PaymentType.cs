@@ -14,5 +14,10 @@ namespace Pos_System.Domain.Models
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual Payment? Payment { get; set; }
+
+        public static implicit operator Guid(PaymentType v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
