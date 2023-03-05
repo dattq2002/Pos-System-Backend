@@ -10,7 +10,7 @@ namespace Pos_System.Domain.Models
         public double Amount { get; set; }
         public Guid PaymentTypeId { get; set; }
 
-        public virtual PaymentType IdNavigation { get; set; } = null!;
         public virtual Order Order { get; set; } = null!;
+        public virtual PaymentType PaymentType { get; set; } = null!;
     }
 }

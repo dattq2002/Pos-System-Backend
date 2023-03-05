@@ -37,6 +37,15 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<StoreAccount> StoreAccounts { get; set; } = null!;
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=pos-system-dev.cmzdrlsusaac.ap-southeast-1.rds.amazonaws.com,6969;User Id=possystem;Password=3w^N&Sp775B5;Database=PosSystem");
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
@@ -348,17 +357,17 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.Payment)
-                    .HasForeignKey<Payment>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_PaymentType");
-
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.Payments)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Payment_Order");
+
+                entity.HasOne(d => d.PaymentType)
+                    .WithMany(p => p.Payments)
+                    .HasForeignKey(d => d.PaymentTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Payment_PaymentType");
             });
 
             modelBuilder.Entity<PaymentType>(entity =>
