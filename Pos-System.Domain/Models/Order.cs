@@ -31,7 +31,7 @@ namespace Pos_System.Domain.Models
         public Guid SessionId { get; set; }
 
         public virtual Account CheckInPersonNavigation { get; set; } = null!;
-        public virtual OrderSource IdNavigation { get; set; } = null!;
+        public virtual OrderSource? OrderSource { get; set; }
         public virtual Session Session { get; set; } = null!;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }

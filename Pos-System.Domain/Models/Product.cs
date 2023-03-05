@@ -10,7 +10,6 @@ namespace Pos_System.Domain.Models
             CollectionProducts = new HashSet<CollectionProduct>();
             InverseParentProduct = new HashSet<Product>();
             MenuProducts = new HashSet<MenuProduct>();
-            OrderDetails = new HashSet<OrderDetail>();
         }
 
         public Guid Id { get; set; }
@@ -35,6 +34,5 @@ namespace Pos_System.Domain.Models
         public virtual ICollection<CollectionProduct> CollectionProducts { get; set; }
         public virtual ICollection<Product> InverseParentProduct { get; set; }
         public virtual ICollection<MenuProduct> MenuProducts { get; set; }
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

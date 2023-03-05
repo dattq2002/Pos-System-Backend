@@ -5,6 +5,11 @@ namespace Pos_System.Domain.Models
 {
     public partial class OrderSource
     {
+        public OrderSource()
+        {
+            Orders = new HashSet<Order>();
+        }
+
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Url { get; set; }
@@ -14,6 +19,6 @@ namespace Pos_System.Domain.Models
         public Guid BrandId { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
-        public virtual Order? Order { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }
