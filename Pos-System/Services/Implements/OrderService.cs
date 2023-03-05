@@ -64,7 +64,7 @@ namespace Pos_System.API.Services.Implements
                 orderDetails.Add(new OrderDetail()
                 {
                     Id = Guid.NewGuid(),
-                    ProductId = product.ProductInMenuId,
+                    MenuProductId = product.ProductInMenuId,
                     OrderId = newOrder.Id,
                     Quantity = product.Quantity,
                     SellingPrice = product.SellingPrice,
@@ -78,11 +78,11 @@ namespace Pos_System.API.Services.Implements
                     product.Extras.ForEach(extra =>
                     {
                         double totalProductExtraAmount = extra.SellingPrice * extra.Quantity;
-                        double finalProductExtraAmount = totalProductAmount - SystemDiscountAmount;
+                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount;
                         orderDetails.Add(new OrderDetail()
                         {
                             Id = Guid.NewGuid(),
-                            ProductId = extra.ProductInMenuId,
+                            MenuProductId = extra.ProductInMenuId,
                             OrderId = newOrder.Id,
                             Quantity = extra.Quantity,
                             SellingPrice = extra.SellingPrice,
@@ -116,7 +116,7 @@ namespace Pos_System.API.Services.Implements
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
             await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
-            _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
+            /*_unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);*/
             await _unitOfWork.CommitAsync();
 
             return storeId;
