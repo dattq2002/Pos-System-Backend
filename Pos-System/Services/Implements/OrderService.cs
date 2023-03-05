@@ -119,7 +119,7 @@ namespace Pos_System.API.Services.Implements
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             await _unitOfWork.CommitAsync();
 
-            return storeId;
+            return newOrder.Id;
         }
     }
 }
