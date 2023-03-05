@@ -27,9 +27,9 @@ namespace Pos_System.API.Services.Implements
             Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
             Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => 
                 x.AccountId.Equals(currentUser.Id)
-                && x.StoreId.Equals(storeId) 
-                /*&& int.Parse(TimeUtils.GetTimestamp(x.StartDateTime)) < int.Parse(currentTimeStamp)
-                && int.Parse(TimeUtils.GetTimestamp(x.EndDateTime)) > int.Parse(currentTimeStamp)*/);
+                && x.StoreId.Equals(storeId)
+                && DateTime.Compare(x.StartDateTime, currentTime) < 0
+                && DateTime.Compare(x.EndDateTime, currentTime) > 0);
 
             if (currentUserSession == null) throw new BadHttpRequestException(MessageConstant.Order.UserNotInSessionMessage);
             if (createNewOrderRequest.ProductsList.Count() < 1) throw new BadHttpRequestException(MessageConstant.Order.NoProductsInOrderMessage);
@@ -116,7 +116,7 @@ namespace Pos_System.API.Services.Implements
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
             await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
-            /*_unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);*/
+            _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             await _unitOfWork.CommitAsync();
 
             return storeId;
