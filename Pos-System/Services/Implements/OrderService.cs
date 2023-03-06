@@ -60,7 +60,7 @@ namespace Pos_System.API.Services.Implements
             createNewOrderRequest.ProductsList.ForEach(product =>
             {
                 double totalProductAmount = product.SellingPrice * product.Quantity;
-                double finalProductAmount = totalProductAmount - SystemDiscountAmount;
+                double finalProductAmount = totalProductAmount - SystemDiscountAmount + totalProductAmount * createNewOrderRequest.VAT;
                 orderDetails.Add(new OrderDetail()
                 {
                     Id = Guid.NewGuid(),
@@ -78,7 +78,7 @@ namespace Pos_System.API.Services.Implements
                     product.Extras.ForEach(extra =>
                     {
                         double totalProductExtraAmount = extra.SellingPrice * extra.Quantity;
-                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount;
+                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount + totalProductExtraAmount * createNewOrderRequest.VAT;
                         orderDetails.Add(new OrderDetail()
                         {
                             Id = Guid.NewGuid(),

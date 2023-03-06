@@ -2,6 +2,8 @@
 {
     public enum OrderStatus
     {
-        PENDING
+        PENDING,
+        PAID,
+        CANCLED
     }
 }

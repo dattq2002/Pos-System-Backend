@@ -2,6 +2,8 @@
 {
     public enum OrderType
     {
-        IN_STORE
+        EAT_IN,
+        TAKE_AWAY,
+        DELIVERY
     }
 }
