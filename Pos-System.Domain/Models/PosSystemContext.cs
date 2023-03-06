@@ -310,6 +310,11 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Notes).HasMaxLength(200);
 
+                entity.HasOne(d => d.MasterOrderDetail)
+                    .WithMany(p => p.InverseMasterOrderDetail)
+                    .HasForeignKey(d => d.MasterOrderDetailId)
+                    .HasConstraintName("FK_OrderDetail_MasterOrderDetail");
+
                 entity.HasOne(d => d.MenuProduct)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.MenuProductId)
