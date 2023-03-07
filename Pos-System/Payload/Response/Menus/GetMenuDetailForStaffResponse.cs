@@ -76,14 +76,16 @@ public class ProductDataForStaff : GetProductDetailsResponse
 {
     public List<Guid> CollectionIds { get; set; } = new List<Guid>();
     public List<Guid> ExtraCategoryIds { get; set; } = new List<Guid>();
+    public Guid MenuProductId { get; set; }
     public ProductDataForStaff(Guid id, string code, string name, double sellingPrice,
         string? picUrl, string status, double historicalPrice, double discountPrice,
         string? description, int displayOrder, string? size, string type, Guid? parentProductId,
-        Guid brandId, Guid categoryId, List<Guid> collectionIds, List<Guid> extraCategoryIds)
+        Guid brandId, Guid categoryId, List<Guid> collectionIds, List<Guid> extraCategoryIds, Guid menuProductId)
         : base(id, code, name, sellingPrice, picUrl, status, historicalPrice,
             discountPrice, description, displayOrder, size, type, parentProductId, brandId, categoryId)
     {
         CollectionIds = collectionIds;
         ExtraCategoryIds = extraCategoryIds;
+        MenuProductId = menuProductId;
     }
 }

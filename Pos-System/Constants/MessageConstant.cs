@@ -93,5 +93,7 @@ public static class MessageConstant
         public const string UserNotInSessionMessage = "Tài khoản không trong ca làm để tạo Order";
         public const string NoProductsInOrderMessage = "Không thể tạo order khi order không đính kèm sản phẩm bên trong";
         public const string CreateOrderFailedMessage = "Tạo mới order thất bại";
+        public const string EmptyOrderIdMessage = "Id của order không hợp lệ";
+        public const string OrderNotFoundMessage = "Order không tồn tại trong hệ thống";
     }
 }

@@ -31,7 +31,7 @@ public static class ApiEndPointConstant
         public const string StoreEndpoint = StoresEndpoint + "/{id}";
         public const string StoreUpdateEmployeeEndpoint = StoresEndpoint + "/{storeId}/users/{id}";
         public const string StoreAccountEndpoint = StoresEndpoint + "/{storeId}/users";
-        public const string MenuProductsForStaffEndPoint = StoresEndpoint + "/menus/products";
+        public const string MenuProductsForStaffEndPoint = StoresEndpoint + "/menus";
     }
 
     public static class Account
@@ -77,5 +77,6 @@ public static class ApiEndPointConstant
     public static class Order
     {
         public const string OrdersEndPoint = Store.StoresEndpoint + "/{storeId}/orders";
+        public const string OrderEndPoint = OrdersEndPoint + "/{id}";
     }
 }

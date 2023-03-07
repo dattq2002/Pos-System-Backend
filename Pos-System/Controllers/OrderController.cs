@@ -3,6 +3,7 @@ using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Request.Orders;
+using Pos_System.API.Payload.Response.Orders;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
@@ -31,6 +32,15 @@ namespace Pos_System.API.Controllers
             }
             _logger.LogInformation($"Create order successfully");
             return Ok(newOrderIdResponse);
+        }
+
+        [CustomAuthorize(RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Order.OrderEndPoint)]
+        [ProducesResponseType(typeof(GetOrderDetailResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOrderDetail(Guid storeId, Guid id)
+        {
+            var response = await _orderService.GetOrderDetail(storeId, id);
+            return Ok(response);
         }
     }
 }
