@@ -148,7 +148,8 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 x.Product.BrandId,
                 x.Product.CategoryId,
                 (List<Guid>)x.Product.CollectionProducts.Select(x => x.CollectionId),
-                (List<Guid>)x.Product.Category.ExtraCategoryProductCategories.Select(x => x.ExtraCategoryId)
+                (List<Guid>)x.Product.Category.ExtraCategoryProductCategories.Select(x => x.ExtraCategoryId),
+                x.Id
             ),
             predicate: x => x.MenuId.Equals(menuOfStoreId),
             include: menuProduct => menuProduct
