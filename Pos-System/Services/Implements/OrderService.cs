@@ -27,9 +27,8 @@ namespace Pos_System.API.Services.Implements
             DateTime currentTime = DateTime.Now;
             string currentTimeStamp = TimeUtils.GetTimestamp(currentTime);
             Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
-            Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x =>
-                x.AccountId.Equals(currentUser.Id)
-                && x.StoreId.Equals(storeId)
+            Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => 
+	            x.StoreId.Equals(storeId)
                 && DateTime.Compare(x.StartDateTime, currentTime) < 0
                 && DateTime.Compare(x.EndDateTime, currentTime) > 0);
 

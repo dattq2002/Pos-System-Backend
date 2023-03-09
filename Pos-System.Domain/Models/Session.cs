@@ -14,7 +14,6 @@ namespace Pos_System.Domain.Models
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public int NumberOfOrders { get; set; }
-        public Guid AccountId { get; set; }
         public double? TotalAmount { get; set; }
         public int? TotalPromotion { get; set; }
         public double? TotalChangeCash { get; set; }
