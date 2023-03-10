@@ -10,7 +10,7 @@ namespace Pos_System.API.Payload.Request.Menus
     public class ProductToUpdate
     {
         public Guid ProductId { get; set; }
-        public double SellingPrice { get; set; }
-        public double DiscountPrice { get; set; }
+        public double? SellingPrice { get; set; }
+        public double? DiscountPrice { get; set; }
     }
 }
