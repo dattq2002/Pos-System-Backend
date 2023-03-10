@@ -169,8 +169,8 @@ namespace Pos_System.API.Services.Implements
                     {
                         Id = Guid.NewGuid(),
                         Status = ProductStatus.Active.GetDescriptionFromEnum(),
-                        SellingPrice = x.SellingPrice,
-                        DiscountPrice = x.DiscountPrice,
+                        SellingPrice = (double)(x.SellingPrice == null ? referenceProductData.SellingPrice : x.SellingPrice),
+                        DiscountPrice = (double)(x.DiscountPrice == null ? referenceProductData.DiscountPrice : x.DiscountPrice),
                         HistoricalPrice = referenceProductData.SellingPrice,
                         MenuId = menuId,
                         ProductId = x.ProductId,
@@ -193,8 +193,8 @@ namespace Pos_System.API.Services.Implements
                 {
                     ProductToUpdate requestProductData = productDataFromRequest.Find(y => y.ProductId.Equals(x.ProductId));
                     if (requestProductData == null) return;
-                    x.SellingPrice = requestProductData.SellingPrice;
-                    x.DiscountPrice = requestProductData.DiscountPrice;
+                    x.SellingPrice = (double)(requestProductData.SellingPrice == null ? x.SellingPrice : requestProductData.SellingPrice);
+                    x.DiscountPrice = (double)(requestProductData.DiscountPrice == null ? x.DiscountPrice : requestProductData.DiscountPrice);
                     x.UpdatedBy = currentUserName;
                     x.UpdatedAt = currentTime;
                 });
