@@ -15,8 +15,10 @@ namespace Pos_System.API.Services.Implements;
 
 public class StoreService : BaseService<StoreService>, IStoreService
 {
-    public StoreService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<StoreService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
+    private readonly IMenuService _menuService;
+    public StoreService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<StoreService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMenuService menuService) : base(unitOfWork, logger, mapper, httpContextAccessor)
     {
+        _menuService = menuService;
     }
 
     public async Task<IPaginate<GetStoreResponse>> GetStoresInBrand(Guid brandId, string? searchShortName, int page, int size)
@@ -49,6 +51,25 @@ public class StoreService : BaseService<StoreService>, IStoreService
         Store newStore = _mapper.Map<Store>(newStoreRequest);
         newStore.Status = StoreStatus.Active.GetDescriptionFromEnum();
         newStore.Id = Guid.NewGuid();
+        HasBaseMenuResponse hasBaseMenu = await _menuService.CheckHasBaseMenuInBrand(newStoreRequest.BrandId);
+        if (hasBaseMenu.HasBaseMenu)
+        {
+            Menu brandBaseMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
+                predicate: menu => menu.BrandId.Equals(newStoreRequest.BrandId) && menu.Priority == 0
+            );
+            MenuStore newMenuStore = new MenuStore()
+            {
+                Id = Guid.NewGuid(),
+                MenuId = brandBaseMenu.Id,
+                StoreId = newStore.Id
+            };
+
+            List<MenuStore> newMenuStores = new List<MenuStore>
+            {
+                newMenuStore
+            };
+            newStore.MenuStores = newMenuStores;
+        }
         await _unitOfWork.GetRepository<Store>().InsertAsync(newStore);
         bool isSuccessfull = await _unitOfWork.CommitAsync() > 0;
         CreateNewStoreResponse createNewStoreResponse = null;
@@ -57,9 +78,8 @@ public class StoreService : BaseService<StoreService>, IStoreService
             createNewStoreResponse = _mapper.Map<CreateNewStoreResponse>(newStore);
         }
         return createNewStoreResponse;
-        
-     }
-     
+    }
+
     public async Task<IPaginate<GetStoreEmployeesResponse>> GetStoreEmployees(Guid storeId, string? searchUserName, int page, int size)
     {
         if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
