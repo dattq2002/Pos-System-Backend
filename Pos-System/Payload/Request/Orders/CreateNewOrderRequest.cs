@@ -20,7 +20,7 @@ namespace Pos_System.API.Payload.Request.Orders
         public Guid ProductInMenuId { get; set; }
         public int Quantity { get; set; }
         public float SellingPrice { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
         public List<OrderProductExtra> Extras { get; set; } = new List<OrderProductExtra>();
     }
 
