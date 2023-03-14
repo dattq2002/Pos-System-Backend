@@ -5,6 +5,7 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Products;
+using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
@@ -325,6 +326,80 @@ namespace Pos_System.API.Services.Implements
             _unitOfWork.GetRepository<Menu>().UpdateAsync(currentMenu);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
             return isSuccessful;
+        }
+
+        public async Task<IPaginate<GetStoreDetailResponse>> GetStoresInMenu(Guid menuId, string? storeName, int page, int size)
+        {
+            if (menuId == Guid.Empty)
+            {
+                throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
+            }
+
+            Menu currentMenuInSystem = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
+                predicate: menu => menu.Id.Equals(menuId)
+            );
+            if (currentMenuInSystem == null)
+            {
+                throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
+            }
+
+            IPaginate<GetStoreDetailResponse> storesApplyMenu = await _unitOfWork.GetRepository<MenuStore>()
+                .GetPagingListAsync(
+                    selector: menuStore => new GetStoreDetailResponse(menuStore.Store.Id, menuStore.Store.BrandId,
+                        menuStore.Store.Name, menuStore.Store.ShortName, menuStore.Store.Email, menuStore.Store.Address,
+                        menuStore.Store.Status, menuStore.Store.Phone, menuStore.Store.Code),
+                    predicate: string.IsNullOrEmpty(storeName) ? menuStore => menuStore.MenuId.Equals(menuId) : menuStore => menuStore.MenuId.Equals(menuId) && menuStore.Store.Name.ToLower().Contains(storeName),
+                    include: menuStore => menuStore.Include(menuStore => menuStore.Store),
+                    page: page,
+                    size: size
+                );
+            return storesApplyMenu;
+        }
+
+        public async Task<Guid> UpdateStoresApplyMenu(Guid menuId, UpdateStoresApplyMenuRequest updateStoresApplyMenuRequest)
+        {
+            List<Guid> currentStoreIdsApplyMenu = (List<Guid>)await _unitOfWork.GetRepository<MenuStore>().GetListAsync(
+                selector: menuStore => menuStore.StoreId,
+                predicate: menuStore => menuStore.MenuId.Equals(menuId)
+            );
+
+            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedStoreIds = CustomListUtil.splitIdsToAddAndRemove(currentStoreIdsApplyMenu, updateStoresApplyMenuRequest.storeIds);
+
+            if (splittedStoreIds.idsToAdd.Count > 0)
+            {
+                List<MenuStore> newMenuStoresToAdd = new List<MenuStore>();
+                foreach (var storeId in splittedStoreIds.idsToAdd)
+                {
+                    MenuStore newMenuStoreToAdd = new MenuStore()
+                    {
+                        Id = Guid.NewGuid(),
+                        StoreId = storeId,
+                        MenuId = menuId
+                    };
+                    newMenuStoresToAdd.Add(newMenuStoreToAdd);
+                }
+                await _unitOfWork.GetRepository<MenuStore>().InsertRangeAsync(newMenuStoresToAdd);
+            }
+
+            if (splittedStoreIds.idsToRemove.Count > 0)
+            {
+                List<MenuStore> listMenuStoreToRemove = new List<MenuStore>();
+
+                foreach (var removeStoreId in splittedStoreIds.idsToRemove)
+                {
+                    MenuStore menuStoreToRemove = await _unitOfWork.GetRepository<MenuStore>().SingleOrDefaultAsync(
+                        selector: menuStore => new MenuStore()
+                        { Id = menuStore.Id, MenuId = menuStore.MenuId, StoreId = menuStore.StoreId },
+                        predicate: menuStore => menuStore.MenuId.Equals(menuId) && menuStore.StoreId.Equals(removeStoreId)
+                    );
+                    listMenuStoreToRemove.Add(menuStoreToRemove);
+                }
+
+                _unitOfWork.GetRepository<MenuStore>().DeleteRangeAsync(listMenuStoreToRemove);
+            }
+
+            await _unitOfWork.CommitAsync();
+            return menuId;
         }
     }
 }
