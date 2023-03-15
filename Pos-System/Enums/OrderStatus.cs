@@ -4,6 +4,6 @@
     {
         PENDING,
         PAID,
-        CANCLED
+        CANCELED
     }
 }
