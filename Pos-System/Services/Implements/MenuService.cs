@@ -330,18 +330,11 @@ namespace Pos_System.API.Services.Implements
 
         public async Task<IPaginate<GetStoreDetailResponse>> GetStoresInMenu(Guid menuId, string? storeName, int page, int size)
         {
-            if (menuId == Guid.Empty)
-            {
-                throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
-            }
+            if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
 
-            Menu currentMenuInSystem = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
-                predicate: menu => menu.Id.Equals(menuId)
-            );
-            if (currentMenuInSystem == null)
-            {
-                throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
-            }
+            Menu currentMenuInSystem = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(predicate: menu => menu.Id.Equals(menuId));
+
+            if (currentMenuInSystem == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
 
             IPaginate<GetStoreDetailResponse> storesApplyMenu = await _unitOfWork.GetRepository<MenuStore>()
                 .GetPagingListAsync(
@@ -385,12 +378,12 @@ namespace Pos_System.API.Services.Implements
             {
                 List<MenuStore> listMenuStoreToRemove = new List<MenuStore>();
 
-                foreach (var removeStoreId in splittedStoreIds.idsToRemove)
+                foreach (var storeIdToRemove in splittedStoreIds.idsToRemove)
                 {
                     MenuStore menuStoreToRemove = await _unitOfWork.GetRepository<MenuStore>().SingleOrDefaultAsync(
                         selector: menuStore => new MenuStore()
                         { Id = menuStore.Id, MenuId = menuStore.MenuId, StoreId = menuStore.StoreId },
-                        predicate: menuStore => menuStore.MenuId.Equals(menuId) && menuStore.StoreId.Equals(removeStoreId)
+                        predicate: menuStore => menuStore.MenuId.Equals(menuId) && menuStore.StoreId.Equals(storeIdToRemove)
                     );
                     listMenuStoreToRemove.Add(menuStoreToRemove);
                 }
