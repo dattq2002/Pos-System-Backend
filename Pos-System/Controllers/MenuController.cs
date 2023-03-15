@@ -4,6 +4,7 @@ using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Products;
+using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
 using Pos_System.Domain.Paginate;
@@ -89,6 +90,25 @@ namespace Pos_System.API.Controllers
             }
 
             return BadRequest(MessageConstant.Menu.UpdateMenuInformationFailedMessage);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Menu.MenuStoresEndPoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreDetailResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoresInMenu(Guid menuId, [FromQuery] string? name, [FromQuery] int page,
+            [FromQuery] int size)
+        {
+            var response = await _menuService.GetStoresInMenu(menuId, name, page, size);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Menu.MenuStoresEndPoint)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateMenuStoreList(Guid menuId, UpdateStoresApplyMenuRequest updateStoresApplyMenuRequest)
+        {
+            var response = await _menuService.UpdateStoresApplyMenu(menuId, updateStoresApplyMenuRequest);
+            return Ok(response);
         }
     }
 }
