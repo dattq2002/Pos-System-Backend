@@ -9,8 +9,6 @@ namespace Pos_System.API.Payload.Request.Orders
         public List<OrderProduct> ProductsList { get; set; } = new List<OrderProduct>();
         public double TotalAmount { get; set; }
         public double DiscountAmount { get; set; }
-        public double VAT { get; set; }
-        public double VATAmount { get; set; }
         public double FinalAmount { get; set; }
 
     }

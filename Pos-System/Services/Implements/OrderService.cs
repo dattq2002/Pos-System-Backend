@@ -8,11 +8,14 @@ using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
 using Pos_System.Repository.Interfaces;
+using PaymentType = Pos_System.Domain.Models.PaymentType;
 
 namespace Pos_System.API.Services.Implements
 {
     public class OrderService : BaseService<OrderService>, IOrderService
     {
+        public const double VAT_PERCENT = 10/100;
+        public const double VAT_STANDARD = 1.1 * VAT_PERCENT;
         public OrderService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
@@ -38,19 +41,21 @@ namespace Pos_System.API.Services.Implements
             string newInvoiceId = store.Code + currentTimeStamp;
             double SystemDiscountAmount = 0;
             int defaultGuest = 1;
+            
+            double VATAmount = createNewOrderRequest.FinalAmount / VAT_STANDARD;
 
             Order newOrder = new Order()
             {
                 Id = Guid.NewGuid(),
                 CheckInPerson = currentUser.Id,
                 CheckInDate = currentTime,
-                CheckOutDate = currentTime.AddMinutes(1),
+                CheckOutDate = currentTime,
                 InvoiceId = newInvoiceId,
                 TotalAmount = createNewOrderRequest.TotalAmount,
                 Discount = createNewOrderRequest.DiscountAmount,
                 FinalAmount = createNewOrderRequest.FinalAmount,
-                Vat = createNewOrderRequest.VAT,
-                Vatamount = createNewOrderRequest.VATAmount,
+                Vat = VAT_PERCENT,
+                Vatamount = VATAmount,
                 OrderType = createNewOrderRequest.OrderType.GetDescriptionFromEnum(),
                 NumberOfGuest = defaultGuest,
                 Status = OrderStatus.PENDING.GetDescriptionFromEnum(),
@@ -61,7 +66,7 @@ namespace Pos_System.API.Services.Implements
             createNewOrderRequest.ProductsList.ForEach(product =>
             {
                 double totalProductAmount = product.SellingPrice * product.Quantity;
-                double finalProductAmount = totalProductAmount - SystemDiscountAmount + totalProductAmount * createNewOrderRequest.VAT / 100;
+                double finalProductAmount = totalProductAmount - SystemDiscountAmount;
                 Guid masterOrderDetailId = Guid.NewGuid();
                 orderDetails.Add(new OrderDetail()
                 {
@@ -80,7 +85,7 @@ namespace Pos_System.API.Services.Implements
                     product.Extras.ForEach(extra =>
                     {
                         double totalProductExtraAmount = extra.SellingPrice * extra.Quantity;
-                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount + totalProductExtraAmount * createNewOrderRequest.VAT / 100;
+                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount;
                         orderDetails.Add(new OrderDetail()
                         {
                             Id = Guid.NewGuid(),
@@ -98,27 +103,9 @@ namespace Pos_System.API.Services.Implements
             });
 
             currentUserSession.NumberOfOrders++;
-            currentUserSession.TotalAmount += newOrder.TotalAmount;
-            currentUserSession.TotalFinalAmount += newOrder.FinalAmount;
-            currentUserSession.TotalChangeCash -= newOrder.FinalAmount;
-            currentUserSession.TotalDiscountAmount += newOrder.Discount;
-
-            PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
-                x.Name.Equals(createNewOrderRequest.Payment.GetDescriptionFromEnum()));
-
-            if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
-
-            Payment newPaymentRequest = new Payment()
-            {
-                Id = Guid.NewGuid(),
-                OrderId = newOrder.Id,
-                Amount = newOrder.FinalAmount,
-                PaymentTypeId = paymentType.Id
-            };
 
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
-            await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             await _unitOfWork.CommitAsync();
 
@@ -196,6 +183,76 @@ namespace Pos_System.API.Services.Implements
                 );
 
             return orderDetailResponse;
+        }
+
+        public async Task<Guid> UpdateOrder(Guid storeId, Guid orderId, UpdateOrderRequest updateOrderRequest)
+        {
+            if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+            Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
+            if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
+
+            string currentUserName = GetUsernameFromJwt();
+            DateTime currentTime = DateTime.Now;
+            string currentTimeStamp = TimeUtils.GetTimestamp(currentTime);
+            Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
+            Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x =>
+                x.StoreId.Equals(storeId)
+                && DateTime.Compare(x.StartDateTime, currentTime) < 0
+                && DateTime.Compare(x.EndDateTime, currentTime) > 0);
+
+            Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(orderId));
+
+            if (currentUserSession == null) throw new BadHttpRequestException(MessageConstant.Order.UserNotInSessionMessage);
+            if (order == null) throw new BadHttpRequestException(MessageConstant.Order.OrderNotFoundMessage);
+
+            order.CheckOutDate = currentTime;
+            order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
+
+            if (updateOrderRequest.Status.Equals(OrderStatus.CANCELED))
+            {
+                currentUserSession.NumberOfOrders--;
+            }
+
+            if(updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.Payment != null)
+            {
+                PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
+                x.Name.Equals(updateOrderRequest.Payment.GetDescriptionFromEnum()));
+
+                if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
+
+                Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
+
+                if (currentPayment == null)
+                {
+
+                    Payment newPaymentRequest = new Payment()
+                    {
+                        Id = Guid.NewGuid(),
+                        OrderId = order.Id,
+                        Amount = order.FinalAmount,
+                        PaymentTypeId = paymentType.Id
+                    };
+                    currentUserSession.TotalAmount += order.TotalAmount;
+                    currentUserSession.TotalFinalAmount += order.FinalAmount;
+                    currentUserSession.TotalChangeCash -= order.FinalAmount;
+                    currentUserSession.TotalDiscountAmount += order.Discount;
+
+                    await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
+                }
+                else
+                {
+                    currentPayment.Amount = order.FinalAmount;
+                    currentPayment.PaymentTypeId = paymentType.Id;
+                    _unitOfWork.GetRepository<Payment>().UpdateAsync(currentPayment);
+                }
+
+            }
+
+            _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            await _unitOfWork.CommitAsync();
+
+            return order.Id;
         }
     }
 }
