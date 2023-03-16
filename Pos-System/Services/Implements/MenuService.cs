@@ -190,18 +190,18 @@ namespace Pos_System.API.Services.Implements
                 productsToUpdate.ForEach(x =>
                 {
                     //Get products in menu to with deactive status to check have the same productId with product is prepared to add to menu
-                    List<MenuProduct> productsInMenuWithDeactiveStatus = productsInMenu.Where(menuProduct =>
+                    List<MenuProduct> deactiveMenuProducts = productsInMenu.Where(menuProduct =>
                         menuProduct.Status == MenuProductStatus.Deactivate.ToString()).ToList();
 
                     List<MenuProduct> prepareDataToUpdate = new List<MenuProduct>();
-                    MenuProduct currentProductInMenuWithDeactiveStatusToUpdateStatus =
-                        productsInMenuWithDeactiveStatus.Find(currentMenuProductWithDeactiveStatus => currentMenuProductWithDeactiveStatus.ProductId == x.ProductId);
+                    MenuProduct deactivateMenuProductToUpdate =
+                        deactiveMenuProducts.Find(deactiveMenuProduct => deactiveMenuProduct.ProductId == x.ProductId);
 
-                    if (currentProductInMenuWithDeactiveStatusToUpdateStatus != null)
+                    if (deactivateMenuProductToUpdate != null)
                     {
                         //Update status to active
-                        currentProductInMenuWithDeactiveStatusToUpdateStatus.Status = MenuProductStatus.Active.ToString();
-                        prepareDataToUpdate.Add(currentProductInMenuWithDeactiveStatusToUpdateStatus);
+                        deactivateMenuProductToUpdate.Status = MenuProductStatus.Active.ToString();
+                        prepareDataToUpdate.Add(deactivateMenuProductToUpdate);
                     }
 
                     if (prepareDataToUpdate.Count > 0)
@@ -228,6 +228,7 @@ namespace Pos_System.API.Services.Implements
                 List<MenuProduct> finalDataToRemove = new List<MenuProduct>();
                 foreach (var menuProductToChangeStatus in prepareDataToRemove)
                 {
+                    //Update status to deactive
                     menuProductToChangeStatus.Status = MenuProductStatus.Deactivate.ToString();
                     finalDataToRemove.Add(menuProductToChangeStatus);
                 }
