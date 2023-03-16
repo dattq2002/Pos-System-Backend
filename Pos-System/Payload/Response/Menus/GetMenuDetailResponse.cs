@@ -43,19 +43,19 @@ public class GetMenuDetailResponse
 		SetStoresInMenu(storesInMenus);
 	}
 
-	private void SetProductsInMenu(List<MenuProduct> products)
+	public void SetProductsInMenu(List<MenuProduct> products)
 	{
 		ProductsInMenu = new List<ProductInMenu>();
 		if (products != null)
 		{
 			foreach (var product in products)
 			{
-				ProductsInMenu.Add(new ProductInMenu(product.ProductId, product.SellingPrice, product.DiscountPrice, product.HistoricalPrice, product.CreatedBy, product.CreatedAt, product.UpdatedBy, product.UpdatedAt, product.Product.Type, product.Product.Category.Name));
+				ProductsInMenu.Add(new ProductInMenu(product.ProductId, product.SellingPrice, product.DiscountPrice, product.HistoricalPrice, product.CreatedBy, product.CreatedAt, product.UpdatedBy, product.UpdatedAt, product.Product.Type, product.Product.Category.Name, EnumUtil.ParseEnum<MenuProductStatus>(product.Status)));
 			}
 		}
 	}
 
-	private void SetStoresInMenu(List<MenuStore> menuStores)
+    public void SetStoresInMenu(List<MenuStore> menuStores)
 	{
 		StoresInMenus = new List<StoreInMenu>();
 		if (menuStores != null)
@@ -80,8 +80,9 @@ public class ProductInMenu
 	public DateTime? CreatedAt { get; set; }
 	public string? UpdatedBy { get; set; }
 	public DateTime? UpdatedAt { get; set; }
+	public MenuProductStatus Status { get; set; }
 
-	public ProductInMenu(Guid id, double sellingPrice, double discountPrice, double historicalPrice, string? createdBy, DateTime? createdAt, string? updatedBy, DateTime? updatedAt, string productType, string categoryName)
+	public ProductInMenu(Guid id, double sellingPrice, double discountPrice, double historicalPrice, string? createdBy, DateTime? createdAt, string? updatedBy, DateTime? updatedAt, string productType, string categoryName, MenuProductStatus status)
 	{
 		Id = id;
 		SellingPrice = sellingPrice;
@@ -93,6 +94,7 @@ public class ProductInMenu
 		UpdatedAt = updatedAt;
 		Type = EnumUtil.ParseEnum<ProductType>(productType);
 		CategoryName = categoryName;
+		Status = status;
 	}
 }
 
