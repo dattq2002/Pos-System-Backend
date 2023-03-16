@@ -135,7 +135,7 @@ namespace Pos_System.API.Services.Implements
             );
 
             menuProducts = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
-                predicate: x => x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()),
+                predicate: x => x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()) && x.MenuId == menuId,
                 include: x => x.Include(x => x.Product).ThenInclude(x => x.Category)
                 );
 
