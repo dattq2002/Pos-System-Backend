@@ -152,7 +152,6 @@ namespace Pos_System.API.Services.Implements
                     .GetRepository<Product>()
                     .GetListAsync(predicate: x => x.BrandId.Equals(userBrandId));
             List<Guid> newProductIds = updateMenuProductsRequest.Products.Select(x => x.ProductId).ToList();
-            // List<Guid> oldProductIds = productsInMenu.Select(x => x.ProductId).ToList();
             List<Guid> oldProductIds = productsInMenu.Select(x => x.ProductId).ToList();
             (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(oldProductIds, newProductIds);
 
