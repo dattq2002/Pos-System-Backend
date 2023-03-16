@@ -121,14 +121,25 @@ namespace Pos_System.API.Services.Implements
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
 
+            List<MenuProduct> menuProducts = new List<MenuProduct>();
+
             GetMenuDetailResponse menuDetailResponse = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
                 selector: menu => new GetMenuDetailResponse(menu.Id, menu.Code, menu.Priority, menu.DateFilter,
                     menu.StartTime, menu.EndTime,
                     menu.Status, menu.CreatedBy, menu.CreatedAt, menu.UpdatedBy, menu.UpdatedAt,
-                    menu.MenuProducts.ToList(), menu.MenuStores.ToList()),
+                    menuProducts, menu.MenuStores.ToList()),
                 predicate: menu => menu.Id.Equals(menuId) && menu.BrandId.Equals(brandId),
-                include: menu => menu.Include(menu => menu.MenuProducts).ThenInclude(menu => menu.Product).ThenInclude(menu => menu.Category).Include(menu => menu.MenuStores).ThenInclude(menu => menu.Store)
+                include: menu => menu
+                    .Include(menu => menu.MenuStores)
+                    .ThenInclude(menu => menu.Store)
             );
+
+            menuProducts = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
+                predicate: x => x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()),
+                include: x => x.Include(x => x.Product).ThenInclude(x => x.Category)
+                );
+
+            menuDetailResponse.SetProductsInMenu(menuProducts);
 
             if (menuDetailResponse == null)
             {
