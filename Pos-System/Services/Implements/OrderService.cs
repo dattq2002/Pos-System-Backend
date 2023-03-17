@@ -14,7 +14,7 @@ namespace Pos_System.API.Services.Implements
 {
     public class OrderService : BaseService<OrderService>, IOrderService
     {
-        public const double VAT_PERCENT = 10/100;
+        public const double VAT_PERCENT = 0.1;
         public const double VAT_STANDARD = 1.1 * VAT_PERCENT;
         public OrderService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
