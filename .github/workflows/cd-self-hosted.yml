@@ -53,7 +53,7 @@ jobs:
         with:
           name: pos-system-backend
       - name: Deploy to IIS
-        shell: pwsh
+        shell: powershell
         run: |
           iisreset /stop
           Remove-Item -Recurse -Force -Confirm:$false D:\web-folder\
