@@ -58,6 +58,6 @@ jobs:
           iisreset /stop
           Remove-Item -Recurse -Force -Confirm:$false D:\web-folder\
           mkdir D:\web-folder
-          Expand-Archive $env:github.workspace/site.zip D:\web-folder
+          Expand-Archive site.zip D:\web-folder
           iisreset /start
 
