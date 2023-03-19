@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: feat/self-hosted-cd
+    branches: main
 
 jobs:
   build:
