@@ -189,6 +189,8 @@ namespace Pos_System.API.Services.Implements
         public async Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size, DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
         {
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+            Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
+            if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
             IPaginate<ViewOrdersResponse> ordersResponse = await _unitOfWork.GetRepository<Order>().GetPagingListAsync(
                 selector: x => new ViewOrdersResponse
                 {
