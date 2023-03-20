@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Accounts;
+using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.API.Payload.Response.Menus;
+using Pos_System.API.Payload.Response.Orders;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
@@ -20,11 +22,13 @@ namespace Pos_System.API.Controllers
     {
         private readonly IStoreService _storeService;
         private readonly IAccountService _accountService;
+        private readonly IOrderService _orderService;
 
-        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService) : base(logger)
+        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService, IOrderService orderService) : base(logger)
         {
             _storeService = storeService;
             _accountService = accountService;
+            _orderService = orderService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager)]
@@ -99,6 +103,15 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> GetMenuDetailForStaff()
         {
             GetMenuDetailForStaffResponse response = await _storeService.GetMenuDetailForStaff();
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpGet(ApiEndPointConstant.Store.StoreOrdersEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<ViewOrdersResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOrdersOfStore(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] OrderType? orderType, [FromQuery] OrderStatus? orderStatus)
+        {
+            var response = await _orderService.GetOrdersInStore(id, page, size, startDate, endDate, orderType, orderStatus);
             return Ok(response);
         }
     }
