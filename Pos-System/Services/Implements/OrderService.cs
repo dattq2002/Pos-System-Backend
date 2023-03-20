@@ -1,12 +1,15 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Extensions;
 using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Response.Orders;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
+using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
 using PaymentType = Pos_System.Domain.Models.PaymentType;
 
@@ -15,7 +18,7 @@ namespace Pos_System.API.Services.Implements
     public class OrderService : BaseService<OrderService>, IOrderService
     {
         public const double VAT_PERCENT = 0.1;
-        public const double VAT_STANDARD = 1.1 * VAT_PERCENT;
+        public const double VAT_STANDARD = 1.1;
         public OrderService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
@@ -42,7 +45,7 @@ namespace Pos_System.API.Services.Implements
             double SystemDiscountAmount = 0;
             int defaultGuest = 1;
             
-            double VATAmount = createNewOrderRequest.FinalAmount / VAT_STANDARD;
+            double VATAmount = (createNewOrderRequest.FinalAmount / VAT_STANDARD) * VAT_PERCENT;
 
             Order newOrder = new Order()
             {
@@ -183,6 +186,61 @@ namespace Pos_System.API.Services.Implements
                 );
 
             return orderDetailResponse;
+        }
+
+        public async Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size, DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
+        {
+            if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+            Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
+            if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
+            IPaginate<ViewOrdersResponse> ordersResponse = await _unitOfWork.GetRepository<Order>().GetPagingListAsync(
+                selector: x => new ViewOrdersResponse
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    StaffName = x.CheckInPersonNavigation.Name,
+                    StartDate = x.CheckInDate,
+                    EndDate = x.CheckOutDate,
+                    FinalAmount= x.FinalAmount,
+                    OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
+                    Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
+                },
+                predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, orderStatus),
+                include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
+                orderBy: x => x.OrderByDescending(x => x.InvoiceId),
+                page: page,
+                size: size
+                );
+
+
+            return ordersResponse;
+        }
+
+        private Expression<Func<Order, bool>> BuildGetOrdersInStoreQuery(Guid storeId, DateTime? startDate,
+	        DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
+        {
+	        Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
+	        if (startDate != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate);
+	        }
+
+	        if (endDate != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate <= endDate);
+	        }
+
+	        if (orderType != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.OrderType.Equals(orderType.GetDescriptionFromEnum()));
+	        }
+
+	        if (orderStatus != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.Status.Equals(orderStatus.GetDescriptionFromEnum()));
+	        }
+
+            return filterQuery;
         }
 
         public async Task<Guid> UpdateOrder(Guid storeId, Guid orderId, UpdateOrderRequest updateOrderRequest)

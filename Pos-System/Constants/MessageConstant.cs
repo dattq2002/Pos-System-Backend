@@ -43,6 +43,7 @@ public static class MessageConstant
         public const string UpdateStaffInformationSuccessfulMessage = "Cập nhật thông tin staff thành công";
         public const string CreateNewStoreAccountUnauthorizedMessage = "Bạn không có quyền tạo tài khoản cho một store";
         public const string StoreNotInBrandMessage = "Bạn không được phép tạo account nằm ngoài brand đang quản lí";
+        public const string GetStoreOrdersUnAuthorized = "Bạn không được phép lấy orders của store khác!";
     }
 
     public static class Category
