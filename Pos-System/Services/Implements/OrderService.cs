@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Extensions;
 using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Response.Orders;
 using Pos_System.API.Services.Interfaces;
@@ -203,15 +205,7 @@ namespace Pos_System.API.Services.Implements
                     OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
                     Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
                 },
-                predicate: x =>
-                    (startDate != null && endDate != null && orderStatus != null && orderStatus != null) ? x.OrderType.Equals(orderType.GetDescriptionFromEnum()) && x.Status.Equals(orderStatus.GetDescriptionFromEnum()) && x.CheckInDate >= startDate && x.CheckOutDate <= endDate && x.Session.StoreId.Equals(storeId):
-                    (startDate != null && endDate != null && orderStatus != null) ? x.Status.Equals(orderStatus.GetDescriptionFromEnum()) && x.CheckInDate >= startDate && x.CheckOutDate <= endDate && x.Session.StoreId.Equals(storeId) :
-                    (startDate != null && endDate != null && orderType != null) ? x.OrderType.Equals(orderType.GetDescriptionFromEnum()) && x.CheckInDate >= startDate && x.CheckOutDate <= endDate && x.Session.StoreId.Equals(storeId) :
-                    (startDate != null && endDate != null) ? x.CheckInDate >= startDate && x.CheckOutDate <= endDate && x.Session.StoreId.Equals(storeId) :
-                    (orderStatus != null && orderStatus != null) ? x.Status.Equals(orderStatus.GetDescriptionFromEnum()) && x.OrderType.Equals(orderType.GetDescriptionFromEnum()) && x.Session.StoreId.Equals(storeId) :
-                    (orderStatus != null) ? x.Status.Equals(orderStatus.GetDescriptionFromEnum()) && x.Session.StoreId.Equals(storeId) :
-                    (orderType != null) ? x.OrderType.Equals(orderType.GetDescriptionFromEnum()) && x.Session.StoreId.Equals(storeId) :
-                    x.Session.StoreId.Equals(storeId),
+                predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, orderStatus),
                 include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
                 orderBy: x => x.OrderByDescending(x => x.InvoiceId),
                 page: page,
@@ -220,6 +214,33 @@ namespace Pos_System.API.Services.Implements
 
 
             return ordersResponse;
+        }
+
+        private Expression<Func<Order, bool>> BuildGetOrdersInStoreQuery(Guid storeId, DateTime? startDate,
+	        DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
+        {
+	        Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
+	        if (startDate != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate);
+	        }
+
+	        if (endDate != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate <= endDate);
+	        }
+
+	        if (orderType != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.OrderType.Equals(orderType.GetDescriptionFromEnum()));
+	        }
+
+	        if (orderStatus != null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.Status.Equals(orderStatus.GetDescriptionFromEnum()));
+	        }
+
+            return filterQuery;
         }
 
         public async Task<Guid> UpdateOrder(Guid storeId, Guid orderId, UpdateOrderRequest updateOrderRequest)
