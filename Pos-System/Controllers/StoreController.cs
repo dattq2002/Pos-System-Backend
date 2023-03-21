@@ -109,9 +109,9 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.StoreManager)]
         [HttpGet(ApiEndPointConstant.Store.StoreOrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ViewOrdersResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetOrdersOfStore(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] OrderType? orderType, [FromQuery] OrderStatus? orderStatus)
+        public async Task<IActionResult> GetOrdersOfStore(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] OrderType? orderType, [FromQuery] OrderStatus? status)
         {
-            var response = await _orderService.GetOrdersInStore(id, page, size, startDate, endDate, orderType, orderStatus);
+            var response = await _orderService.GetOrdersInStore(id, page, size, startDate, endDate, orderType, status);
             return Ok(response);
         }
     }
