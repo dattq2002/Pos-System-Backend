@@ -105,10 +105,22 @@ namespace Pos_System.API.Services.Implements
                 }
             });
 
+            PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
+             x.Id.Equals(createNewOrderRequest.PaymentId));
+
+            Payment newPaymentRequest = new Payment()
+            {
+                Id = Guid.NewGuid(),
+                OrderId = newOrder.Id,
+                Amount = 0,
+                PaymentTypeId = paymentType.Id
+            };
+
             currentUserSession.NumberOfOrders++;
 
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
+            await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             await _unitOfWork.CommitAsync();
 
@@ -188,7 +200,7 @@ namespace Pos_System.API.Services.Implements
             return orderDetailResponse;
         }
 
-        public async Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size, DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
+        public async Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size, DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? status)
         {
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
             Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
@@ -205,7 +217,7 @@ namespace Pos_System.API.Services.Implements
                     OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
                     Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
                 },
-                predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, orderStatus),
+                predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
                 include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
                 orderBy: x => x.OrderByDescending(x => x.InvoiceId),
                 page: page,
@@ -217,7 +229,7 @@ namespace Pos_System.API.Services.Implements
         }
 
         private Expression<Func<Order, bool>> BuildGetOrdersInStoreQuery(Guid storeId, DateTime? startDate,
-	        DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus)
+	        DateTime? endDate, OrderType? orderType, OrderStatus? status)
         {
 	        Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
 	        if (startDate != null)
@@ -235,9 +247,9 @@ namespace Pos_System.API.Services.Implements
 		        filterQuery = filterQuery.AndAlso(p => p.OrderType.Equals(orderType.GetDescriptionFromEnum()));
 	        }
 
-	        if (orderStatus != null)
+	        if (status != null)
 	        {
-		        filterQuery = filterQuery.AndAlso(p => p.Status.Equals(orderStatus.GetDescriptionFromEnum()));
+		        filterQuery = filterQuery.AndAlso(p => p.Status.Equals(status.GetDescriptionFromEnum()));
 	        }
 
             return filterQuery;
@@ -271,10 +283,10 @@ namespace Pos_System.API.Services.Implements
                 currentUserSession.NumberOfOrders--;
             }
 
-            if(updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.Payment != null)
+            if(updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)
             {
                 PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
-                x.Name.Equals(updateOrderRequest.Payment.GetDescriptionFromEnum()));
+                    x.Id.Equals(updateOrderRequest.paymentId));
 
                 if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
 

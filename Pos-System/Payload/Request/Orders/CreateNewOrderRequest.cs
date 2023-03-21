@@ -4,7 +4,7 @@ namespace Pos_System.API.Payload.Request.Orders
 {
     public class CreateNewOrderRequest
     {
-        public OrderPaymentType Payment { get; set; }
+        public Guid PaymentId { get; set; }
         public OrderType OrderType { get; set; }
         public List<OrderProduct> ProductsList { get; set; } = new List<OrderProduct>();
         public double TotalAmount { get; set; }
