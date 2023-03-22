@@ -46,10 +46,8 @@ namespace Pos_System.API.Payload.Response.Orders
     public class OrderPaymentResponse
     {
         public Guid Id { get; set; }
-        public Guid PaymentTypeId { get; set; }
-        public OrderPaymentType PaymentType { get; set; }
+        public string Name { get; set; }
         public string? PicUrl { get; set; }
-        public double PaidAmount { get; set; }
     }
 
 }
