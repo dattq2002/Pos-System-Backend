@@ -187,11 +187,9 @@ namespace Pos_System.API.Services.Implements
             orderDetailResponse.Payment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(
                 selector: payment => new OrderPaymentResponse()
                 {
-                    Id = payment.Id,
-                    PaymentTypeId = payment.PaymentTypeId,
-                    PaymentType = EnumUtil.ParseEnum<OrderPaymentType>(payment.PaymentType.Name),
+                    Id = payment.PaymentTypeId,
+                    Name = payment.PaymentType.Name,
                     PicUrl = payment.PaymentType.PicUrl,
-                    PaidAmount = payment.Amount
                 },
                 predicate: payment => payment.OrderId.Equals(orderId),
                 include: payment => payment.Include(payment => payment.PaymentType)
