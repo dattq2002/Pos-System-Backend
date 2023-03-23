@@ -75,7 +75,7 @@ namespace Pos_System.API.Services.Implements
             if (createNewBrandAccountRequest.Role != RoleEnum.BrandAdmin &&
                 createNewBrandAccountRequest.Role != RoleEnum.BrandManager) throw new BadHttpRequestException(MessageConstant.Account.CreateAccountWithWrongRoleMessage);
             _logger.LogInformation($"Create new account for brand {brand.Name} with account {createNewBrandAccountRequest.Username}, role: {createNewBrandAccountRequest.Role.GetDescriptionFromEnum()} ");
-            createNewBrandAccountRequest.Password = PasswordUtil.HashPassword(createNewBrandAccountRequest.Password);
+            createNewBrandAccountRequest.Password = createNewBrandAccountRequest.Password;
             Account newBrandAccount = _mapper.Map<Account>(createNewBrandAccountRequest);
             newBrandAccount.Id = Guid.NewGuid();
             newBrandAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(createNewBrandAccountRequest.Role.GetDescriptionFromEnum()));
@@ -268,7 +268,7 @@ namespace Pos_System.API.Services.Implements
                     throw new BadHttpRequestException(MessageConstant.Store.CreateNewStoreAccountUnauthorizedMessage);
             }
             _logger.LogInformation($"Create new account for store {store.Name} with account {createNewStoreAccountRequest.Username}, role: {newAccountRole} ");
-            createNewStoreAccountRequest.Password = PasswordUtil.HashPassword(createNewStoreAccountRequest.Password);
+            createNewStoreAccountRequest.Password =createNewStoreAccountRequest.Password;
             Account newStoreAccount = _mapper.Map<Account>(createNewStoreAccountRequest);
             newStoreAccount.Id = Guid.NewGuid();
             newStoreAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(newAccountRole.GetDescriptionFromEnum()));

@@ -14,5 +14,6 @@ namespace Pos_System.API.Payload.Request.Menus
 		[Range(minimum: 0, maximum: 1439, ErrorMessage = "Thời gian kết thúc vượt quá số quy định (0 - 1439)")]
         public int EndTime { get; set; }
 		public bool IsBaseMenu { get; set; }
+        public bool IsUseBaseMenu { get; set; }
     }
 }
