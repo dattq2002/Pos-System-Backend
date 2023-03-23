@@ -46,7 +46,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.Staff)]
         [HttpPut(ApiEndPointConstant.Order.OrderEndPoint)]
-        [ProducesResponseType(typeof(GetOrderDetailResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateOrderPayment(Guid storeId, Guid id, UpdateOrderRequest updateOrderRequest)
         {
             var response = await _orderService.UpdateOrder(storeId, id, updateOrderRequest);

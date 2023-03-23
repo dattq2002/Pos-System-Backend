@@ -28,6 +28,8 @@ namespace Pos_System.API.Services.Implements
                 .SingleOrDefaultAsync(predicate: x => x.Id.Equals(brandId));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
             _logger.LogInformation($"Create new Menu with menu code: {createNewMenuRequest.Code}");
+            string currentUserName = GetUsernameFromJwt();
+            DateTime now = DateTime.Now;
             Menu newMenu = new Menu()
             {
                 Id = Guid.NewGuid(),
@@ -37,8 +39,8 @@ namespace Pos_System.API.Services.Implements
                 StartTime = createNewMenuRequest.StartTime,
                 EndTime = createNewMenuRequest.EndTime,
                 BrandId = brand.Id,
-                CreatedBy = GetUsernameFromJwt(),
-                CreatedAt = DateTime.UtcNow,
+                CreatedBy = currentUserName,
+                CreatedAt = now,
                 Status = EnumUtil.GetDescriptionFromEnum(MenuStatus.Deactivate)
             };
             if (createNewMenuRequest.IsBaseMenu)
@@ -59,7 +61,30 @@ namespace Pos_System.API.Services.Implements
                     });
                 }
             } //Create a base menu for brand that will apply for all stores
+
+            List<MenuProduct> menuProductsToInsert = new List<MenuProduct>();
+            if (createNewMenuRequest.IsUseBaseMenu)
+            {
+                if (createNewMenuRequest.Priority == 0) throw new BadHttpRequestException(MessageConstant.Menu.CanNotUsePriorityAsBaseMenu);
+                IEnumerable<MenuProduct> menuProducts = await _unitOfWork.GetRepository<MenuProduct>()
+                    .GetListAsync(predicate: x => x.Menu.Priority == 0 && x.Menu.BrandId.Equals(brandId),
+                    include: x => x.Include(x => x.Menu));
+
+                menuProducts.ToList().ForEach(x => menuProductsToInsert.Add(new MenuProduct
+                {
+                    Id = Guid.NewGuid(),
+                    Status = x.Status,
+                    SellingPrice = x.SellingPrice,
+                    DiscountPrice = x.DiscountPrice,
+                    HistoricalPrice = x.HistoricalPrice,
+                    MenuId = newMenu.Id,
+                    ProductId = x.ProductId,
+                    CreatedBy = currentUserName,
+                    CreatedAt = now
+                }));
+            }
             await _unitOfWork.GetRepository<Menu>().InsertAsync(newMenu);
+            await _unitOfWork.GetRepository<MenuProduct>().InsertRangeAsync(menuProductsToInsert);
             bool isSuccessfully = await _unitOfWork.CommitAsync() > 0;
             if (isSuccessfully) return newMenu.Id;
             return Guid.Empty;
