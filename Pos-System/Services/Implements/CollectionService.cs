@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Response.Categories;
 using Pos_System.API.Payload.Response.Collections;
@@ -216,6 +217,25 @@ namespace Pos_System.API.Services.Implements
             }
             bool isSuccesful = await _unitOfWork.CommitAsync() > 0;
             return isSuccesful;
+        }
+
+        public async Task<Guid> UpdateCollectionStatus(Guid collectionId, UpdateCollectionStatusRequest updateCollectionStatusRequest)
+        {
+            if (!updateCollectionStatusRequest.Op.Equals("/update") || !updateCollectionStatusRequest.Path.Equals("/status"))
+                throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+            bool isValidValue = Enum.TryParse(updateCollectionStatusRequest.Value, out CollectionStatus newStatus);
+            if (!isValidValue)
+                throw new BadHttpRequestException(MessageConstant.Account.UpdateAccountStatusRequestWrongFormatMessage);
+
+            if (collectionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Collection.EmptyCollectionIdMessage);
+
+            Collection collectionForupdate = await _unitOfWork.GetRepository<Collection>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(collectionId));
+
+            if (collectionForupdate == null) throw new BadHttpRequestException(MessageConstant.Collection.CollectionNotFoundMessage);
+            collectionForupdate.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+            _unitOfWork.GetRepository<Collection>().UpdateAsync(collectionForupdate);
+            return collectionId;
         }
     }
 }

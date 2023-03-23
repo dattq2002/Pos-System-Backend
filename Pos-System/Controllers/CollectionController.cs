@@ -82,5 +82,15 @@ namespace Pos_System.API.Controllers
             if (!isSuccessful) return Ok(MessageConstant.Collection.UpdateProductInCollectionFailedMessage);
             return Ok(MessageConstant.Collection.UpdateProductInCollectionSuccessfulMessage);
         }
+
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPatch(ApiEndPointConstant.Collection.CollectionEndPoint)]
+        [ProducesResponseType(typeof(Guid),StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCollectionStatus(Guid id, UpdateCollectionStatusRequest updateCollectionStatusRequest)
+        {
+            Guid collectionIdResponse = await _collectionService.UpdateCollectionStatus(id, updateCollectionStatusRequest);
+            return Ok(collectionIdResponse);
+        }
     }
 }

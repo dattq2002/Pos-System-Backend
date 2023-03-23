@@ -18,5 +18,6 @@ namespace Pos_System.API.Services.Interfaces
         Task<IPaginate<GetProductResponse>> GetProductInCollection(Guid collectionId, string? name, int page, int size);
 
         Task<bool> AddProductsToCollection(Guid collectionId, List<Guid> request);
+        Task<Guid> UpdateCollectionStatus(Guid collectionId, UpdateCollectionStatusRequest updateCollectionStatusRequest);
     }
 }

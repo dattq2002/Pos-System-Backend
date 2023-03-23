@@ -187,7 +187,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 x.Code,
                 x.PicUrl,
                 x.Description
-                ), predicate: x => x.BrandId.Equals(userBrandId));
+                ), predicate: x => x.BrandId.Equals(userBrandId) && x.Status == CollectionStatus.Active.GetDescriptionFromEnum());
 
         menuOfStore.CategoriesOfBrand = (List<CategoryOfBrand>)await _unitOfWork.GetRepository<Category>()
             .GetListAsync(selector: x => new CategoryOfBrand(
