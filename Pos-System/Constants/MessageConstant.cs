@@ -87,6 +87,8 @@ public static class MessageConstant
         public const string UpdateMenuInformationFailedMessage = "Cập nhật thông tin menu thất bại";
         public const string EndTimeLowerThanStartTimeMessage =
             "Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu";
+
+        public const string BaseMenuExistedMessage = "Nhãn hàng đã có menu cơ bản";
     }
 
     public static class Order
