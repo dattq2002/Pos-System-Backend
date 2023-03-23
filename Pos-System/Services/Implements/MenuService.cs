@@ -45,6 +45,11 @@ namespace Pos_System.API.Services.Implements
             };
             if (createNewMenuRequest.IsBaseMenu)
             {
+	            HasBaseMenuResponse hasBaseMenu = await CheckHasBaseMenuInBrand(brandId);
+	            if (hasBaseMenu.HasBaseMenu)
+	            {
+		            throw new BadHttpRequestException(MessageConstant.Menu.BaseMenuExistedMessage);
+	            }
                 newMenu.Priority = 0; //Default priority of base menu is 0
                 newMenu.MenuStores = new List<MenuStore>();
                 IEnumerable<Guid> storesInBrand = await _unitOfWork.GetRepository<Store>()
