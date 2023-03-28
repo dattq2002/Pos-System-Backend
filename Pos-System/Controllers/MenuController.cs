@@ -112,7 +112,7 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
-        [HttpPost(ApiEndPointConstant.Menu.MenuEndPoint)]
+        [HttpPatch(ApiEndPointConstant.Menu.MenuEndPoint)]
         [ProducesResponseType(typeof(Guid),StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateMenuStatus(Guid menuId, UpdateMenuStatusRequest updateMenuStatusRequest)
         {
