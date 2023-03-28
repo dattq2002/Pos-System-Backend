@@ -88,6 +88,8 @@ public static class MessageConstant
         public const string EndTimeLowerThanStartTimeMessage = "Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu";
         public const string CanNotUsePriorityAsBaseMenu = "Bạn không thể dùng priority của base menu để tạo menu khác";
         public const string BaseMenuExistedMessage = "Nhãn hàng đã có menu cơ bản";
+        public const string UpdateMenuStatusRequestWrongFormatMessage =
+            "Cập nhật status menu request sai format";
     }
 
     public static class Order

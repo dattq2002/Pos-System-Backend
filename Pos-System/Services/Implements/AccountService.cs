@@ -75,7 +75,7 @@ namespace Pos_System.API.Services.Implements
             if (createNewBrandAccountRequest.Role != RoleEnum.BrandAdmin &&
                 createNewBrandAccountRequest.Role != RoleEnum.BrandManager) throw new BadHttpRequestException(MessageConstant.Account.CreateAccountWithWrongRoleMessage);
             _logger.LogInformation($"Create new account for brand {brand.Name} with account {createNewBrandAccountRequest.Username}, role: {createNewBrandAccountRequest.Role.GetDescriptionFromEnum()} ");
-            createNewBrandAccountRequest.Password = createNewBrandAccountRequest.Password;
+            createNewBrandAccountRequest.Password = PasswordUtil.HashPassword(createNewBrandAccountRequest.Password);
             Account newBrandAccount = _mapper.Map<Account>(createNewBrandAccountRequest);
             newBrandAccount.Id = Guid.NewGuid();
             newBrandAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(createNewBrandAccountRequest.Role.GetDescriptionFromEnum()));
@@ -239,7 +239,7 @@ namespace Pos_System.API.Services.Implements
                 throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
 
 			updatedAccount.Name = string.IsNullOrEmpty(staffAccountInformationRequest.Name) ? updatedAccount.Name : staffAccountInformationRequest.Name;
-			updatedAccount.Password = string.IsNullOrEmpty(staffAccountInformationRequest.Password) ? updatedAccount.Password : staffAccountInformationRequest.Password.Trim();
+			updatedAccount.Password = string.IsNullOrEmpty(staffAccountInformationRequest.Password) ? updatedAccount.Password : PasswordUtil.HashPassword(staffAccountInformationRequest.Password.Trim());
 
             _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
@@ -268,7 +268,7 @@ namespace Pos_System.API.Services.Implements
                     throw new BadHttpRequestException(MessageConstant.Store.CreateNewStoreAccountUnauthorizedMessage);
             }
             _logger.LogInformation($"Create new account for store {store.Name} with account {createNewStoreAccountRequest.Username}, role: {newAccountRole} ");
-            createNewStoreAccountRequest.Password =createNewStoreAccountRequest.Password;
+            createNewStoreAccountRequest.Password = PasswordUtil.HashPassword(createNewStoreAccountRequest.Password);
             Account newStoreAccount = _mapper.Map<Account>(createNewStoreAccountRequest);
             newStoreAccount.Id = Guid.NewGuid();
             newStoreAccount.RoleId = await _unitOfWork.GetRepository<Role>().SingleOrDefaultAsync(selector: x => x.Id, predicate: x => x.Name.Equals(newAccountRole.GetDescriptionFromEnum()));

@@ -147,7 +147,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
             x.DateFilter,
             x.StartTime,
             x.EndTime),
-            predicate: x => x.Id.Equals(menuOfStoreId));
+            predicate: x => x.Id.Equals(menuOfStoreId) && x.Status.Equals(MenuStatus.Active.GetDescriptionFromEnum()));
 
         menuOfStore.ProductsInMenu = (List<ProductDataForStaff>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
             selector: x => new ProductDataForStaff

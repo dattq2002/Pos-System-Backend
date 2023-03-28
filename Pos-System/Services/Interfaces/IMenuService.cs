@@ -18,5 +18,6 @@ namespace Pos_System.API.Services.Interfaces
         public Task<bool> UpdateMenuInformation(Guid menuId, UpdateMenuInformationRequest updateMenuInformationRequest);
         public Task<IPaginate<GetStoreDetailResponse>> GetStoresInMenu(Guid menuId, string? storeName, int page, int size);
         public Task<Guid> UpdateStoresApplyMenu(Guid menuId, UpdateStoresApplyMenuRequest updateStoresApplyMenuRequest);
+        public Task<Guid> UpdateMenuStatus(Guid menuId, UpdateMenuStatusRequest updateMenuStatusRequest);
     }
 }

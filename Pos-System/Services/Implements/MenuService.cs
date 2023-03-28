@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Collections;
 using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Products;
@@ -456,6 +457,25 @@ namespace Pos_System.API.Services.Implements
             }
 
             await _unitOfWork.CommitAsync();
+            return menuId;
+        }
+
+        public async Task<Guid> UpdateMenuStatus(Guid menuId, UpdateMenuStatusRequest updateMenuStatusRequest)
+        {
+            if (!updateMenuStatusRequest.Op.Equals("/update") || !updateMenuStatusRequest.Path.Equals("/status"))
+                throw new BadHttpRequestException(MessageConstant.Menu.UpdateMenuStatusRequestWrongFormatMessage);
+            bool isValidValue = Enum.TryParse(updateMenuStatusRequest.Value, out MenuStatus newStatus);
+            if (!isValidValue)
+                throw new BadHttpRequestException(MessageConstant.Menu.UpdateMenuStatusRequestWrongFormatMessage);
+
+            if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
+
+            Menu menuForupdate = await _unitOfWork.GetRepository<Menu>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(menuId));
+
+            if (menuForupdate == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
+            menuForupdate.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+            _unitOfWork.GetRepository<Menu>().UpdateAsync(menuForupdate);
             return menuId;
         }
     }
