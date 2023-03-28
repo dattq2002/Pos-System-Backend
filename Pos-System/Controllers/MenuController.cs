@@ -110,5 +110,14 @@ namespace Pos_System.API.Controllers
             var response = await _menuService.UpdateStoresApplyMenu(menuId, updateStoresApplyMenuRequest);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Menu.MenuEndPoint)]
+        [ProducesResponseType(typeof(Guid),StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateMenuStatus(Guid menuId, UpdateMenuStatusRequest updateMenuStatusRequest)
+        {
+            var response = await _menuService.UpdateMenuStatus(menuId, updateMenuStatusRequest);
+            return Ok(response);
+        }
     }
 }
