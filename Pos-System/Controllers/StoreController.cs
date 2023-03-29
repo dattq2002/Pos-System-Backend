@@ -106,7 +106,7 @@ namespace Pos_System.API.Controllers
             return Ok(response);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager)]
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
         [HttpGet(ApiEndPointConstant.Store.StoreOrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ViewOrdersResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrdersOfStore(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] OrderType? orderType, [FromQuery] OrderStatus? status)
