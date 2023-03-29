@@ -30,7 +30,7 @@ namespace Pos_System.API.Services.Implements
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
 
             string currentUserName = GetUsernameFromJwt();
-            DateTime currentTime = DateTime.Now;
+            DateTime currentTime =TimeUtils.GetCurrentSEATime();
             string currentTimeStamp = TimeUtils.GetTimestamp(currentTime);
             Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
             Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => 
@@ -261,8 +261,7 @@ namespace Pos_System.API.Services.Implements
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
 
             string currentUserName = GetUsernameFromJwt();
-            DateTime currentTime = DateTime.Now;
-            string currentTimeStamp = TimeUtils.GetTimestamp(currentTime);
+            DateTime currentTime = TimeUtils.GetCurrentSEATime();
             Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
             Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x =>
                 x.StoreId.Equals(storeId)
