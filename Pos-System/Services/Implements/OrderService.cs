@@ -200,6 +200,7 @@ namespace Pos_System.API.Services.Implements
 
         public async Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size, DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? status)
         {
+            RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
             Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
             if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
@@ -217,7 +218,7 @@ namespace Pos_System.API.Services.Implements
                 },
                 predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
                 include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
-                orderBy: x => x.OrderByDescending(x => x.InvoiceId),
+                orderBy: x => userRole == RoleEnum.Staff ? x.OrderByDescending(x => x.CheckInDate) : x.OrderByDescending(x => x.InvoiceId),
                 page: page,
                 size: size
                 );
