@@ -405,9 +405,9 @@ namespace Pos_System.API.Services.Implements
                 .GetPagingListAsync(
                     selector: menuStore => new GetStoreDetailResponse(menuStore.Store.Id, menuStore.Store.BrandId,
                         menuStore.Store.Name, menuStore.Store.ShortName, menuStore.Store.Email, menuStore.Store.Address,
-                        menuStore.Store.Status, menuStore.Store.Phone, menuStore.Store.Code),
+                        menuStore.Store.Status, menuStore.Store.Phone, menuStore.Store.Code, menuStore.Store.Brand.PicUrl),
                     predicate: string.IsNullOrEmpty(storeName) ? menuStore => menuStore.MenuId.Equals(menuId) : menuStore => menuStore.MenuId.Equals(menuId) && menuStore.Store.Name.ToLower().Contains(storeName),
-                    include: menuStore => menuStore.Include(menuStore => menuStore.Store),
+                    include: menuStore => menuStore.Include(menuStore => menuStore.Store).ThenInclude(store => store.Brand),
                     page: page,
                     size: size
                 );

@@ -39,7 +39,9 @@ public class StoreService : BaseService<StoreService>, IStoreService
     {
         if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
         GetStoreDetailResponse storeDetailResponse = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(
-            selector: x => new GetStoreDetailResponse(x.Id, x.BrandId, x.Name, x.Name, x.Email, x.Address, x.Status, x.Phone, x.Code),
+            selector: x => new GetStoreDetailResponse(x.Id, x.BrandId, x.Name, x.Name, x.Email, x.Address, x.Status,
+                x.Phone, x.Code, x.Brand.PicUrl),
+            include: x => x.Include(x => x.Brand),
             predicate: x => x.Id.Equals(storeId)
             );
         return storeDetailResponse;
