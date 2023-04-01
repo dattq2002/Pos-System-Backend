@@ -18,8 +18,6 @@ namespace Pos_System.API.Payload.Request.Stores
         public string? Phone { get; set; }
         [Required(ErrorMessage = "Store's code is required")]
         public string? Code { get; set; }
-        [Required(ErrorMessage = "Brand id is required")]
-        public Guid BrandId { get; set; }
         public string? Address { get; set; }
     }
 }

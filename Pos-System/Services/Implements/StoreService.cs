@@ -49,15 +49,16 @@ public class StoreService : BaseService<StoreService>, IStoreService
 
     public async Task<CreateNewStoreResponse> CreateNewStore(CreateNewStoreRequest newStoreRequest)
     {
+        Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
         _logger.LogInformation($"Create new store with {newStoreRequest.Name}");
         Store newStore = _mapper.Map<Store>(newStoreRequest);
         newStore.Status = StoreStatus.Active.GetDescriptionFromEnum();
         newStore.Id = Guid.NewGuid();
-        HasBaseMenuResponse hasBaseMenu = await _menuService.CheckHasBaseMenuInBrand(newStoreRequest.BrandId);
+        HasBaseMenuResponse hasBaseMenu = await _menuService.CheckHasBaseMenuInBrand(userBrandId);
         if (hasBaseMenu.HasBaseMenu)
         {
             Menu brandBaseMenu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(
-                predicate: menu => menu.BrandId.Equals(newStoreRequest.BrandId) && menu.Priority == 0
+                predicate: menu => menu.BrandId.Equals(userBrandId) && menu.Priority == 0
             );
             MenuStore newMenuStore = new MenuStore()
             {
