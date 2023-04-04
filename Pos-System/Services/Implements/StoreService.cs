@@ -54,6 +54,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
         Store newStore = _mapper.Map<Store>(newStoreRequest);
         newStore.Status = StoreStatus.Active.GetDescriptionFromEnum();
         newStore.Id = Guid.NewGuid();
+        newStore.BrandId = userBrandId;
         HasBaseMenuResponse hasBaseMenu = await _menuService.CheckHasBaseMenuInBrand(userBrandId);
         if (hasBaseMenu.HasBaseMenu)
         {
