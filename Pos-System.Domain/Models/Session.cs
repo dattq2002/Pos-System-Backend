@@ -20,6 +20,7 @@ namespace Pos_System.Domain.Models
         public double? TotalDiscountAmount { get; set; }
         public double? TotalFinalAmount { get; set; }
         public Guid StoreId { get; set; }
+        public string? Name { get; set; }
 
         public virtual Store Store { get; set; } = null!;
         public virtual ICollection<Order> Orders { get; set; }

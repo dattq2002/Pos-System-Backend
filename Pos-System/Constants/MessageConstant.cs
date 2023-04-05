@@ -44,6 +44,9 @@ public static class MessageConstant
         public const string CreateNewStoreAccountUnauthorizedMessage = "Bạn không có quyền tạo tài khoản cho một store";
         public const string StoreNotInBrandMessage = "Bạn không được phép tạo account nằm ngoài brand đang quản lí";
         public const string GetStoreOrdersUnAuthorized = "Bạn không được phép lấy orders của store khác!";
+        public const string CreateStoreSessionsSuccessfully = "Tạo Session cho store thành công";
+        public const string GetStoreSessionUnAuthorized = "Bạn không được phép lấy session của store khác!";
+        public const string CreateStoreSessionUnAuthorized = "Bạn không được phép tạo session cho store khác!";
     }
 
     public static class Category
@@ -99,5 +102,11 @@ public static class MessageConstant
         public const string CreateOrderFailedMessage = "Tạo mới order thất bại";
         public const string EmptyOrderIdMessage = "Id của order không hợp lệ";
         public const string OrderNotFoundMessage = "Order không tồn tại trong hệ thống";
+    }
+
+    public static class Session
+    {
+        public const string EmptySessionIdMessage = "Id của session không hợp lệ";
+        public const string SessionNotFoundMessage = "Session không tồn tại trong store";
     }
 }

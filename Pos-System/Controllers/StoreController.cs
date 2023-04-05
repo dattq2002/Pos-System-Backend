@@ -4,10 +4,12 @@ using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Accounts;
 using Pos_System.API.Payload.Request.Orders;
+using Pos_System.API.Payload.Request.Sessions;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Orders;
+using Pos_System.API.Payload.Response.Sessions;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
@@ -23,12 +25,14 @@ namespace Pos_System.API.Controllers
         private readonly IStoreService _storeService;
         private readonly IAccountService _accountService;
         private readonly IOrderService _orderService;
+        private readonly ISessionService _sessionService;
 
-        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService, IOrderService orderService) : base(logger)
+        public StoreController(ILogger<StoreController> logger, IStoreService storeService, IAccountService accountService, IOrderService orderService, ISessionService sessionService) : base(logger)
         {
             _storeService = storeService;
             _accountService = accountService;
             _orderService = orderService;
+            _sessionService = sessionService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandAdmin, RoleEnum.BrandManager, RoleEnum.StoreManager, RoleEnum.Staff)]
@@ -112,6 +116,33 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> GetOrdersOfStore(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] OrderType? orderType, [FromQuery] OrderStatus? status)
         {
             var response = await _orderService.GetOrdersInStore(id, page, size, startDate, endDate, orderType, status);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpPost(ApiEndPointConstant.Store.StoreSessionsEndpoint)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateNewStoreSessions(Guid id, CreateStoreSessionsRequest createStoreSessionsRequest)
+        {
+            await _sessionService.CreateStoreSessions(id, createStoreSessionsRequest);
+            return Ok(MessageConstant.Store.CreateStoreSessionsSuccessfully);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Store.StoreSessionsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreSessionListResponse>),StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoreSessions(Guid id, [FromQuery] int page, [FromQuery] int size, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            var response = await _sessionService.GetStoreSessions(id, page, size, startDate, endDate);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Store.StoreSessionEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreSessionListResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStoreEndShiftStatictis(Guid storeId, Guid id)
+        {
+            var response = await _storeService.GetStoreEndShiftStatistics(storeId, id);
             return Ok(response);
         }
     }
