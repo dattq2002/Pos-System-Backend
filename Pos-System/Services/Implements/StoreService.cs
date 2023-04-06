@@ -206,4 +206,42 @@ public class StoreService : BaseService<StoreService>, IStoreService
 
         return menuOfStore;
     }
+
+    public async Task<GetStoreEndShiftStatisticsResponse> GetStoreEndShiftStatistics(Guid storeId, Guid sessionId)
+    {
+        Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
+        if (userStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreSessionUnAuthorized);
+        if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+        if (sessionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Session.EmptySessionIdMessage);
+        Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
+        if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
+        Session session = await _unitOfWork.GetRepository<Session>()
+            .SingleOrDefaultAsync(predicate: x => x.StoreId.Equals(storeId) && x.Id.Equals(sessionId));
+        if (session == null) throw new BadHttpRequestException(MessageConstant.Session.SessionNotFoundMessage);
+
+        //Số tiền trong két tiền
+        double currentCashInVault = session.TotalChangeCash ?? 0;
+        //Só tiền hàng đã bán
+        double currentTotalFinalAmount = session.TotalFinalAmount ?? 0;
+        //Số tiền bàn giao lúc đầu
+        double cashHandedOver = currentCashInVault - currentTotalFinalAmount;
+
+        GetStoreEndShiftStatisticsResponse result = new GetStoreEndShiftStatisticsResponse()
+        {
+            SessionId = session.Id,
+            StartDateTime = session.StartDateTime,
+            EndDateTime = session.EndDateTime,
+            Name = session.Name ?? "",
+            NumberOfOrders = session.NumberOfOrders,
+            TotalAmount = session.TotalAmount ?? 0,
+            TotalPromotion = session.TotalPromotion ?? 0,
+            CurrentCashInVault = currentCashInVault,
+            InitCashInVault = cashHandedOver,
+            ProfitAmount = currentTotalFinalAmount,
+            TotalDiscountAmount = session.TotalDiscountAmount ?? 0,
+        };
+
+        return result;
+
+    }
 }

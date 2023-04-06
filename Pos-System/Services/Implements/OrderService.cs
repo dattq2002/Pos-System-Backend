@@ -108,19 +108,10 @@ namespace Pos_System.API.Services.Implements
             PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
              x.Id.Equals(createNewOrderRequest.PaymentId));
 
-            Payment newPaymentRequest = new Payment()
-            {
-                Id = Guid.NewGuid(),
-                OrderId = newOrder.Id,
-                Amount = 0,
-                PaymentTypeId = paymentType.Id
-            };
-
             currentUserSession.NumberOfOrders++;
 
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
-            await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             await _unitOfWork.CommitAsync();
 
@@ -273,16 +264,26 @@ namespace Pos_System.API.Services.Implements
             if (currentUserSession == null) throw new BadHttpRequestException(MessageConstant.Order.UserNotInSessionMessage);
             if (order == null) throw new BadHttpRequestException(MessageConstant.Order.OrderNotFoundMessage);
 
-            order.CheckOutDate = currentTime;
-            order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
-
             if (updateOrderRequest.Status.Equals(OrderStatus.CANCELED))
             {
                 currentUserSession.NumberOfOrders--;
+                Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
+                //Reverse Transaction if switch from PAID to CANCELED
+                if(currentPayment != null)
+                {
+                    currentUserSession.TotalAmount -= order.TotalAmount;
+                    currentUserSession.TotalFinalAmount -= order.FinalAmount;
+                    currentUserSession.TotalChangeCash -= order.FinalAmount;
+                    currentUserSession.TotalDiscountAmount -= order.Discount;
+
+                    _unitOfWork.GetRepository<Payment>().DeleteAsync(currentPayment);
+                }
             }
 
-            if(updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)
+            if (updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)
             {
+                //Case chang from CANCELED to PAID
+                if(order.Status.Equals(OrderStatus.CANCELED)) currentUserSession.NumberOfOrders++;
                 PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
                     x.Id.Equals(updateOrderRequest.paymentId));
 
@@ -300,21 +301,19 @@ namespace Pos_System.API.Services.Implements
                         Amount = order.FinalAmount,
                         PaymentTypeId = paymentType.Id
                     };
+
                     currentUserSession.TotalAmount += order.TotalAmount;
                     currentUserSession.TotalFinalAmount += order.FinalAmount;
-                    currentUserSession.TotalChangeCash -= order.FinalAmount;
+                    currentUserSession.TotalChangeCash += order.FinalAmount;
                     currentUserSession.TotalDiscountAmount += order.Discount;
 
                     await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
                 }
-                else
-                {
-                    currentPayment.Amount = order.FinalAmount;
-                    currentPayment.PaymentTypeId = paymentType.Id;
-                    _unitOfWork.GetRepository<Payment>().UpdateAsync(currentPayment);
-                }
 
             }
+
+            order.CheckOutDate = currentTime;
+            order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
 
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             _unitOfWork.GetRepository<Order>().UpdateAsync(order);

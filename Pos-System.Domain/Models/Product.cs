@@ -8,8 +8,10 @@ namespace Pos_System.Domain.Models
         public Product()
         {
             CollectionProducts = new HashSet<CollectionProduct>();
+            GroupProducts = new HashSet<GroupProduct>();
             InverseParentProduct = new HashSet<Product>();
             MenuProducts = new HashSet<MenuProduct>();
+            ProductInGroups = new HashSet<ProductInGroup>();
         }
 
         public Guid Id { get; set; }
@@ -32,7 +34,9 @@ namespace Pos_System.Domain.Models
         public virtual Category Category { get; set; } = null!;
         public virtual Product? ParentProduct { get; set; }
         public virtual ICollection<CollectionProduct> CollectionProducts { get; set; }
+        public virtual ICollection<GroupProduct> GroupProducts { get; set; }
         public virtual ICollection<Product> InverseParentProduct { get; set; }
         public virtual ICollection<MenuProduct> MenuProducts { get; set; }
+        public virtual ICollection<ProductInGroup> ProductInGroups { get; set; }
     }
 }
