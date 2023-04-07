@@ -82,6 +82,15 @@ namespace Pos_System.API.Controllers
             var response = await _productService.GetProductsInBrand(id);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Product.GroupProductsInBrandEndPoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateNewGroupProduct(Guid id, CreateNewGroupProductRequest createUpdateNewGroupProductRequest)
+        {
+            var response = await _productService.CreateNewGroupProduct(id, createUpdateNewGroupProductRequest);
+            return Ok(response);
+        }
     }
 }
 

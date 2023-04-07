@@ -5,5 +5,6 @@ public enum ProductType
 	SINGLE,
 	PARENT,
 	EXTRA,
-	CHILD
+	CHILD,
+	COMBO
 }

@@ -209,10 +209,13 @@ namespace Pos_System.Domain.Models
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasComment("");
+
                 entity.HasOne(d => d.ComboProduct)
                     .WithMany(p => p.GroupProducts)
                     .HasForeignKey(d => d.ComboProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_GroupProduct_Product");
             });
 
@@ -450,6 +453,10 @@ namespace Pos_System.Domain.Models
                 entity.ToTable("ProductInGroup");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasComment("");
 
                 entity.HasOne(d => d.GroupProduct)
                     .WithMany(p => p.ProductInGroups)

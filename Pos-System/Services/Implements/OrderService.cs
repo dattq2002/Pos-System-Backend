@@ -11,7 +11,6 @@ using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
 using Pos_System.Domain.Paginate;
 using Pos_System.Repository.Interfaces;
-using PaymentType = Pos_System.Domain.Models.PaymentType;
 
 namespace Pos_System.API.Services.Implements
 {
