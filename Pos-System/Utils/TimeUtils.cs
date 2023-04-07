@@ -23,7 +23,7 @@
         public static DateTime ConvertToSEATime(DateTime value)
         {
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            DateTime convertedTime = TimeZoneInfo.ConvertTime(value, TimeZoneInfo.Local, tz);
+            DateTime convertedTime = TimeZoneInfo.ConvertTime(value, tz);
             return convertedTime;
         }
     }

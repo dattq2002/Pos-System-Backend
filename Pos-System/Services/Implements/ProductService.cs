@@ -130,9 +130,68 @@ namespace Pos_System.API.Services.Implements
             if(brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
             IEnumerable<GetProductDetailsResponse> products = await _unitOfWork.GetRepository<Product>().GetListAsync(
                 selector: x => new GetProductDetailsResponse(x.Id, x.Code, x.Name, x.SellingPrice, x.PicUrl, x.Status, x.HistoricalPrice, x.DiscountPrice, x.Description, x.DisplayOrder, x.Size, x.Type, x.ParentProductId, x.BrandId, x.CategoryId),
-                predicate: x => x.Id.Equals(brandId) && x.BrandId.Equals(brandId)
+                predicate: x => x.Id.Equals(brandId) && x.BrandId.Equals(brandId),
+                orderBy: x => x.OrderBy(x => x.Code)
             );
             return products;
+        }
+
+        public async Task<Guid> CreateNewGroupProduct(Guid brandId, CreateNewGroupProductRequest createUpdateNewGroupProductRequest)
+        {
+            Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
+            if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            if(!userBrandId.Equals(brandId)) throw new BadHttpRequestException(MessageConstant.GroupProduct.WrongComboInformationMessage);
+
+            if (createUpdateNewGroupProductRequest.ComboProductId != null)
+            {
+                Product product = await _unitOfWork.GetRepository<Product>().SingleOrDefaultAsync(
+                    predicate: x => x.Id.Equals(createUpdateNewGroupProductRequest.ComboProductId)
+                        && x.Type.Equals(ProductType.COMBO.GetDescriptionFromEnum())
+                        && x.BrandId.Equals(userBrandId)
+                    );
+
+                if (product == null) throw new BadHttpRequestException(MessageConstant.GroupProduct.WrongComboInformationMessage);
+            }
+
+            GroupProduct groupProductToInsert = new GroupProduct()
+            {
+                Id = Guid.NewGuid(),
+                ComboProductId = createUpdateNewGroupProductRequest.ComboProductId,
+                Name = createUpdateNewGroupProductRequest.Name,
+                CombinationMode = createUpdateNewGroupProductRequest.CombinationMode.GetDescriptionFromEnum(),
+                Priority = createUpdateNewGroupProductRequest.Priority,
+                Quantity = createUpdateNewGroupProductRequest.Quantity,
+                Status = GroupProductStatus.Active.GetDescriptionFromEnum()
+            };
+
+
+            List<ProductInGroup> productInGroupsToInsert = new List<ProductInGroup>();
+            if(createUpdateNewGroupProductRequest.ProductIds != null || createUpdateNewGroupProductRequest.ProductIds.Count > 0)
+            {
+                int defaultMin = 1;
+                int defaultMax = 1;
+                double defaultAdditionalPrice = 0;
+                int defaultPriority = 0;
+                int defaultQuantity = 1;
+                createUpdateNewGroupProductRequest.ProductIds.ForEach(productId =>
+                    productInGroupsToInsert.Add(new ProductInGroup()
+                    {
+                        Id = Guid.NewGuid(),
+                        GroupProductId = groupProductToInsert.Id,
+                        ProductId = productId,
+                        Priority = defaultPriority,
+                        AdditionalPrice = defaultAdditionalPrice,
+                        Min = defaultMin,
+                        Max = defaultMax,
+                        Quantity = defaultQuantity,
+                        Status = ProductInGroupStatus.Active.GetDescriptionFromEnum()
+                    }));
+            }
+
+            await _unitOfWork.GetRepository<GroupProduct>().InsertAsync(groupProductToInsert);
+            await _unitOfWork.GetRepository<ProductInGroup>().InsertRangeAsync(productInGroupsToInsert);
+            await _unitOfWork.CommitAsync();
+            return groupProductToInsert.Id;
         }
     }
 }

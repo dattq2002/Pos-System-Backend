@@ -13,7 +13,7 @@ public static class MessageConstant
         public const string CreateBrandFailMessage = "Create new brand failed";
         public const string CreateBrandSucceedMessage = "Create new brand successful";
         public const string BrandNotFoundMessage = "Brand không tồn tại trong hệ thống";
-        public const string EmptyBrandIdMessage = "Brand Id bị trống";
+        public const string EmptyBrandIdMessage = "Brand Id bị trống hoặc bạn không trong một brand nào";
         public const string UpdateBrandSuccessfulMessage = "Cập nhật thông tin brand thành công";
         public const string UpdateBrandFailedMessage = "Cập nhật thông tin brand thất bại";
     }
@@ -108,5 +108,11 @@ public static class MessageConstant
     {
         public const string EmptySessionIdMessage = "Id của session không hợp lệ";
         public const string SessionNotFoundMessage = "Session không tồn tại trong store";
+    }
+
+    public static class GroupProduct
+    {
+        public const string WrongComboInformationMessage = "Combo bạn đang chọn không tồn tại hoặc không thuộc brand của bạn";
+
     }
 }
