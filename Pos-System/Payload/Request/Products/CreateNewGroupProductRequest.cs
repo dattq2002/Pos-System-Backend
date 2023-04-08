@@ -12,13 +12,5 @@ namespace Pos_System.API.Payload.Request.Products
         public List<Guid>? ProductIds { get; set; }
     }
 
-    public class ProductInGroupRequest
-    {
-        public Guid Id { get; set; }
-        public int? Priority { set; get; }
-        public float? AdditionalPrice { get; set; }
-        public int? Min { get; set; }
-        public int? Max { get; set; }
-        public int? Quantity { set; get; }
-    }
+
 }

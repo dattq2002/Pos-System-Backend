@@ -480,6 +480,7 @@ namespace Pos_System.API.Services.Implements
             if (menuForupdate == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
             menuForupdate.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
             _unitOfWork.GetRepository<Menu>().UpdateAsync(menuForupdate);
+            await _unitOfWork.CommitAsync();
             return menuId;
         }
     }
