@@ -113,6 +113,11 @@ public static class MessageConstant
     public static class GroupProduct
     {
         public const string WrongComboInformationMessage = "Combo bạn đang chọn không tồn tại hoặc không thuộc brand của bạn";
+        public const string GroupProductNotFoundMessage = "Group Product không tồn tại trong hệ thống";
+    }
 
+    public static class ProductInGroup
+    {
+        public const string ProductNotInGroupMessage = "Data cũ của product không tồn tại, productId: ";
     }
 }

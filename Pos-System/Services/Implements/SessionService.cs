@@ -32,13 +32,11 @@ namespace Pos_System.API.Services.Implements
             {
                 createStoreSessionsRequest.Sessions.ForEach(session =>
                 {
-                    DateTime convertedStartTime = TimeUtils.ConvertToSEATime(session.startTime);
-                    DateTime convertedEndTime = TimeUtils.ConvertToSEATime(session.endTime);
                     sessionsToInsert.Add(new Session
                     {
                         Id = Guid.NewGuid(),
-                        StartDateTime = convertedStartTime,
-                        EndDateTime = convertedEndTime,
+                        StartDateTime = session.startTime,
+                        EndDateTime = session.endTime,
                         NumberOfOrders = 0,
                         TotalAmount = 0,
                         TotalPromotion = 0,
@@ -47,7 +45,7 @@ namespace Pos_System.API.Services.Implements
                         TotalFinalAmount = 0,
                         StoreId = storeId,
                         Name = String.IsNullOrEmpty(session.Name) ? 
-                            "Ca " + TimeUtils.GetHoursTime(convertedStartTime) + " - " + TimeUtils.GetHoursTime(convertedEndTime) 
+                            "Ca " + TimeUtils.GetHoursTime(session.startTime) + " - " + TimeUtils.GetHoursTime(session.endTime) 
                             : session.Name
                     });
                 });
