@@ -36,7 +36,9 @@ namespace Pos_System.API.Services.Implements
 	        RoleEnum role = EnumUtil.ParseEnum<RoleEnum>(account.Role.Name);
 	        Tuple<string, Guid> guidClaim = null;
 	        LoginResponse loginResponse = null;
-	        switch (role)
+            string? accountBrandPicUrl = null;
+
+            switch (role)
 	        {
 		        case RoleEnum.BrandAdmin:
 		        case RoleEnum.BrandManager:
@@ -44,12 +46,12 @@ namespace Pos_System.API.Services.Implements
 				        selector: x => x.BrandId,
 				        predicate: x => x.AccountId.Equals(account.Id));
 			        guidClaim = new Tuple<string, Guid>("brandId", brandId);
-                    string? brandAccountBrandPicUrl = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+                    accountBrandPicUrl = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
                         selector: brand => brand.PicUrl,
                         predicate: brand => brand.Id.Equals(brandId)
                     );
 			        loginResponse = new BrandAccountLoginResponse(account.Id, account.Username, account.Name,
-				        account.Role.Name, account.Status, brandId, brandAccountBrandPicUrl);
+				        account.Role.Name, account.Status, brandId, accountBrandPicUrl);
 			        break;
 		        case RoleEnum.StoreManager:
 		        case RoleEnum.Staff:
@@ -57,17 +59,17 @@ namespace Pos_System.API.Services.Implements
 				        selector: x => x.StoreId,
 				        predicate: x => x.AccountId.Equals(account.Id));
 			        guidClaim = new Tuple<string, Guid>("storeId", storeId);
-                    string? storeAccountBrandPicUrl = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(
+                    accountBrandPicUrl = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(
                         selector: store => store.Brand.PicUrl,
                         predicate: store => store.Id.Equals(storeId),
                         include: store => store.Include(store => store.Brand)
                     );
                     loginResponse = new StoreAccountLoginResponse(account.Id, account.Username, account.Name,
-				        account.Role.Name, account.Status, storeId, storeAccountBrandPicUrl);
+				        account.Role.Name, account.Status, storeId, accountBrandPicUrl);
 			        break;
 		        default:
                     loginResponse = new LoginResponse(account.Id, account.Username, account.Name, account.Role.Name,
-                        account.Status, null);
+                        account.Status, accountBrandPicUrl);
 			        break;
 	        }
 
