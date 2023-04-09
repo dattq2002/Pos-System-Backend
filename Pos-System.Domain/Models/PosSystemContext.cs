@@ -23,6 +23,7 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<Collection> Collections { get; set; } = null!;
         public virtual DbSet<CollectionProduct> CollectionProducts { get; set; } = null!;
         public virtual DbSet<ExtraCategory> ExtraCategories { get; set; } = null!;
+        public virtual DbSet<GroupProduct> GroupProducts { get; set; } = null!;
         public virtual DbSet<Menu> Menus { get; set; } = null!;
         public virtual DbSet<MenuProduct> MenuProducts { get; set; } = null!;
         public virtual DbSet<MenuStore> MenuStores { get; set; } = null!;
@@ -32,6 +33,7 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<Payment> Payments { get; set; } = null!;
         public virtual DbSet<PaymentType> PaymentTypes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<ProductInGroup> ProductInGroups { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Session> Sessions { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
@@ -191,6 +193,30 @@ namespace Pos_System.Domain.Models
                     .WithMany(p => p.ExtraCategoryProductCategories)
                     .HasForeignKey(d => d.ProductCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<GroupProduct>(entity =>
+            {
+                entity.ToTable("GroupProduct");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CombinationMode)
+                    .HasMaxLength(30)
+                    .HasDefaultValueSql("('')");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasDefaultValueSql("('')");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasComment("");
+
+                entity.HasOne(d => d.ComboProduct)
+                    .WithMany(p => p.GroupProducts)
+                    .HasForeignKey(d => d.ComboProductId)
+                    .HasConstraintName("FK_GroupProduct_Product");
             });
 
             modelBuilder.Entity<Menu>(entity =>
@@ -422,6 +448,29 @@ namespace Pos_System.Domain.Models
                     .HasConstraintName("FK_Product_Product");
             });
 
+            modelBuilder.Entity<ProductInGroup>(entity =>
+            {
+                entity.ToTable("ProductInGroup");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasComment("");
+
+                entity.HasOne(d => d.GroupProduct)
+                    .WithMany(p => p.ProductInGroups)
+                    .HasForeignKey(d => d.GroupProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductInGroup_GroupProduct");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductInGroups)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductInGroup_Product");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("Role");
@@ -436,6 +485,10 @@ namespace Pos_System.Domain.Models
                 entity.ToTable("Session");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasComment("");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Sessions)

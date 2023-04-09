@@ -13,7 +13,7 @@ public static class MessageConstant
         public const string CreateBrandFailMessage = "Create new brand failed";
         public const string CreateBrandSucceedMessage = "Create new brand successful";
         public const string BrandNotFoundMessage = "Brand không tồn tại trong hệ thống";
-        public const string EmptyBrandIdMessage = "Brand Id bị trống";
+        public const string EmptyBrandIdMessage = "Brand Id bị trống hoặc bạn không trong một brand nào";
         public const string UpdateBrandSuccessfulMessage = "Cập nhật thông tin brand thành công";
         public const string UpdateBrandFailedMessage = "Cập nhật thông tin brand thất bại";
     }
@@ -44,6 +44,9 @@ public static class MessageConstant
         public const string CreateNewStoreAccountUnauthorizedMessage = "Bạn không có quyền tạo tài khoản cho một store";
         public const string StoreNotInBrandMessage = "Bạn không được phép tạo account nằm ngoài brand đang quản lí";
         public const string GetStoreOrdersUnAuthorized = "Bạn không được phép lấy orders của store khác!";
+        public const string CreateStoreSessionsSuccessfully = "Tạo Session cho store thành công";
+        public const string GetStoreSessionUnAuthorized = "Bạn không được phép lấy session của store khác!";
+        public const string CreateStoreSessionUnAuthorized = "Bạn không được phép tạo session cho store khác!";
     }
 
     public static class Category
@@ -99,5 +102,22 @@ public static class MessageConstant
         public const string CreateOrderFailedMessage = "Tạo mới order thất bại";
         public const string EmptyOrderIdMessage = "Id của order không hợp lệ";
         public const string OrderNotFoundMessage = "Order không tồn tại trong hệ thống";
+    }
+
+    public static class Session
+    {
+        public const string EmptySessionIdMessage = "Id của session không hợp lệ";
+        public const string SessionNotFoundMessage = "Session không tồn tại trong store";
+    }
+
+    public static class GroupProduct
+    {
+        public const string WrongComboInformationMessage = "Combo bạn đang chọn không tồn tại hoặc không thuộc brand của bạn";
+        public const string GroupProductNotFoundMessage = "Group Product không tồn tại trong hệ thống";
+    }
+
+    public static class ProductInGroup
+    {
+        public const string ProductNotInGroupMessage = "Data cũ của product không tồn tại, productId: ";
     }
 }

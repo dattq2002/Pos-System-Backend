@@ -297,6 +297,7 @@ namespace Pos_System.API.Services.Implements
                             product.HistoricalPrice, product.DiscountPrice),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
+                        orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
                         size: size
                     );
@@ -309,6 +310,7 @@ namespace Pos_System.API.Services.Implements
                             product.HistoricalPrice, product.DiscountPrice),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
+                        orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
                         size: size
                     );
@@ -321,6 +323,7 @@ namespace Pos_System.API.Services.Implements
                             product.HistoricalPrice, product.DiscountPrice),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
+                        orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
                         size: size
                     );
@@ -333,6 +336,7 @@ namespace Pos_System.API.Services.Implements
                             product.HistoricalPrice, product.DiscountPrice),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
+                        orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
                         size: size
                     );
@@ -476,6 +480,7 @@ namespace Pos_System.API.Services.Implements
             if (menuForupdate == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
             menuForupdate.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
             _unitOfWork.GetRepository<Menu>().UpdateAsync(menuForupdate);
+            await _unitOfWork.CommitAsync();
             return menuId;
         }
     }

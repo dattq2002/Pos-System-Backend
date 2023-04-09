@@ -17,5 +17,6 @@ public interface IStoreService
 
     public Task<bool> UpdateStoreInformation(Guid storeId, UpdateStoreRequest updateStoreRequest);
     public Task<GetMenuDetailForStaffResponse> GetMenuDetailForStaff();
+    public Task<GetStoreEndShiftStatisticsResponse> GetStoreEndShiftStatistics(Guid storeId, Guid sessionId);
 
 }

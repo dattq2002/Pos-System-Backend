@@ -33,6 +33,8 @@ public static class ApiEndPointConstant
         public const string StoreAccountEndpoint = StoresEndpoint + "/{storeId}/users";
         public const string MenuProductsForStaffEndPoint = StoresEndpoint + "/menus";
         public const string StoreOrdersEndpoint = StoreEndpoint + "/orders";
+        public const string StoreSessionsEndpoint = StoreEndpoint + "/sessions";
+        public const string StoreSessionEndpoint = StoresEndpoint + "{storeId}/sessions/{id}";
     }
 
     public static class Account
@@ -59,6 +61,8 @@ public static class ApiEndPointConstant
         public const string ProductsEndPoint = ApiEndpoint + "/products";
         public const string ProductEndPoint = ProductsEndPoint + "/{id}";
         public const string ProductsInBrandEndPoint = Brand.BrandEndpoint + "/products";
+        public const string GroupProductsInBrandEndPoint = Brand.BrandEndpoint + "/groupProducts";
+        public const string GroupProductInBrandEndPoint = Brand.BrandsEndpoint + "/{brandId}/groupProducts/{id}";
     }
 
     public static class Menu

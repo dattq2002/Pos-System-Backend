@@ -18,6 +18,8 @@ namespace Pos_System.API.Services.Interfaces
         Task<IPaginate<GetProductResponse>> GetProducts(string? name, ProductType? type, int page, int size);
 
         Task<IEnumerable<GetProductDetailsResponse>> GetProductsInBrand(Guid brandId);
+        Task<Guid> CreateNewGroupProduct(Guid brandId, CreateNewGroupProductRequest createUpdateNewGroupProductRequest);
+        Task<Guid> UpdateGroupProduct(Guid brandId, Guid groupProductId, UpdateGroupProductRequest updateGroupProductRequest);
     }
 }
 
