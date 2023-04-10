@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Helpers;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Stores;
@@ -136,8 +137,34 @@ public class StoreService : BaseService<StoreService>, IStoreService
         Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
         if (userStoreId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.MissingStoreIdMessage);
 
-        Guid menuOfStoreId = await _unitOfWork.GetRepository<MenuStore>()
-            .SingleOrDefaultAsync(selector: x => x.MenuId, predicate: x => x.StoreId.Equals(userStoreId));
+        //Filter Menu
+        List<MenuStore> allMenuAvailable = (List<MenuStore>)await _unitOfWork.GetRepository<MenuStore>()
+            .GetListAsync(predicate: x => x.StoreId.Equals(userStoreId) 
+                && x.Menu.Status.Equals(MenuStatus.Active.GetDescriptionFromEnum()) 
+                && x.Store.Brand.Status.Equals(BrandStatus.Active.GetDescriptionFromEnum()),
+                include: x => x
+                    .Include(x => x.Menu)
+                    .Include(x => x.Store).ThenInclude(x => x.Brand)
+                );
+        if (!allMenuAvailable.Any()) throw new BadHttpRequestException(MessageConstant.Menu.NoMenusFoundMessage);
+
+        DateTime currentSEATime = TimeUtils.GetCurrentSEATime();
+        DateFilter currentDay = DateTimeHelper.GetDateFromDateTime(currentSEATime);
+        TimeOnly currentTime = TimeOnly.FromDateTime(currentSEATime);
+
+        List<MenuStore> menusAvailableInDay = new List<MenuStore>();
+        foreach (var menu in allMenuAvailable)
+        {
+            List<DateFilter> menuAvailableDays = DateTimeHelper.GetDatesFromDateFilter(menu.Menu.DateFilter);
+            TimeOnly menuStartTime = DateTimeHelper.ConvertIntToTimeOnly(menu.Menu.StartTime);
+            TimeOnly menuEndTime = DateTimeHelper.ConvertIntToTimeOnly(menu.Menu.EndTime);
+            if (menuAvailableDays.Contains(currentDay) && currentTime <= menuEndTime && currentTime >= menuStartTime)
+                menusAvailableInDay.Add(menu);
+        }
+
+        MenuStore menuAvailableWithHighestPriority = menusAvailableInDay.OrderByDescending(x => x.Menu.Priority).FirstOrDefault();
+        if (menuAvailableWithHighestPriority == null) throw new BadHttpRequestException(MessageConstant.Menu.NoMenusAvailableMessage);
+        Guid menuOfStoreId = menuAvailableWithHighestPriority.MenuId;
 
         Guid userBrandId = await _unitOfWork.GetRepository<Store>()
             .SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(userStoreId));
