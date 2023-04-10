@@ -44,7 +44,7 @@ namespace Pos_System.API.Services.Implements
                 CreatedAt = now,
                 Status = EnumUtil.GetDescriptionFromEnum(MenuStatus.Deactivate)
             };
-            if (createNewMenuRequest.IsBaseMenu)
+            if (createNewMenuRequest.IsBaseMenu || createNewMenuRequest.Priority == 0)
             {
 	            HasBaseMenuResponse hasBaseMenu = await CheckHasBaseMenuInBrand(brandId);
 	            if (hasBaseMenu.HasBaseMenu)
