@@ -74,7 +74,8 @@ namespace Pos_System.API.Services.Implements
                     ? x => x.BrandId.Equals(brandId) && x.Type.Equals(type.GetDescriptionFromEnum())
                     : x => x.BrandId.Equals(brandId) && x.Name.ToLower().Contains(name) && x.Type.Equals(type.GetDescriptionFromEnum()))),
                 page: page,
-                size: size
+                size: size,
+                orderBy: x => x.OrderBy(x => x.Code)
                 );
             return productsResponse;
         }

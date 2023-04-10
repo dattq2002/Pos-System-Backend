@@ -303,7 +303,7 @@ namespace Pos_System.API.Services.Implements
 
                     currentUserSession.TotalAmount += order.TotalAmount;
                     currentUserSession.TotalFinalAmount += order.FinalAmount;
-                    currentUserSession.TotalChangeCash += order.FinalAmount;
+                    if(paymentType.Name.Equals("CASH") || paymentType.Name.Equals("Tiền mặt")) currentUserSession.TotalChangeCash += order.FinalAmount;
                     currentUserSession.TotalDiscountAmount += order.Discount;
 
                     await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
