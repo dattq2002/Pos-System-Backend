@@ -8,5 +8,7 @@ namespace Pos_System.API.Services.Interfaces
     {
         Task<bool> CreateStoreSessions(Guid storeId, CreateStoreSessionsRequest createStoreSessionsRequest);
         Task<IPaginate<GetStoreSessionListResponse>> GetStoreSessions(Guid storeId, int page, int size, DateTime? startTime, DateTime? endTime);
+        Task<Guid> UpdateStoreSession(Guid storeId, Guid sessionId, UpdateStoreSessionRequest updateStoreSessionRequest);
+
     }
 }
