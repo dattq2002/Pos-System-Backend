@@ -139,7 +139,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
         [HttpGet(ApiEndPointConstant.Store.StoreSessionEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<GetStoreSessionListResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreEndShiftStatisticsResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStoreEndShiftStatictis(Guid storeId, Guid id)
         {
             var response = await _storeService.GetStoreEndShiftStatistics(storeId, id);

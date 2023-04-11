@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Products;
-using Pos_System.API.Payload.Response.Categories;
 using Pos_System.API.Payload.Response.Products;
-using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
 using Pos_System.Domain.Paginate;
@@ -98,6 +96,15 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> UpdateGroupProduct(Guid brandId ,Guid id, UpdateGroupProductRequest updateGroupProductRequest)
         {
             var response = await _productService.UpdateGroupProduct(brandId, id, updateGroupProductRequest);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPatch(ApiEndPointConstant.Product.ProductEndPoint)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> UpdateProductStatus(Guid id, UpdateProductStatusRequest updateProductStatusRequest)
+        {
+            var response = await _productService.UpdateProductStatus(id, updateProductStatusRequest);
             return Ok(response);
         }
     }

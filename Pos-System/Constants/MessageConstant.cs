@@ -75,6 +75,8 @@ public static class MessageConstant
         public const string UpdateProductFailedMessage = "Cập nhật thông tin product thất bại";
         public const string EmptyProductIdMessage = "Product Id bị trống";
         public const string ProductNotFoundMessage = "Product không tồn tại trong hệ thống";
+        public const string UpdateProductStatusRequestWrongFormatMessage =
+            "Cập nhật status product request sai format";
     }
 
     public static class Menu

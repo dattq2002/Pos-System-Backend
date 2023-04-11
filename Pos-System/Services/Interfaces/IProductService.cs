@@ -20,6 +20,8 @@ namespace Pos_System.API.Services.Interfaces
         Task<IEnumerable<GetProductDetailsResponse>> GetProductsInBrand(Guid brandId);
         Task<Guid> CreateNewGroupProduct(Guid brandId, CreateNewGroupProductRequest createUpdateNewGroupProductRequest);
         Task<Guid> UpdateGroupProduct(Guid brandId, Guid groupProductId, UpdateGroupProductRequest updateGroupProductRequest);
+        Task<bool> UpdateProductStatus(Guid productId, UpdateProductStatusRequest updateProductStatusRequest);
+
     }
 }
 
