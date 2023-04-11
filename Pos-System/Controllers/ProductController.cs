@@ -100,11 +100,11 @@ namespace Pos_System.API.Controllers
         }
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
-        [HttpPatch(ApiEndPointConstant.Product.ProductEndPoint)]
+        [HttpPatch(ApiEndPointConstant.Product.ProductInBrandEndpoint)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateProductStatus(Guid id, UpdateProductStatusRequest updateProductStatusRequest)
+        public async Task<IActionResult> UpdateProductStatus(Guid productId, UpdateProductStatusRequest updateProductStatusRequest)
         {
-            var response = await _productService.UpdateProductStatus(id, updateProductStatusRequest);
+            var response = await _productService.UpdateProductStatus(productId, updateProductStatusRequest);
             return Ok(response);
         }
     }
