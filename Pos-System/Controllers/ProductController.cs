@@ -63,7 +63,7 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> UpdateProductInformation(Guid id, UpdateProductRequest updateProductRequest)
         {
             _logger.LogInformation($"Start to update product with product id: {id}");
-            Guid response = await _productService.UpdateProduct(id , updateProductRequest);
+            Guid response = await _productService.UpdateProduct(id, updateProductRequest);
             if (response == Guid.Empty)
             {
                 _logger.LogInformation(
@@ -76,7 +76,8 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.ProductsInBrandEndPoint)]
         [ProducesResponseType(typeof(GetProductDetailsResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProductsInBrand(Guid id){
+        public async Task<IActionResult> GetProductsInBrand(Guid id)
+        {
             var response = await _productService.GetProductsInBrand(id);
             return Ok(response);
         }
@@ -93,7 +94,7 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpPut(ApiEndPointConstant.Product.GroupProductInBrandEndPoint)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateGroupProduct(Guid brandId ,Guid id, UpdateGroupProductRequest updateGroupProductRequest)
+        public async Task<IActionResult> UpdateGroupProduct(Guid brandId, Guid id, UpdateGroupProductRequest updateGroupProductRequest)
         {
             var response = await _productService.UpdateGroupProduct(brandId, id, updateGroupProductRequest);
             return Ok(response);
@@ -105,7 +106,8 @@ namespace Pos_System.API.Controllers
         public async Task<IActionResult> UpdateProductStatus(Guid productId, UpdateProductStatusRequest updateProductStatusRequest)
         {
             var response = await _productService.UpdateProductStatus(productId, updateProductStatusRequest);
-            return Ok(response);
+            if (response) return NoContent();
+            return BadRequest();
         }
     }
 }
