@@ -145,5 +145,14 @@ namespace Pos_System.API.Controllers
             var response = await _storeService.GetStoreEndShiftStatistics(storeId, id);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpPut(ApiEndPointConstant.Store.StoreSessionEndpoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateStoreSession(Guid storeId, Guid id, UpdateStoreSessionRequest updateStoreSessionRequest)
+        {
+            var response = await _sessionService.UpdateStoreSession(storeId, id, updateStoreSessionRequest);
+            return Ok(response);
+        }
     }
 }

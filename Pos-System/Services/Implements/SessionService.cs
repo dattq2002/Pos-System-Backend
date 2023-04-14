@@ -76,7 +76,7 @@ namespace Pos_System.API.Services.Implements
                     TotalFinalAmount = x.TotalFinalAmount ?? 0
                 },
                 predicate: BuildGetSessionsOfStoreQuery(storeId, startTime, endTime),
-                orderBy: x => x.OrderByDescending(x => x.StartDateTime),
+                orderBy: x => x.OrderByDescending(x => x.EndDateTime),
                 page: page,
                 size: size
                 );
@@ -84,6 +84,32 @@ namespace Pos_System.API.Services.Implements
             return sessionsInStore;
         }
 
+        public async Task<Guid> UpdateStoreSession(Guid storeId, Guid sessionId, UpdateStoreSessionRequest updateStoreSessionRequest)
+        {
+            Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
+            if (userStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.CreateStoreSessionUnAuthorized);
+            _logger.LogInformation($"Start update store session with storeID: {storeId}");
+            if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+            Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
+            if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
+
+            Session sessionToUpdate = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(sessionId));
+            if (sessionToUpdate == null) throw new BadHttpRequestException(MessageConstant.Session.SessionNotFoundMessage);
+
+            sessionToUpdate.StartDateTime = updateStoreSessionRequest.startTime;
+            sessionToUpdate.EndDateTime = updateStoreSessionRequest.endTime;
+            sessionToUpdate.Name = updateStoreSessionRequest.Name ?? 
+                "Ca " + TimeUtils.GetHoursTime(sessionToUpdate.StartDateTime) + " - " + TimeUtils.GetHoursTime(sessionToUpdate.EndDateTime);
+            if (updateStoreSessionRequest.InitCashInVault != null)
+            {
+                double currentInitCashInVault = (double)(sessionToUpdate.TotalChangeCash - sessionToUpdate.TotalFinalAmount);
+                sessionToUpdate.TotalChangeCash = sessionToUpdate.TotalChangeCash - currentInitCashInVault + updateStoreSessionRequest.InitCashInVault;
+            }
+
+            _unitOfWork.GetRepository<Session>().UpdateAsync(sessionToUpdate);
+            await _unitOfWork.CommitAsync();
+            return sessionId;
+        }
 
         private Expression<Func<Session, bool>> BuildGetSessionsOfStoreQuery(Guid storeId, DateTime? startDate,
            DateTime? endDate)
