@@ -77,12 +77,20 @@ public static class ApiEndPointConstant
 
     public static class PaymentType
     {
-	    public const string PaymentTypesEndPoint = ApiEndpoint + "/payment-types";
+        public const string PaymentTypesEndPoint = ApiEndpoint + "/payment-types";
     }
 
     public static class Order
     {
         public const string OrdersEndPoint = Store.StoresEndpoint + "/{storeId}/orders";
         public const string OrderEndPoint = OrdersEndPoint + "/{id}";
+    }
+    public static class Report
+    {
+        public const string ReportEndPoint = ApiEndpoint + "/report";
+        public const string SystemReportEndPoint = ReportEndPoint + "/system";
+        public const string StoreReportEndPoint = ReportEndPoint + "/store";
+
+
     }
 }
