@@ -90,6 +90,7 @@ public static class ApiEndPointConstant
         public const string ReportEndPoint = ApiEndpoint + "/report";
         public const string SystemReportEndPoint = ReportEndPoint + "/system";
         public const string StoreReportEndPoint = ReportEndPoint + "/store";
+        public const string BrandReportEndPoint = ReportEndPoint + "/brand";
 
 
     }

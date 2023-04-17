@@ -29,12 +29,12 @@ namespace Pos_System.API.Controllers
             return Ok(res);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager)]
-        [HttpGet(ApiEndPointConstant.Report.StoreReportEndPoint)]
-        [ProducesResponseType(typeof(StoreReportResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoreReport(Guid id, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        [CustomAuthorize(RoleEnum.BrandManager)]
+        [HttpGet(ApiEndPointConstant.Report.BrandReportEndPoint)]
+        [ProducesResponseType(typeof(BrandReportResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBrandReport()
         {
-            var res = await _reportService.GetStoreReport(id, startDate, endDate);
+            var res = await _reportService.GetBrandReport();
             return Ok(res);
         }
 

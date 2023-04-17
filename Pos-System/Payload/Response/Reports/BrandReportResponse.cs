@@ -2,11 +2,17 @@
 {
     public class BrandReportResponse
     {
-        public double BasicRevenue { get; set; }
-        public List<double>? RevenueByTimeline { get; set; }
-        public int TotalOrder { get; set; }
-        public double TotalDiscount { get; set; }
-        public int TotalOrderUsingCash { get; set; }
-        public int TotalOrderUsingOnline { get; set; }
+        public int? TotalStoreInBrand { get; set; }
+        public int? TotalAccountInBrand { get; set; }
+        public int? TotalProductInBrand { get; set; }
+        public int? TotalPaymentMethodInBrand { get; set; }
+
+        public BrandReportResponse(int? totalStoreInBrand, int? totalAccountInBrand, int? totalProductInBrand, int? totalPaymentMethodInBrand)
+        {
+            TotalStoreInBrand = totalStoreInBrand;
+            TotalAccountInBrand = totalAccountInBrand;
+            TotalProductInBrand = totalProductInBrand;
+            TotalPaymentMethodInBrand = totalPaymentMethodInBrand;
+        }
     }
 }

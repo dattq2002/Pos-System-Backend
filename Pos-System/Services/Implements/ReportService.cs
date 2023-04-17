@@ -24,70 +24,70 @@ namespace Pos_System.API.Services.Implements
             _menuService = menuService;
         }
 
-        public async Task<StoreReportResponse> GetStoreReport(Guid storeId, DateTime? startDate, DateTime? endDate)
-        {
-            RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
-            if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
-            Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
-            if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
-            Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(currentUserStoreId));
-            if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
-            Guid brandId = store.BrandId;
-            StoreReportResponse storeReportResponse = new StoreReportResponse(0.0, 0.0, 0.0, null, null, null, null, null, null, null);
-            var orderList = await _unitOfWork.GetRepository<Order>().GetListAsync<Order>(
-                   selector: x => new Order(),
-                  predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate)
-                  );
+        //public async Task<StoreReportResponse> GetStoreReport(Guid storeId, DateTime? startDate, DateTime? endDate)
+        //{
+        //    RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
+        //    if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+        //    Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
+        //    if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
+        //    Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(currentUserStoreId));
+        //    if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
+        //    Guid brandId = store.BrandId;
+        //    StoreReportResponse storeReportResponse = new StoreReportResponse(0.0, 0.0, 0.0, null, null, null, null, null, null, null);
+        //    var orderList = await _unitOfWork.GetRepository<Order>().GetListAsync<Order>(
+        //           selector: x => new Order(),
+        //          predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate)
+        //          );
 
-            //Query by order status
-            storeReportResponse.listOrderStatus.Add("Tất cả");
-            storeReportResponse.listOrderStatus.Add("Đã thanh toán");
-            storeReportResponse.listOrderStatus.Add("Đã hủy");
-            storeReportResponse.listOrderStatus.Add("Đợi thanh toán");
-            storeReportResponse.TotalOrderByStatus.Add(orderList.Count());
-            storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Count());
-            storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.CANCELED.GetDescriptionFromEnum())).Count());
-            storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.PENDING.GetDescriptionFromEnum())).Count());
-
-
-            //Query revenue
-            storeReportResponse.BasicRevenue = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.TotalAmount);
-            storeReportResponse.TotalDiscount = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.Discount);
-            storeReportResponse.TotalFinalRevenue = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.FinalAmount);
-
-            //Query by timeline
-            for (int i = 6; i < 24; i++)
-            {
-                var count = 0;
-                double countAmount = 0;
-                foreach (var item in orderList)
-                {
-                    if (i == item.CheckOutDate.Hour && item.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()))
-                    {
-                        count++;
-                        countAmount += item.FinalAmount;
-
-                    }
-                }
-                storeReportResponse.listTimeLine.Add(i.ToString() + "h");
-                storeReportResponse.TotalOrderByTimeline.Add(count);
-                storeReportResponse.TotalRevenueByTimeline.Add(countAmount);
-            }
-
-            //Query by orderType
-            storeReportResponse.listOrderType.Add("Tại  Quán");
-            storeReportResponse.listOrderType.Add("Mang đi");
-            storeReportResponse.listOrderType.Add("Giao hàng");
-            storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.EAT_IN.GetDescriptionFromEnum())).Count());
-            storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.TAKE_AWAY.GetDescriptionFromEnum())).Count());
-            storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.DELIVERY.GetDescriptionFromEnum())).Count());
+        //    //Query by order status
+        //    storeReportResponse.listOrderStatus.Add("Tất cả");
+        //    storeReportResponse.listOrderStatus.Add("Đã thanh toán");
+        //    storeReportResponse.listOrderStatus.Add("Đã hủy");
+        //    storeReportResponse.listOrderStatus.Add("Đợi thanh toán");
+        //    storeReportResponse.TotalOrderByStatus.Add(orderList.Count());
+        //    storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Count());
+        //    storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.CANCELED.GetDescriptionFromEnum())).Count());
+        //    storeReportResponse.TotalOrderByStatus.Add(orderList.Where(f => f.Status.Equals(OrderStatus.PENDING.GetDescriptionFromEnum())).Count());
 
 
+        //    //Query revenue
+        //    storeReportResponse.BasicRevenue = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.TotalAmount);
+        //    storeReportResponse.TotalDiscount = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.Discount);
+        //    storeReportResponse.TotalFinalRevenue = orderList.Where(f => f.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())).Aggregate(0.0, (acc, x) => acc + x.FinalAmount);
+
+        //    //Query by timeline
+        //    for (int i = 6; i < 24; i++)
+        //    {
+        //        var count = 0;
+        //        double countAmount = 0;
+        //        foreach (var item in orderList)
+        //        {
+        //            if (i == item.CheckOutDate.Hour && item.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()))
+        //            {
+        //                count++;
+        //                countAmount += item.FinalAmount;
+
+        //            }
+        //        }
+        //        storeReportResponse.listTimeLine.Add(i.ToString() + "h");
+        //        storeReportResponse.TotalOrderByTimeline.Add(count);
+        //        storeReportResponse.TotalRevenueByTimeline.Add(countAmount);
+        //    }
+
+        //    //Query by orderType
+        //    storeReportResponse.listOrderType.Add("Tại  Quán");
+        //    storeReportResponse.listOrderType.Add("Mang đi");
+        //    storeReportResponse.listOrderType.Add("Giao hàng");
+        //    storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.EAT_IN.GetDescriptionFromEnum())).Count());
+        //    storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.TAKE_AWAY.GetDescriptionFromEnum())).Count());
+        //    storeReportResponse.TotalOrderByType.Add(orderList.Where(f => f.OrderType.Equals(OrderType.DELIVERY.GetDescriptionFromEnum())).Count());
 
 
 
-            return storeReportResponse;
-        }
+
+
+        //    return storeReportResponse;
+        //}
 
         public async Task<SystemReport> GetSystemReport()
         {
@@ -108,6 +108,38 @@ namespace Pos_System.API.Services.Implements
             systemReport.TotalPaymentMethod = totalPayment.Count();
 
             return systemReport;
+        }
+
+        public async Task<BrandReportResponse> GetBrandReport()
+        {
+            Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+            if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            BrandReportResponse brandReport = new BrandReportResponse(0, 0, 0, 0);
+
+            var totalStore = await _unitOfWork.GetRepository<Store>().GetListAsync(
+        predicate: x => x.BrandId.Equals(brandId) && x.Status.Equals(StoreStatus.Active.GetDescriptionFromEnum()));
+            var totalBrandAccount = await _unitOfWork.GetRepository<Account>().GetListAsync(
+                  include: x => x.Include(account => account.BrandAccount),
+        predicate: x => x.BrandAccount.BrandId.Equals(brandId) && x.Status.Equals(AccountStatus.Active.GetDescriptionFromEnum()));
+            var totalStoreAccount = await _unitOfWork.GetRepository<Account>().GetListAsync(
+                include: x => x.Include(account => account.StoreAccount).Include(store => store.StoreAccount),
+      predicate: x => x.StoreAccount.Store.BrandId.Equals(brandId) && x.Status.Equals(AccountStatus.Active.GetDescriptionFromEnum()));
+
+            var totalProductInBrand = await _unitOfWork.GetRepository<Product>().GetListAsync(
+        predicate: x => x.BrandId.Equals(brandId) && x.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()));
+
+            var totalPaymentMethodInBrand = await _unitOfWork.GetRepository<PaymentType>().GetListAsync(
+          predicate: x => x.BrandId.Equals(brandId));
+
+
+            var totalPayment = await _unitOfWork.GetRepository<PaymentType>().GetListAsync(
+        );
+            brandReport.TotalStoreInBrand = totalStore.Count();
+            brandReport.TotalAccountInBrand = totalStoreAccount.Count() + totalBrandAccount.Count();
+            brandReport.TotalProductInBrand = totalProductInBrand.Count();
+            brandReport.TotalPaymentMethodInBrand = totalPaymentMethodInBrand.Count();
+
+            return brandReport;
         }
 
 
