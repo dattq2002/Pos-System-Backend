@@ -2,7 +2,7 @@
 
 namespace Pos_System.API.Payload.Request.Accounts
 {
-    public class UpdateStaffAccountInformationRequest
+    public class UpdateStoreAccountInformationRequest
     {
         [MaxLength(50, ErrorMessage = "Account name max length is 50 characters")]
         public string? Name { get; set; }

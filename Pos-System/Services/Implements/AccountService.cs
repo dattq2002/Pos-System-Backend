@@ -241,7 +241,7 @@ namespace Pos_System.API.Services.Implements
             return account;
         }
 
-        public async Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        public async Task<bool> UpdateStoreAccountInformation(Guid accountId, UpdateStoreAccountInformationRequest staffAccountInformationRequest)
         {
 			if (accountId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
             Account updatedAccount = await _unitOfWork.GetRepository<Account>()
