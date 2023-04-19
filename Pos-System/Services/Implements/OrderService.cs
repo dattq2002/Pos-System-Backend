@@ -279,38 +279,6 @@ namespace Pos_System.API.Services.Implements
                 }
             }
 
-            if (updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)
-            {
-                //Case chang from CANCELED to PAID
-                if(order.Status.Equals(OrderStatus.CANCELED)) currentUserSession.NumberOfOrders++;
-                PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
-                    x.Id.Equals(updateOrderRequest.paymentId));
-
-                if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
-
-                Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
-
-                if (currentPayment == null)
-                {
-
-                    Payment newPaymentRequest = new Payment()
-                    {
-                        Id = Guid.NewGuid(),
-                        OrderId = order.Id,
-                        Amount = order.FinalAmount,
-                        PaymentTypeId = paymentType.Id
-                    };
-
-                    currentUserSession.TotalAmount += order.TotalAmount;
-                    currentUserSession.TotalFinalAmount += order.FinalAmount;
-                    if(paymentType.Name.Equals("CASH") || paymentType.Name.Equals("Tiền mặt")) currentUserSession.TotalChangeCash += order.FinalAmount;
-                    currentUserSession.TotalDiscountAmount += order.Discount;
-
-                    await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
-                }
-
-            }
-
             order.CheckOutDate = currentTime;
             order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
 

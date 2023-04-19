@@ -205,6 +205,19 @@ namespace Pos_System.API.Services.Implements
                         _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
                         break;
                     }
+                case RoleEnum.BrandManager:
+                    {
+                        Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                            .SingleOrDefaultAsync(
+                                predicate: x => x.Id.Equals(accountId) && x.Role.Name.Equals(RoleEnum.StoreManager.GetDescriptionFromEnum()),
+                                include: x => x.Include(x => x.Role)
+                            );
+                        if (updatedAccount == null)
+                            throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+                        updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+                        _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+                        break;
+                    }
                 default:
                     {
                         throw new BadHttpRequestException(MessageConstant.Account.UserUnauthorizedMessage);
