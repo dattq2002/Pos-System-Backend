@@ -205,6 +205,19 @@ namespace Pos_System.API.Services.Implements
                         _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
                         break;
                     }
+                case RoleEnum.BrandManager:
+                    {
+                        Account updatedAccount = await _unitOfWork.GetRepository<Account>()
+                            .SingleOrDefaultAsync(
+                                predicate: x => x.Id.Equals(accountId) && x.Role.Name.Equals(RoleEnum.StoreManager.GetDescriptionFromEnum()),
+                                include: x => x.Include(x => x.Role)
+                            );
+                        if (updatedAccount == null)
+                            throw new BadHttpRequestException(MessageConstant.Account.AccountNotFoundMessage);
+                        updatedAccount.Status = EnumUtil.GetDescriptionFromEnum(newStatus);
+                        _unitOfWork.GetRepository<Account>().UpdateAsync(updatedAccount);
+                        break;
+                    }
                 default:
                     {
                         throw new BadHttpRequestException(MessageConstant.Account.UserUnauthorizedMessage);
@@ -241,7 +254,7 @@ namespace Pos_System.API.Services.Implements
             return account;
         }
 
-        public async Task<bool> UpdateStaffAccountInformation(Guid accountId, UpdateStaffAccountInformationRequest staffAccountInformationRequest)
+        public async Task<bool> UpdateStoreAccountInformation(Guid accountId, UpdateStoreAccountInformationRequest staffAccountInformationRequest)
         {
 			if (accountId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Account.EmptyAccountId);
             Account updatedAccount = await _unitOfWork.GetRepository<Account>()

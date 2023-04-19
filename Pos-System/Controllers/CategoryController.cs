@@ -25,7 +25,7 @@ namespace Pos_System.API.Controllers
         [ProducesResponseType(typeof(CreateNewCategoryRequest), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNewCategory(CreateNewCategoryRequest request)
         {
-            bool isSuccessful = await _categoryService.CreateNewCategoryRequest(request);
+            bool isSuccessful = await _categoryService.CreateNewCategory(request);
             if (!isSuccessful) return Ok(MessageConstant.Category.CreateNewCategoryFailedMessage);
             return Ok(request);
         }
@@ -64,7 +64,7 @@ namespace Pos_System.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> AddExtraCategoriesToNormalCategory(Guid categoryId, List<Guid> request)
         {
-            bool isSuccessful = await _categoryService.AddExtraCategoriesToNormalCategoryRequest(categoryId, request);
+            bool isSuccessful = await _categoryService.AddExtraCategoriesToNormalCategory(categoryId, request);
             if (!isSuccessful) return Ok(MessageConstant.Category.UpdateExtraCategoryFailedMessage);
             return Ok(MessageConstant.Category.UpdateExtraCategorySuccessfulMessage);
         }

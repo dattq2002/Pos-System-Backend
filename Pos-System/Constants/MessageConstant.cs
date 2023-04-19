@@ -4,14 +4,14 @@ public static class MessageConstant
 {
     public static class LoginMessage
     {
-        public const string InvalidUsernameOrPassword = "Username or password is not correct";
-        public const string DeactivatedAccount = "Deactivated account can not login system";
+        public const string InvalidUsernameOrPassword = "Tên đăng nhập hoặc mật khẩu không chính xác";
+        public const string DeactivatedAccount = "Tài khoản đang bị vô hiệu hoá";
     }
 
     public static class Brand
     {
-        public const string CreateBrandFailMessage = "Create new brand failed";
-        public const string CreateBrandSucceedMessage = "Create new brand successful";
+        public const string CreateBrandFailMessage = "Tạo nhãn hiệu mới thất bại";
+        public const string CreateBrandSucceedMessage = "Tạo nhãn hiệu mới thành công";
         public const string BrandNotFoundMessage = "Brand không tồn tại trong hệ thống";
         public const string EmptyBrandIdMessage = "Brand Id bị trống hoặc bạn không trong một brand nào";
         public const string UpdateBrandSuccessfulMessage = "Cập nhật thông tin brand thành công";
@@ -21,8 +21,8 @@ public static class MessageConstant
     public static class Account
     {
         public const string CreateAccountWithWrongRoleMessage = "Please create with acceptent role";
-        public const string CreateBrandAccountFailMessage = "Create brand account failed";
-        public const string CreateStaffAccountFailMessage = "Create staff account failed";
+        public const string CreateBrandAccountFailMessage = "Tạo tài khoản mới cho nhãn hiệu thất bại";
+        public const string CreateStaffAccountFailMessage = "Tạo tài khoản nhân viên thất bại";
         public const string UserUnauthorizedMessage = "Bạn không được phép cập nhật status cho tài khoản này";
 
         public const string UpdateAccountStatusRequestWrongFormatMessage =
@@ -37,7 +37,7 @@ public static class MessageConstant
     public static class Store
     {
         public const string EmptyStoreIdMessage = "Store Id bị trống";
-        public const string CreateStoreFailMessage = "Create new store failed";
+        public const string CreateStoreFailMessage = "Tạo của hàng mới thất bại";
         public const string StoreNotFoundMessage = "Store không tồn tại trong hệ thống";
         public const string UpdateStoreInformationSuccessfulMessage = "Cập nhật thông tin store thành công";
         public const string UpdateStaffInformationSuccessfulMessage = "Cập nhật thông tin staff thành công";
@@ -91,6 +91,8 @@ public static class MessageConstant
         public const string UpdateMenuInformationSuccessfulMessage = "Cập nhật thông tin menu thành công";
         public const string UpdateMenuInformationFailedMessage = "Cập nhật thông tin menu thất bại";
         public const string EndTimeLowerThanStartTimeMessage = "Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu";
+        public const string StartTimeRequestBiggerThanCurrentMenuEndTimeMessage = "Thời gian bắt đầu khi cập nhật không được lớn hơn thời gian kết thúc hiện tại của menu";
+        public const string EndTimeRequestLowerThanCurrentMenuStartTimeMessage = "Thời gian kết thúc khi cập nhật không được nhỏ hơn thời gian bắt đầu hiện tại của menu";
         public const string CanNotUsePriorityAsBaseMenu = "Bạn không thể dùng priority của base menu để tạo menu khác";
         public const string BaseMenuExistedMessage = "Nhãn hàng đã có menu cơ bản";
         public const string UpdateMenuStatusRequestWrongFormatMessage =

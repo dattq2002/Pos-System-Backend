@@ -370,21 +370,21 @@ namespace Pos_System.API.Services.Implements
                 throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
             }
 
+            if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue
+                                                                && updateMenuInformationRequest.StartTime > updateMenuInformationRequest.EndTime)
+            {
+                _logger.LogInformation($"Failed to update menu {menuId} because endtime is lower than starttime");
+                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
+            }
+
             if (updateMenuInformationRequest.StartTime.HasValue && (updateMenuInformationRequest.StartTime > currentMenu.EndTime))
             {
-                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
+                throw new BadHttpRequestException(MessageConstant.Menu.StartTimeRequestBiggerThanCurrentMenuEndTimeMessage);
             }
 
             if (updateMenuInformationRequest.EndTime.HasValue && (updateMenuInformationRequest.EndTime < currentMenu.StartTime))
             {
-                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
-            }
-
-            if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue
-                && updateMenuInformationRequest.StartTime > updateMenuInformationRequest.EndTime)
-            {
-                _logger.LogInformation($"Failed to update menu {menuId} because endtime is lower than starttime");
-                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
+                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeRequestLowerThanCurrentMenuStartTimeMessage);
             }
 
             _logger.LogInformation($"Start update menu information of menu's {menuId} id");

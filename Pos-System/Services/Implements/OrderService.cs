@@ -268,15 +268,15 @@ namespace Pos_System.API.Services.Implements
                 currentUserSession.NumberOfOrders--;
                 Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
                 //Reverse Transaction if switch from PAID to CANCELED
-                if(currentPayment != null)
-                {
-                    currentUserSession.TotalAmount -= order.TotalAmount;
-                    currentUserSession.TotalFinalAmount -= order.FinalAmount;
-                    currentUserSession.TotalChangeCash -= order.FinalAmount;
-                    currentUserSession.TotalDiscountAmount -= order.Discount;
-
-                    _unitOfWork.GetRepository<Payment>().DeleteAsync(currentPayment);
-                }
+                // if(currentPayment != null)
+                // {
+                //     currentUserSession.TotalAmount -= order.TotalAmount;
+                //     currentUserSession.TotalFinalAmount -= order.FinalAmount;
+                //     currentUserSession.TotalChangeCash -= order.FinalAmount;
+                //     currentUserSession.TotalDiscountAmount -= order.Discount;
+                //
+                //     _unitOfWork.GetRepository<Payment>().DeleteAsync(currentPayment);
+                // }
             }
 
             if (updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)

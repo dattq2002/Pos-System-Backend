@@ -7,7 +7,7 @@ namespace Pos_System.API.Services.Interfaces;
 
 public interface ICategoryService
 {
-    Task<bool> CreateNewCategoryRequest(CreateNewCategoryRequest request);
+    Task<bool> CreateNewCategory(CreateNewCategoryRequest request);
 
     Task<IPaginate<GetCategoryResponse>> GetCategories(string? name, CategoryType? type, int page, int size);
 
@@ -15,7 +15,7 @@ public interface ICategoryService
 
     Task<bool> UpdateCategory(Guid id, UpdateCategoryRequest request);
 
-    Task<bool> AddExtraCategoriesToNormalCategoryRequest(Guid categoryId, List<Guid> request);
+    Task<bool> AddExtraCategoriesToNormalCategory(Guid categoryId, List<Guid> request);
 
     Task<IPaginate<GetCategoryResponse>> GetExtraCategoriesByCategoryId(Guid categoryId, int page, int size);
 }

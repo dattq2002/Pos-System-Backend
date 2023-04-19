@@ -18,7 +18,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
     }
 
 
-    public async Task<bool> CreateNewCategoryRequest(CreateNewCategoryRequest request)
+    public async Task<bool> CreateNewCategory(CreateNewCategoryRequest request)
     {
         _logger.LogInformation($"Start create new category: {request}");
         Guid brandId = Guid.Parse(GetBrandIdFromJwt());
@@ -95,7 +95,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
         return isSuccessful;
     }
 
-    public async Task<bool> AddExtraCategoriesToNormalCategoryRequest(Guid categoryId, List<Guid> request)
+    public async Task<bool> AddExtraCategoriesToNormalCategory(Guid categoryId, List<Guid> request)
     {
         _logger.LogInformation($"Add extraCategory to Normal Categoery: {categoryId}");
         Guid brandId = Guid.Parse(GetBrandIdFromJwt());
