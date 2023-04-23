@@ -14,7 +14,6 @@ namespace Pos_System.API.Payload.Response.Orders
         public OrderStatus OrderStatus { get; set; }
         public OrderType OrderType { get; set; }
         public DateTime CheckInDate { get; set; }
-        public OrderPaymentResponse Payment { get; set; }
         public List<OrderProductDetailResponse> ProductList { get; set; } = new List<OrderProductDetailResponse>();
     }
 
@@ -42,12 +41,4 @@ namespace Pos_System.API.Payload.Response.Orders
         public double Discount { get; set; }
         public string Name { get; set; }
     }
-
-    public class OrderPaymentResponse
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string? PicUrl { get; set; }
-    }
-
 }
