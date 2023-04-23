@@ -25,10 +25,20 @@ namespace Pos_System.API.Controllers
 			var loginResponse = await _accountService.Login(loginRequest);
 			if (loginResponse == null)
 			{
-				return Unauthorized(MessageConstant.LoginMessage.InvalidUsernameOrPassword);
+				return Unauthorized(new ErrorResponse()
+				{
+					StatusCode = StatusCodes.Status401Unauthorized,
+					Error = MessageConstant.LoginMessage.InvalidUsernameOrPassword,
+					TimeStamp = DateTime.Now
+				});
 			}
 			if (loginResponse.Status == AccountStatus.Deactivate)
-				return Unauthorized(MessageConstant.LoginMessage.DeactivatedAccount);
+				return Unauthorized(new ErrorResponse()
+				{
+					StatusCode = StatusCodes.Status401Unauthorized,
+					Error = MessageConstant.LoginMessage.DeactivatedAccount,
+					TimeStamp = DateTime.Now
+				});
 			return Ok(loginResponse);
 		}
     }
