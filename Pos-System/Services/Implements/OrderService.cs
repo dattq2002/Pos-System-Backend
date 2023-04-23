@@ -274,7 +274,7 @@ namespace Pos_System.API.Services.Implements
                 //Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
 
                 //if (currentPayment == null)
-                {
+                //{
 
                     //Payment newPaymentRequest = new Payment()
                     //{
@@ -284,7 +284,7 @@ namespace Pos_System.API.Services.Implements
                     //    PaymentTypeId = paymentType.Id
                     //};
                     //await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
-                }
+                //}
                 currentUserSession.TotalAmount += order.TotalAmount;
                 currentUserSession.TotalFinalAmount += order.FinalAmount;
                 currentUserSession.TotalDiscountAmount += order.Discount;
