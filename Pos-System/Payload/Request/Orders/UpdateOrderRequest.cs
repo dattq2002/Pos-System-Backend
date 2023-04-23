@@ -5,6 +5,6 @@ namespace Pos_System.API.Payload.Request.Orders
     public class UpdateOrderRequest
     {
         public OrderStatus Status { get; set; }
-        public Guid? paymentId { get; set; }
+        public string? PaymentType { get; set; }
     }
 }

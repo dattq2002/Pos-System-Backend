@@ -104,9 +104,6 @@ namespace Pos_System.API.Services.Implements
                 }
             });
 
-            PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
-             x.Id.Equals(createNewOrderRequest.PaymentId));
-
             currentUserSession.NumberOfOrders++;
 
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
@@ -173,18 +170,6 @@ namespace Pos_System.API.Services.Implements
                     include: x => x.Include(x => x.MenuProduct).ThenInclude(menuProduct => menuProduct.Product));
                 }
             }
-
-            orderDetailResponse.Payment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(
-                selector: payment => new OrderPaymentResponse()
-                {
-                    Id = payment.PaymentTypeId,
-                    Name = payment.PaymentType.Name,
-                    PicUrl = payment.PaymentType.PicUrl,
-                },
-                predicate: payment => payment.OrderId.Equals(orderId),
-                include: payment => payment.Include(payment => payment.PaymentType)
-                );
-
             return orderDetailResponse;
         }
 
@@ -252,7 +237,6 @@ namespace Pos_System.API.Services.Implements
 
             string currentUserName = GetUsernameFromJwt();
             DateTime currentTime = TimeUtils.GetCurrentSEATime();
-            Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
             Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x =>
                 x.StoreId.Equals(storeId)
                 && DateTime.Compare(x.StartDateTime, currentTime) < 0
@@ -266,7 +250,6 @@ namespace Pos_System.API.Services.Implements
             if (updateOrderRequest.Status.Equals(OrderStatus.CANCELED))
             {
                 currentUserSession.NumberOfOrders--;
-                Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
                 //Reverse Transaction if switch from PAID to CANCELED
                 // if(currentPayment != null)
                 // {
@@ -279,36 +262,39 @@ namespace Pos_System.API.Services.Implements
                 // }
             }
 
-            if (updateOrderRequest.Status.Equals(OrderStatus.PAID) && updateOrderRequest.paymentId != null)
+            if (updateOrderRequest.Status.Equals(OrderStatus.PAID))
             {
                 //Case chang from CANCELED to PAID
-                if(order.Status.Equals(OrderStatus.CANCELED)) currentUserSession.NumberOfOrders++;
-                PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
-                    x.Id.Equals(updateOrderRequest.paymentId));
+                //if(order.Status.Equals(OrderStatus.CANCELED)) currentUserSession.NumberOfOrders++;
+                //PaymentType paymentType = await _unitOfWork.GetRepository<PaymentType>().SingleOrDefaultAsync(predicate: x =>
+                //    x.Id.Equals(updateOrderRequest.paymentId));
 
-                if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
+                //if (paymentType == null) throw new BadHttpRequestException("Payment not found!");
 
-                Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
+                //Payment currentPayment = await _unitOfWork.GetRepository<Payment>().SingleOrDefaultAsync(predicate: x => x.OrderId.Equals(orderId));
 
-                if (currentPayment == null)
+                //if (currentPayment == null)
                 {
 
-                    Payment newPaymentRequest = new Payment()
-                    {
-                        Id = Guid.NewGuid(),
-                        OrderId = order.Id,
-                        Amount = order.FinalAmount,
-                        PaymentTypeId = paymentType.Id
-                    };
-
-                    currentUserSession.TotalAmount += order.TotalAmount;
-                    currentUserSession.TotalFinalAmount += order.FinalAmount;
-                    if(paymentType.Name.Equals("CASH") || paymentType.Name.Equals("Tiền mặt")) currentUserSession.TotalChangeCash += order.FinalAmount;
-                    currentUserSession.TotalDiscountAmount += order.Discount;
-
-                    await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
+                    //Payment newPaymentRequest = new Payment()
+                    //{
+                    //    Id = Guid.NewGuid(),
+                    //    OrderId = order.Id,
+                    //    Amount = order.FinalAmount,
+                    //    PaymentTypeId = paymentType.Id
+                    //};
+                    //await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
                 }
-
+                currentUserSession.TotalAmount += order.TotalAmount;
+                currentUserSession.TotalFinalAmount += order.FinalAmount;
+                currentUserSession.TotalDiscountAmount += order.Discount;
+                if (updateOrderRequest.PaymentType != null)
+                {
+	                if (updateOrderRequest.PaymentType.Equals("CASH"))
+	                {
+		                currentUserSession.TotalChangeCash += order.FinalAmount;
+	                }
+                }
             }
 
             order.CheckOutDate = currentTime;
