@@ -30,8 +30,6 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<Order> Orders { get; set; } = null!;
         public virtual DbSet<OrderDetail> OrderDetails { get; set; } = null!;
         public virtual DbSet<OrderSource> OrderSources { get; set; } = null!;
-        public virtual DbSet<Payment> Payments { get; set; } = null!;
-        public virtual DbSet<PaymentType> PaymentTypes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductInGroup> ProductInGroups { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
@@ -371,40 +369,6 @@ namespace Pos_System.Domain.Models
                     .HasForeignKey(d => d.BrandId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderSource_Brand");
-            });
-
-            modelBuilder.Entity<Payment>(entity =>
-            {
-                entity.ToTable("Payment");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.Order)
-                    .WithMany(p => p.Payments)
-                    .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_Order");
-
-                entity.HasOne(d => d.PaymentType)
-                    .WithMany(p => p.Payments)
-                    .HasForeignKey(d => d.PaymentTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_PaymentType");
-            });
-
-            modelBuilder.Entity<PaymentType>(entity =>
-            {
-                entity.ToTable("PaymentType");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Name).HasMaxLength(50);
-
-                entity.HasOne(d => d.Brand)
-                    .WithMany(p => p.PaymentTypes)
-                    .HasForeignKey(d => d.BrandId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_Brand");
             });
 
             modelBuilder.Entity<Product>(entity =>

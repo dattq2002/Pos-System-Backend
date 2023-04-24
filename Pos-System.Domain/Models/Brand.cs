@@ -12,7 +12,6 @@ namespace Pos_System.Domain.Models
             Collections = new HashSet<Collection>();
             Menus = new HashSet<Menu>();
             OrderSources = new HashSet<OrderSource>();
-            PaymentTypes = new HashSet<PaymentType>();
             Products = new HashSet<Product>();
             Stores = new HashSet<Store>();
         }
@@ -30,7 +29,6 @@ namespace Pos_System.Domain.Models
         public virtual ICollection<Collection> Collections { get; set; }
         public virtual ICollection<Menu> Menus { get; set; }
         public virtual ICollection<OrderSource> OrderSources { get; set; }
-        public virtual ICollection<PaymentType> PaymentTypes { get; set; }
         public virtual ICollection<Product> Products { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
     }
