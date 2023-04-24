@@ -27,11 +27,28 @@ namespace Pos_System.API.Services.Implements
             Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
 
+            List<Session> currentSessionsInStore = (List<Session>)await _unitOfWork.GetRepository<Session>().GetListAsync(
+                predicate: x => x.StoreId.Equals(storeId)
+            );
+
             List<Session> sessionsToInsert = new List<Session>();
             if(createStoreSessionsRequest.Sessions.Count > 0)
             {
                 createStoreSessionsRequest.Sessions.ForEach(session =>
                 {
+                    currentSessionsInStore.ForEach(x =>
+                    {
+                        //Check if startTime is inside of the time of another session
+                        if (session.startTime >= x.StartDateTime && session.startTime <= x.EndDateTime) 
+                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidStartDate + x.Id);
+                        //Check if endTime is inside of the time of another session
+                        if (session.endTime >= x.StartDateTime && session.endTime <= x.EndDateTime) 
+                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidEndDate + x.Id);
+                        //Check is there any sessions is inside the time gap
+                        List<Session> sessionsInsideUpdatingSession = currentSessionsInStore
+                            .Where(x => x.StartDateTime <= session.startTime && x.EndDateTime <= session.endTime).ToList();
+                        if (sessionsInsideUpdatingSession.Count > 0) throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
+                    });
                     sessionsToInsert.Add(new Session
                     {
                         Id = Guid.NewGuid(),
@@ -93,9 +110,30 @@ namespace Pos_System.API.Services.Implements
             Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
 
+            //Get all available session except updating session
+            List<Session> currentSessionsInStore = (List<Session>)await _unitOfWork.GetRepository<Session>().GetListAsync(
+                predicate: x => x.StoreId.Equals(storeId) && !x.Id.Equals(sessionId)
+            );
+
             Session sessionToUpdate = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(sessionId));
             if (sessionToUpdate == null) throw new BadHttpRequestException(MessageConstant.Session.SessionNotFoundMessage);
 
+            currentSessionsInStore.ForEach(availableSession =>
+            {
+                //Check if startTime is inside of the time of another session
+                if (updateStoreSessionRequest.startTime >= availableSession.StartDateTime && updateStoreSessionRequest.startTime <= availableSession.EndDateTime) 
+                    throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidStartDate + availableSession.Id);
+                //Check if endTime is inside of the time of another session
+                if (updateStoreSessionRequest.endTime >= availableSession.StartDateTime && updateStoreSessionRequest.endTime <= availableSession.EndDateTime) 
+                    throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidEndDate + availableSession.Id);
+            });
+
+            //Check is there any sessions is inside the time gap
+            List<Session> sessionsInsideUpdatingSession = currentSessionsInStore
+                .Where(x => x.StartDateTime <= updateStoreSessionRequest.startTime && x.EndDateTime <= updateStoreSessionRequest.endTime).ToList();
+            if (sessionsInsideUpdatingSession.Count > 0) throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
+
+            //Update the session
             sessionToUpdate.StartDateTime = updateStoreSessionRequest.startTime;
             sessionToUpdate.EndDateTime = updateStoreSessionRequest.endTime;
             sessionToUpdate.Name = updateStoreSessionRequest.Name ?? 
