@@ -112,6 +112,9 @@ public static class MessageConstant
     {
         public const string EmptySessionIdMessage = "Id của session không hợp lệ";
         public const string SessionNotFoundMessage = "Session không tồn tại trong store";
+        public const string CreateNewSessionInvalidStartDate = "Session startDate bị trùng với session: ";
+        public const string CreateNewSessionInvalidEndDate = "Session endDate bị trùng với session: ";
+        public const string AlreadySessionAvailableInTimeGap = "Thời gian của session bạn đang tạo hoặc cập nhật hiện đã có một vài session vui lòng thay đổi thời gian phù hợp";
     }
 
     public static class GroupProduct
