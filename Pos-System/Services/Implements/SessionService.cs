@@ -32,22 +32,21 @@ namespace Pos_System.API.Services.Implements
             );
 
             List<Session> sessionsToInsert = new List<Session>();
-            if(createStoreSessionsRequest.Sessions.Count > 0)
+            if (createStoreSessionsRequest.Sessions.Count > 0)
             {
                 createStoreSessionsRequest.Sessions.ForEach(session =>
                 {
-                    currentSessionsInStore.ForEach(x =>
+                    currentSessionsInStore.ForEach(systemAvailableSession =>
                     {
                         //Check if startTime is inside of the time of another session
-                        if (session.startTime >= x.StartDateTime && session.startTime <= x.EndDateTime) 
-                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidStartDate + x.Id);
+                        if (session.startTime >= systemAvailableSession.StartDateTime && session.startTime <= systemAvailableSession.EndDateTime)
+                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidStartDate + systemAvailableSession.Id);
                         //Check if endTime is inside of the time of another session
-                        if (session.endTime >= x.StartDateTime && session.endTime <= x.EndDateTime) 
-                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidEndDate + x.Id);
-                        //Check is there any sessions is inside the time gap
-                        List<Session> sessionsInsideUpdatingSession = currentSessionsInStore
-                            .Where(x => x.StartDateTime <= session.startTime && x.EndDateTime <= session.endTime).ToList();
-                        if (sessionsInsideUpdatingSession.Count > 0) throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
+                        if (session.endTime >= systemAvailableSession.StartDateTime && session.endTime <= systemAvailableSession.EndDateTime)
+                            throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidEndDate + systemAvailableSession.Id);
+                        //Check is available session inside the time gap
+                        if (session.startTime <= systemAvailableSession.EndDateTime && session.endTime >= systemAvailableSession.StartDateTime)
+                            throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
                     });
                     sessionsToInsert.Add(new Session
                     {
@@ -126,12 +125,10 @@ namespace Pos_System.API.Services.Implements
                 //Check if endTime is inside of the time of another session
                 if (updateStoreSessionRequest.endTime >= availableSession.StartDateTime && updateStoreSessionRequest.endTime <= availableSession.EndDateTime) 
                     throw new BadHttpRequestException(MessageConstant.Session.CreateNewSessionInvalidEndDate + availableSession.Id);
+                //Check is available session inside the time gap
+                if (updateStoreSessionRequest.startTime <= availableSession.EndDateTime && updateStoreSessionRequest.endTime >= availableSession.StartDateTime)
+                    throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
             });
-
-            //Check is there any sessions is inside the time gap
-            List<Session> sessionsInsideUpdatingSession = currentSessionsInStore
-                .Where(x => x.StartDateTime <= updateStoreSessionRequest.startTime && x.EndDateTime <= updateStoreSessionRequest.endTime).ToList();
-            if (sessionsInsideUpdatingSession.Count > 0) throw new BadHttpRequestException(MessageConstant.Session.AlreadySessionAvailableInTimeGap);
 
             //Update the session
             sessionToUpdate.StartDateTime = updateStoreSessionRequest.startTime;

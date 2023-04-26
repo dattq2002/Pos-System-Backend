@@ -202,7 +202,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 (List<Guid>)x.Product.Category.ExtraCategoryProductCategories.Select(x => x.ExtraCategoryId),
                 x.Id
             ),
-            predicate: x => x.MenuId.Equals(menuOfStoreId),
+            predicate: x => x.MenuId.Equals(menuOfStoreId) && x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()),
             include: menuProduct => menuProduct
                 .Include(menuProduct => menuProduct.Product)
                 .ThenInclude(product => product.CollectionProducts)
