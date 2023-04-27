@@ -252,9 +252,12 @@ namespace Pos_System.API.Services.Implements
                     }
 
                     ProductToUpdate requestProductData = productDataFromRequest.Find(y => y.ProductId.Equals(x.ProductId));
+                    //Get ref product data to update newest price from product
+                    Product referenceProductData = currentProductsInSystem.Find(y => y.Id.Equals(x.ProductId));
+                    if (referenceProductData == null) throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
                     if (requestProductData == null) return;
-                    x.SellingPrice = (double)(requestProductData.SellingPrice == null ? x.SellingPrice : requestProductData.SellingPrice);
-                    x.DiscountPrice = (double)(requestProductData.DiscountPrice == null ? x.DiscountPrice : requestProductData.DiscountPrice);
+                    x.SellingPrice = (double)(requestProductData.SellingPrice == null ? referenceProductData.SellingPrice : requestProductData.SellingPrice);
+                    x.DiscountPrice = (double)(requestProductData.DiscountPrice == null ? referenceProductData.DiscountPrice : requestProductData.DiscountPrice);
                     x.UpdatedBy = currentUserName;
                     x.UpdatedAt = currentTime;
                 });
