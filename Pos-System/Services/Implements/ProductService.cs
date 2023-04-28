@@ -1,10 +1,9 @@
 ﻿using System;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
-using Pos_System.API.Payload.Request.Menus;
 using Pos_System.API.Payload.Request.Products;
-using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -310,6 +309,48 @@ namespace Pos_System.API.Services.Implements
             }
             await _unitOfWork.CommitAsync();
             return groupProductId;
+        }
+
+        public async Task<IEnumerable<GetGroupProductListResponse>> GetGroupProductListOfCombo(Guid brandId, Guid productId)
+        {
+            Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
+            if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            if (!userBrandId.Equals(brandId)) throw new BadHttpRequestException(MessageConstant.GroupProduct.WrongComboInformationMessage);
+
+            if (productId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Product.EmptyProductIdMessage);
+            Product currentProduct = await _unitOfWork.GetRepository<Product>().SingleOrDefaultAsync(
+                predicate: x => x.Id.Equals(productId) && x.Type.Equals(ProductType.COMBO.GetDescriptionFromEnum())
+                );
+            if (currentProduct == null) throw new BadHttpRequestException(MessageConstant.Product.ProductNotFoundMessage);
+
+            List<GetGroupProductListResponse> response = (List<GetGroupProductListResponse>)await _unitOfWork.GetRepository<GroupProduct>().GetListAsync(
+                selector: x => new GetGroupProductListResponse
+                {
+                    Id = x.Id,
+                    ComboProductId = (Guid)x.ComboProductId,
+                    Name = x.Name,
+                    CombinationMode = EnumUtil.ParseEnum<GroupCombinationMode>(x.CombinationMode),
+                    Priority = x.Priority,
+                    Quantity = x.Quantity,
+                    Status = EnumUtil.ParseEnum<GroupProductStatus>(x.Status),
+                    ProductsInGroups = (List<ProductsInGroupResponse>)x.ProductInGroups.Select(productInGroup => new ProductsInGroupResponse
+                    {
+                        Id = productInGroup.Id,
+                        GroupProductId = productInGroup.GroupProductId,
+                        ProductId = productInGroup.ProductId,
+                        Priority = productInGroup.Priority,
+                        AdditionalPrice = productInGroup.AdditionalPrice,
+                        Min = productInGroup.Min,
+                        Max = productInGroup.Max,
+                        Quantity = productInGroup.Quantity,
+                        Status = EnumUtil.ParseEnum<ProductInGroupStatus>(productInGroup.Status)
+                    })
+                },
+                predicate: x => x.ComboProductId.Equals(productId),
+                include: groupProduct => groupProduct.Include(groupProduct => groupProduct.ProductInGroups),
+                orderBy: x => x.OrderBy(x => x.Priority));
+
+            return response;
         }
     }
 }
