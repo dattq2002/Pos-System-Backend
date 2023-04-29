@@ -103,7 +103,7 @@ namespace Pos_System.API.Controllers
 
         [CustomAuthorize(RoleEnum.BrandAdmin)]
         [HttpGet(ApiEndPointConstant.Product.GroupProductOfComboEndPoint)]
-        [ProducesResponseType(typeof(GetGroupProductListResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GetGroupProductListResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetGroupProductsOfCombo(Guid brandId, Guid id)
         {
             var response = await _productService.GetGroupProductListOfCombo(brandId, id);

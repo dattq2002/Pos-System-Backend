@@ -20,6 +20,10 @@ public class GetMenuDetailForStaffResponse
     public List<CollectionOfBrand> CollectionsOfBrand { get; set; }
     [JsonPropertyName("categories")]
     public List<CategoryOfBrand> CategoriesOfBrand { get; set; }
+    [JsonPropertyName("groupProducts")]
+    public List<GroupProductInMenu> groupProductInMenus { get; set; }
+    [JsonPropertyName("productsInGroup")]
+    public List<ProductsInGroupResponse> productInGroupList { get; set; }
 
     public GetMenuDetailForStaffResponse(Guid id, Guid brandId, string code, int priority, bool isBaseMenu, int dateFilter, int startTime, int endTime)
     {
@@ -88,4 +92,16 @@ public class ProductDataForStaff : GetProductDetailsResponse
         ExtraCategoryIds = extraCategoryIds;
         MenuProductId = menuProductId;
     }
+}
+
+public class GroupProductInMenu
+{
+    public Guid Id { get; set; }
+    public Guid ComboProductId { get; set; }
+    public string Name { get; set; }
+    public GroupCombinationMode CombinationMode { get; set; }
+    public int Priority { get; set; }
+    public int Quantity { get; set; }
+    public GroupProductStatus Status { get; set; }
+    public List<Guid> ProductsInGroupIds { get; set; }
 }
