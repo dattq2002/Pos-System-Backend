@@ -5,6 +5,7 @@ using Pos_System.API.Enums;
 using Pos_System.API.Helpers;
 using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Menus;
+using Pos_System.API.Payload.Response.Products;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -137,7 +138,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
         Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
         if (userStoreId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.MissingStoreIdMessage);
 
-        //Filter Menu
+        //Filter Menu, make sure it return correct menu in specific time
         List<MenuStore> allMenuAvailable = (List<MenuStore>)await _unitOfWork.GetRepository<MenuStore>()
             .GetListAsync(predicate: x => x.StoreId.Equals(userStoreId) 
                 && x.Menu.Status.Equals(MenuStatus.Active.GetDescriptionFromEnum()) 
@@ -155,6 +156,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
         List<MenuStore> menusAvailableInDay = new List<MenuStore>();
         foreach (var menu in allMenuAvailable)
         {
+            //Find the menu available days and time
             List<DateFilter> menuAvailableDays = DateTimeHelper.GetDatesFromDateFilter(menu.Menu.DateFilter);
             TimeOnly menuStartTime = DateTimeHelper.ConvertIntToTimeOnly(menu.Menu.StartTime);
             TimeOnly menuEndTime = DateTimeHelper.ConvertIntToTimeOnly(menu.Menu.EndTime);
@@ -162,6 +164,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 menusAvailableInDay.Add(menu);
         }
 
+        //If there are more than 2 menus available take the highest priority one
         MenuStore menuAvailableWithHighestPriority = menusAvailableInDay.OrderByDescending(x => x.Menu.Priority).FirstOrDefault();
         if (menuAvailableWithHighestPriority == null) throw new BadHttpRequestException(MessageConstant.Menu.NoMenusAvailableMessage);
         Guid menuOfStoreId = menuAvailableWithHighestPriority.MenuId;
@@ -200,7 +203,7 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 x.Product.CategoryId,
                 (List<Guid>)x.Product.CollectionProducts.Select(x => x.CollectionId),
                 (List<Guid>)x.Product.Category.ExtraCategoryProductCategories.Select(x => x.ExtraCategoryId),
-                x.Id
+                x.Id //This is the menuProductId in response body
             ),
             predicate: x => x.MenuId.Equals(menuOfStoreId) && x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()),
             include: menuProduct => menuProduct
@@ -230,6 +233,51 @@ public class StoreService : BaseService<StoreService>, IStoreService
                 x.Description,
                 x.PicUrl
                 ), predicate: x => x.BrandId.Equals(userBrandId));
+
+        //Use to filter which productInGroups is added to menu
+        List<Guid> productIdsInMenu = menuOfStore.ProductsInMenu.Select(x => x.Id).ToList();
+
+        menuOfStore.groupProductInMenus = (List<GroupProductInMenu>)await _unitOfWork.GetRepository<GroupProduct>().GetListAsync(
+            x => new GroupProductInMenu
+            {
+                Id = x.Id,
+                ComboProductId = (Guid)x.ComboProductId,
+                Name = x.Name,
+                CombinationMode = EnumUtil.ParseEnum<GroupCombinationMode>(x.CombinationMode),
+                Priority = x.Priority,
+                Quantity = x.Quantity,
+                Status = EnumUtil.ParseEnum<GroupProductStatus>(x.Status),
+            },
+            predicate: x => x.ComboProduct.BrandId.Equals(userBrandId) && x.Status.Equals(GroupProductStatus.Active.GetDescriptionFromEnum()),
+            include: x => x.Include(x => x.ComboProduct)
+            );
+
+        menuOfStore.productInGroupList = (List<ProductsInGroupResponse>)await _unitOfWork.GetRepository<ProductInGroup>().GetListAsync(
+            selector: x => new ProductsInGroupResponse
+            {
+                Id = x.Id,
+                GroupProductId = x.GroupProductId,
+                ProductId = x.ProductId,
+                Priority = x.Priority,
+                AdditionalPrice = x.AdditionalPrice,
+                Min = x.Min,
+                Max = x.Max,
+                Quantity = x.Quantity,
+                Status = EnumUtil.ParseEnum<ProductInGroupStatus>(x.Status)
+            },
+            predicate: x => x.Product.BrandId.Equals(userBrandId) 
+                && productIdsInMenu.Contains(x.ProductId)
+                && x.Status.Equals(ProductInGroupStatus.Active.GetDescriptionFromEnum())
+                && x.Product.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()),
+            include: x => x.Include(x => x.Product)
+            );
+
+        foreach (GroupProductInMenu groupProduct in menuOfStore.groupProductInMenus)
+        {
+            groupProduct.ProductsInGroupIds = (List<Guid>)menuOfStore.productInGroupList
+                    .Where(x => x.GroupProductId.Equals(groupProduct.Id))
+                    .Select(x => x.Id).ToList();
+        }
 
         return menuOfStore;
     }

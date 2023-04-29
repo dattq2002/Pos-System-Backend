@@ -158,4 +158,34 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
                 );
         return categoryResponse;
     }
+
+    public async Task<IPaginate<GetProductsInCategory>> GetProductsInCategory(Guid categoryId, int page, int size)
+    {
+        Guid brandId = Guid.Parse(GetBrandIdFromJwt());
+        if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+        Brand brand = await _unitOfWork.GetRepository<Brand>().SingleOrDefaultAsync(
+            predicate: x => x.Id.Equals(brandId));
+        if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+
+        IPaginate<GetProductsInCategory> response = await _unitOfWork.GetRepository<Product>().GetPagingListAsync(
+            selector: x => new GetProductsInCategory
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                PicUrl = x.PicUrl,
+                SellingPrice = x.SellingPrice == null ? 0 : x.SellingPrice,
+                DiscountPrice = x.DiscountPrice,
+                HistoricalPrice = x.HistoricalPrice,
+                Status = EnumUtil.ParseEnum<ProductStatus>(x.Status),
+                Type = EnumUtil.ParseEnum<ProductType>(x.Type),
+            },
+            predicate: x => x.CategoryId.Equals(categoryId),
+            orderBy: x => x.OrderBy(x => x.Code),
+            page: page,
+            size: size
+        );
+
+        return response;
+    }
 }

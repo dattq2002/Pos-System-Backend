@@ -77,5 +77,14 @@ namespace Pos_System.API.Controllers
             var response = await _categoryService.GetExtraCategoriesByCategoryId(categoryId, page, size);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Category.ProductsInCategoryEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetProductsInCategory>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProductsInCategory(Guid categoryId, [FromQuery] int page, [FromQuery] int size)
+        {
+            var response = await _categoryService.GetProductsInCategory(categoryId, page, size);
+            return Ok(response);
+        }
     }
 }
