@@ -180,7 +180,7 @@ public class CategoryService : BaseService<CategoryService>, ICategoryService
                 Status = EnumUtil.ParseEnum<ProductStatus>(x.Status),
                 Type = EnumUtil.ParseEnum<ProductType>(x.Type),
             },
-            predicate: x => x.CategoryId.Equals(categoryId),
+            predicate: x => x.CategoryId.Equals(categoryId) && x.BrandId.Equals(brandId),
             orderBy: x => x.OrderBy(x => x.Code),
             page: page,
             size: size
