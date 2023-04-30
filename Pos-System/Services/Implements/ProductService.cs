@@ -352,6 +352,30 @@ namespace Pos_System.API.Services.Implements
 
             return response;
         }
+
+        public async Task<Guid> UpdateProductInGroup(Guid groupProductId, Guid id, UpdateProductInGroupRequest updateProductInGroupRequest)
+        {
+            Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
+            if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            if (id == Guid.Empty) throw new BadHttpRequestException(MessageConstant.ProductInGroup.EmptyProductInGroupId);
+            ProductInGroup currentProductInGroup = await _unitOfWork.GetRepository<ProductInGroup>().SingleOrDefaultAsync(
+                predicate: x => x.Id.Equals(id) && x.Product.BrandId.Equals(userBrandId)
+                );
+
+            if (currentProductInGroup == null) throw new BadHttpRequestException(MessageConstant.ProductInGroup.ProductInGroupNotFound);
+
+            currentProductInGroup.Priority = updateProductInGroupRequest.Priority ?? currentProductInGroup.Priority;
+            currentProductInGroup.AdditionalPrice = updateProductInGroupRequest.AdditionalPrice ?? currentProductInGroup.AdditionalPrice;
+            currentProductInGroup.Min = updateProductInGroupRequest?.Min ?? currentProductInGroup.Min;
+            currentProductInGroup.Max = updateProductInGroupRequest.Max ?? currentProductInGroup.Max;
+            currentProductInGroup.Quantity = updateProductInGroupRequest.Quantity ?? currentProductInGroup.Quantity;
+            currentProductInGroup.Status = updateProductInGroupRequest.Status.GetDescriptionFromEnum() ?? currentProductInGroup.Status;
+
+            _unitOfWork.GetRepository<ProductInGroup>().UpdateAsync(currentProductInGroup);
+            await _unitOfWork.CommitAsync();
+
+            return id;
+        }
     }
 }
 

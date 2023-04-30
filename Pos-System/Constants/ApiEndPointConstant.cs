@@ -65,6 +65,7 @@ public static class ApiEndPointConstant
         public const string GroupProductsInBrandEndPoint = Brand.BrandEndpoint + "/groupProducts";
         public const string GroupProductInBrandEndPoint = Brand.BrandsEndpoint + "/{brandId}/groupProducts/{id}";
         public const string GroupProductOfComboEndPoint = Brand.BrandsEndpoint + "/{brandId}/products/{id}/groupProducts";
+        public const string ProductInGroupEndPoint = ApiEndpoint + "/groupProducts/{groupProductId}/productInGroup/{id}";
     }
 
     public static class Menu
