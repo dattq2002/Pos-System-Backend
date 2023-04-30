@@ -21,6 +21,7 @@ namespace Pos_System.API.Services.Interfaces
         Task<Guid> CreateNewGroupProduct(Guid brandId, CreateNewGroupProductRequest createUpdateNewGroupProductRequest);
         Task<Guid> UpdateGroupProduct(Guid brandId, Guid groupProductId, UpdateGroupProductRequest updateGroupProductRequest);
         Task<IEnumerable<GetGroupProductListResponse>> GetGroupProductListOfCombo(Guid brandId, Guid productId);
+        Task<Guid> UpdateProductInGroup(Guid groupProductId, Guid id, UpdateProductInGroupRequest updateProductInGroupRequest);
     }
 }
 

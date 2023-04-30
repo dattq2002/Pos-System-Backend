@@ -125,6 +125,8 @@ public static class MessageConstant
 
     public static class ProductInGroup
     {
+        public const string EmptyProductInGroupId = "Id của product in group bị trống";
+        public const string ProductInGroupNotFound = "Product in Group không tồn tại trong hệ thống";
         public const string ProductNotInGroupMessage = "Data cũ của product không tồn tại, productId: ";
     }
 }

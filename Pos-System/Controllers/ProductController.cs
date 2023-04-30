@@ -109,6 +109,15 @@ namespace Pos_System.API.Controllers
             var response = await _productService.GetGroupProductListOfCombo(brandId, id);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPut(ApiEndPointConstant.Product.ProductInGroupEndPoint)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateSingleProductInGroup(Guid groupProductId, Guid id, UpdateProductInGroupRequest updateProductInGroupRequest)
+        {
+            var response = await _productService.UpdateProductInGroup(groupProductId, id, updateProductInGroupRequest);
+            return Ok(response);
+        }
     }
 }
 
