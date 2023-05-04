@@ -297,7 +297,7 @@ namespace Pos_System.API.Services.Implements
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
-                            product.HistoricalPrice, product.DiscountPrice),
+                            product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
@@ -310,7 +310,7 @@ namespace Pos_System.API.Services.Implements
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
-                            product.HistoricalPrice, product.DiscountPrice),
+                            product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
@@ -323,7 +323,7 @@ namespace Pos_System.API.Services.Implements
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
-                            product.HistoricalPrice, product.DiscountPrice),
+                            product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
@@ -336,7 +336,7 @@ namespace Pos_System.API.Services.Implements
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
                         selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
-                            product.HistoricalPrice, product.DiscountPrice),
+                            product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
                         predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),

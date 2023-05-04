@@ -12,8 +12,8 @@ namespace Pos_System.API.Payload.Response.Products
         public string? PicUrl { get; set; }
         public double HistoricalPrice { get; set; }
         public double DiscountPrice { get; set; }
-
-        public GetProductInMenuResponse(Guid id, string name, string code, string? picUrl, double sellingPrice, double historicalPrice, double discountPrice)
+        public ProductType Type { get; set; }
+        public GetProductInMenuResponse(Guid id, string name, string code, string? picUrl, double sellingPrice, double historicalPrice, double discountPrice, string type)
         {
             Id = id;
             Name = name;
@@ -22,6 +22,7 @@ namespace Pos_System.API.Payload.Response.Products
             SellingPrice = sellingPrice;
             HistoricalPrice = historicalPrice;
             DiscountPrice = discountPrice;
+            Type = EnumUtil.ParseEnum<ProductType>(type);
         }
     }
 }
