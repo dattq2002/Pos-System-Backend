@@ -179,59 +179,36 @@ namespace Pos_System.API.Services.Implements
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
             Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
             if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
-            if (startDate.HasValue && endDate.HasValue)
-            {
-	            IPaginate<ViewOrdersResponse> ordersResponse = await _unitOfWork.GetRepository<Order>().GetPagingListAsync(
-		            selector: x => new ViewOrdersResponse
-		            {
-			            Id = x.Id,
-			            InvoiceId = x.InvoiceId,
-			            StaffName = x.CheckInPersonNavigation.Name,
-			            StartDate = x.CheckInDate,
-			            EndDate = x.CheckOutDate,
-			            FinalAmount = x.FinalAmount,
-			            OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
-			            Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
-		            },
-		            predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
-		            include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
-		            orderBy: x => userRole == RoleEnum.Staff ? x.OrderByDescending(x => x.CheckInDate) : x.OrderByDescending(x => x.InvoiceId),
-		            page: page,
-		            size: size
-	            );
-	            return ordersResponse;
-            }
-            else if (startDate.HasValue)
-            {
-	            IPaginate<ViewOrdersResponse> ordersResponse = await _unitOfWork.GetRepository<Order>().GetPagingListAsync(
-		            selector: x => new ViewOrdersResponse
-		            {
-			            Id = x.Id,
-			            InvoiceId = x.InvoiceId,
-			            StaffName = x.CheckInPersonNavigation.Name,
-			            StartDate = x.CheckInDate,
-			            EndDate = x.CheckOutDate,
-			            FinalAmount = x.FinalAmount,
-			            OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
-			            Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
-		            },
-		            predicate: BuildGetOrdersInStoreQuery(storeId, startDate, startDate.Value.AddDays(1), orderType, status),
-		            include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
-		            orderBy: x => userRole == RoleEnum.Staff ? x.OrderByDescending(x => x.CheckInDate) : x.OrderByDescending(x => x.InvoiceId),
-		            page: page,
-		            size: size
-	            );
-	            return ordersResponse;
-            }
-
-            return new Paginate<ViewOrdersResponse>();
+            IPaginate<ViewOrdersResponse> ordersResponse = await _unitOfWork.GetRepository<Order>().GetPagingListAsync(
+                selector: x => new ViewOrdersResponse
+                {
+                    Id = x.Id,
+                    InvoiceId = x.InvoiceId,
+                    StaffName = x.CheckInPersonNavigation.Name,
+                    StartDate = x.CheckInDate,
+                    EndDate = x.CheckOutDate,
+                    FinalAmount= x.FinalAmount,
+                    OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
+                    Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
+                },
+                predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
+                include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
+                orderBy: x => userRole == RoleEnum.Staff ? x.OrderByDescending(x => x.CheckInDate) : x.OrderByDescending(x => x.InvoiceId),
+                page: page,
+                size: size
+                );
+            return ordersResponse;
         }
 
         private Expression<Func<Order, bool>> BuildGetOrdersInStoreQuery(Guid storeId, DateTime? startDate,
 	        DateTime? endDate, OrderType? orderType, OrderStatus? status)
         {
 	        Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
-	        if (startDate != null)
+	        if (startDate != null && endDate == null)
+	        {
+		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate && p.CheckInDate <= startDate.Value.AddDays(1));
+	        }
+	        else if (startDate != null)
 	        {
 		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate);
 	        }
