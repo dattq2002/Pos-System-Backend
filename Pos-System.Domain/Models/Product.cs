@@ -12,6 +12,7 @@ namespace Pos_System.Domain.Models
             InverseParentProduct = new HashSet<Product>();
             MenuProducts = new HashSet<MenuProduct>();
             ProductInGroups = new HashSet<ProductInGroup>();
+            PromotionProductMappings = new HashSet<PromotionProductMapping>();
         }
 
         public Guid Id { get; set; }
@@ -38,5 +39,6 @@ namespace Pos_System.Domain.Models
         public virtual ICollection<Product> InverseParentProduct { get; set; }
         public virtual ICollection<MenuProduct> MenuProducts { get; set; }
         public virtual ICollection<ProductInGroup> ProductInGroups { get; set; }
+        public virtual ICollection<PromotionProductMapping> PromotionProductMappings { get; set; }
     }
 }
