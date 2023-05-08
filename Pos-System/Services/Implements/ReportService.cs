@@ -22,7 +22,7 @@ namespace Pos_System.API.Services.Implements
             _orderService = orderService;
         }
 
-        public async Task<GetStoreEndDayReport> GetStoreEndDayReport(Guid storeId, DateTime? startDate)
+        public async Task<GetStoreEndDayReport> GetStoreEndDayReport(Guid storeId, DateTime? startDate, DateTime? endDate)
         {
             RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
@@ -38,8 +38,8 @@ namespace Pos_System.API.Services.Implements
              predicate: x => x.BrandId.Equals(userBrandId)
          );
             List<Order> orders = (List<Order>)await _unitOfWork.GetRepository<Order>().GetListAsync(
-                include: x => x.Include(order => order.OrderDetails).ThenInclude(x => x.MenuProduct).ThenInclude(x => x.Product),
-                predicate: p => p.CheckInDate >= startDate && p.CheckInDate <= startDate.Value.AddDays(1) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()),
+                include: x => x.Include(order => order.OrderDetails).ThenInclude(x => x.MenuProduct).ThenInclude(x => x.Product).Include(order => order.Session),
+                predicate: p => p.Session.StoreId.Equals(storeId)&&p.CheckInDate >= startDate && p.CheckInDate <= endDate.Value.AddDays(1) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()),
                 orderBy: x => x.OrderByDescending(x => x.CheckInDate)
                 );
             report.StoreId = currentUserStoreId;

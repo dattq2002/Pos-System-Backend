@@ -9,6 +9,7 @@ using Pos_System.API.Payload.Request.Stores;
 using Pos_System.API.Payload.Response.Accounts;
 using Pos_System.API.Payload.Response.Menus;
 using Pos_System.API.Payload.Response.Orders;
+using Pos_System.API.Payload.Response.Promotion;
 using Pos_System.API.Payload.Response.Sessions;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Implements;
@@ -160,9 +161,18 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
         [HttpGet(ApiEndPointConstant.Store.StoreEndDayReportEndpoint)]
         [ProducesResponseType(typeof(GetStoreEndDayReport), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoreEndDayReport(Guid id, [FromQuery] DateTime? startDate)
+        public async Task<IActionResult> GetStoreEndDayReport(Guid id, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var response = await _reportService.GetStoreEndDayReport(id, startDate);
+            var response = await _reportService.GetStoreEndDayReport(id, startDate, endDate);
+            return Ok(response);
+        }
+
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
+        [HttpGet(ApiEndPointConstant.Store.GetPromotion)]
+        [ProducesResponseType(typeof(GetPromotionResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPrmotion(Guid id, [FromQuery] int page, [FromQuery] int size)
+        {
+            var response = await _orderService.GetPromotion(id, page, size);
             return Ok(response);
         }
     }

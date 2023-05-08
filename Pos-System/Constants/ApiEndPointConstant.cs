@@ -36,6 +36,7 @@ public static class ApiEndPointConstant
         public const string StoreSessionsEndpoint = StoreEndpoint + "/sessions";
         public const string StoreSessionEndpoint = StoresEndpoint + "/{storeId}/sessions/{id}";
         public const string StoreEndDayReportEndpoint = StoreEndpoint + "/day-report";
+        public const string GetPromotion = StoreEndpoint + "/promotion";
     }
 
     public static class Account

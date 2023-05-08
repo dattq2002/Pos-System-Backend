@@ -1,6 +1,7 @@
 ﻿using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Response.Orders;
+using Pos_System.API.Payload.Response.Promotion;
 using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Services.Interfaces
@@ -12,6 +13,8 @@ namespace Pos_System.API.Services.Interfaces
         public Task<GetOrderDetailResponse> GetOrderDetail(Guid storeId, Guid orderId);
         public Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size,
             DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus);
-        
+        public Task<IPaginate<GetPromotionResponse>> GetPromotion(Guid storeId, int page, int size);
+
+
     }
 }

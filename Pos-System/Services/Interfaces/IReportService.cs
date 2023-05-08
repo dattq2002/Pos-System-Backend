@@ -5,7 +5,7 @@ namespace Pos_System.API.Services.Interfaces
 {
 	public interface IReportService
 	{
-        Task<GetStoreEndDayReport> GetStoreEndDayReport(Guid storeId, DateTime? startDate);
+        Task<GetStoreEndDayReport> GetStoreEndDayReport(Guid storeId, DateTime? startDate, DateTime? endDate);
     }
 }
 

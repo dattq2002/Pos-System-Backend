@@ -31,6 +31,8 @@
     <Folder Include="Payload\Response\PaymentTypes\" />
     <Folder Include="Validators\" />
     <Folder Include="Payload\Request\Products\" />
+    <Folder Include="Payload\Response\Promotion\" />
+    <Folder Include="Payload\Request\Promotion\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,5 +43,7 @@
   <ItemGroup>
     <None Remove="Payload\Request\Products\" />
     <None Remove="Payload\Response\Products\" />
+    <None Remove="Payload\Response\Promotion\" />
+    <None Remove="Payload\Request\Promotion\" />
   </ItemGroup>
 </Project>

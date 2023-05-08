@@ -9,7 +9,7 @@ namespace Pos_System.API.Payload.Request.Orders
         public double TotalAmount { get; set; }
         public double DiscountAmount { get; set; }
         public double FinalAmount { get; set; }
-
+        public Guid? PromotionId { get; set; }
     }
 
     public class OrderProduct
