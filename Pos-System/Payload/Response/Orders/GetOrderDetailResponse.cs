@@ -14,6 +14,7 @@ namespace Pos_System.API.Payload.Response.Orders
         public OrderStatus OrderStatus { get; set; }
         public OrderType OrderType { get; set; }
         public DateTime CheckInDate { get; set; }
+        public string? DiscountName { get; set; }
         public List<OrderProductDetailResponse> ProductList { get; set; } = new List<OrderProductDetailResponse>();
     }
 

@@ -135,7 +135,10 @@ namespace Pos_System.API.Services.Implements
 
             Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
-            Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(orderId));
+            Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(
+                predicate: x => x.Id.Equals(orderId),
+                include: x=> x.Include(p => p.PromotionOrderMappings).ThenInclude(a => a.Promotion)
+               );
             if (order == null) throw new BadHttpRequestException(MessageConstant.Order.OrderNotFoundMessage);
 
             GetOrderDetailResponse orderDetailResponse = new GetOrderDetailResponse();
@@ -149,7 +152,7 @@ namespace Pos_System.API.Services.Implements
             orderDetailResponse.OrderStatus = EnumUtil.ParseEnum<OrderStatus>(order.Status);
             orderDetailResponse.OrderType = EnumUtil.ParseEnum<OrderType>(order.OrderType);
             orderDetailResponse.CheckInDate = order.CheckInDate;
-
+            orderDetailResponse.DiscountName = order.Discount > 0 ? order.PromotionOrderMappings.Select(pr => pr.Promotion.Name).First() : "Giảm giá";
             orderDetailResponse.ProductList = (List<OrderProductDetailResponse>)await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
                 selector: x => new OrderProductDetailResponse()
                 {
@@ -352,7 +355,7 @@ namespace Pos_System.API.Services.Implements
                 predicate:
                      x => x.BrandId.Equals(userBrandId) && x.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()),
                 orderBy: x => x.OrderBy(x => x.Name)
-                ); 
+                );
             return responese;
         }
     }

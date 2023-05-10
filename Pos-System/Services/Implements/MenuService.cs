@@ -213,7 +213,7 @@ namespace Pos_System.API.Services.Implements
                         Status = ProductStatus.Active.GetDescriptionFromEnum(),
                         SellingPrice = (double)(x.SellingPrice == null ? referenceProductData.SellingPrice : x.SellingPrice),
                         DiscountPrice = (double)(x.DiscountPrice == null ? referenceProductData.DiscountPrice : x.DiscountPrice),
-                        HistoricalPrice = referenceProductData.SellingPrice,
+                        HistoricalPrice = referenceProductData.HistoricalPrice,
                         MenuId = menuId,
                         ProductId = x.ProductId,
                         CreatedBy = currentUserName,

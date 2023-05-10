@@ -39,10 +39,17 @@ namespace Pos_System.API.Services.Implements
          );
             List<Order> orders = (List<Order>)await _unitOfWork.GetRepository<Order>().GetListAsync(
                 include: x => x.Include(order => order.OrderDetails).ThenInclude(x => x.MenuProduct).ThenInclude(x => x.Product).Include(order => order.Session),
-                predicate: p => p.Session.StoreId.Equals(storeId)&&p.CheckInDate >= startDate && p.CheckInDate <= endDate.Value.AddDays(1) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()),
+                predicate: p => p.Session.StoreId.Equals(storeId) && p.CheckInDate >= startDate && p.CheckInDate <= endDate.Value.AddDays(1) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()),
                 orderBy: x => x.OrderByDescending(x => x.CheckInDate)
                 );
             report.StoreId = currentUserStoreId;
+            for (int i = 0; i < 24; i++)
+            {
+                report.TimeLine.Add(i);
+                report.TotalAmountTimeLine.Add(0);
+                report.TotalOrderTimeLine.Add(0);
+
+            }
             foreach (var category in categories)
             {
                 report.CategoryReports.Add(new CategoryReport(category.Id, category.Name, 0, 0, 0, new List<ProductReport>()));
@@ -79,24 +86,37 @@ namespace Pos_System.API.Services.Implements
                             var exitProduct = cateReport.ProductReports.FindIndex(element => element.Id.Equals(orderDetail.MenuProduct.ProductId));
                             if (exitProduct == -1)
                             {
-                            cateReport.ProductReports.Add(new ProductReport(orderDetail.MenuProduct.Product.Id, orderDetail.MenuProduct.Product.Name, orderDetail.Quantity, orderDetail.TotalAmount, orderDetail.Discount));
-                            cateReport.TotalProduct += orderDetail.Quantity;
-                            cateReport.TotalAmount += orderDetail.TotalAmount;
-                            cateReport.TotalDiscount += orderDetail.Discount;
-                            } else
+                                cateReport.ProductReports.Add(new ProductReport(orderDetail.MenuProduct.Product.Id, orderDetail.MenuProduct.Product.Name, orderDetail.Quantity, orderDetail.TotalAmount, orderDetail.Discount));
+                                cateReport.TotalProduct += orderDetail.Quantity;
+                                cateReport.TotalAmount += orderDetail.TotalAmount;
+                                cateReport.TotalDiscount += orderDetail.Discount;
+                                report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
+                            }
+                            else
                             {
                                 cateReport.ProductReports[exitProduct].Quantity += orderDetail.Quantity;
                                 cateReport.ProductReports[exitProduct].TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalProduct += orderDetail.Quantity;
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
+                                cateReport.TotalDiscount += orderDetail.Discount;
+                                report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
                             }
-
                         }
+
                     }
                 }
+                for (int i = 0; i < 24; i++)
+                {
+                    if (i == item.CheckOutDate.Hour)
+                    {
+                        report.TotalOrderTimeLine[i]++;
+                        report.TotalAmountTimeLine[i] += item.FinalAmount;
 
+                    }
+                }
             }
             report.AverageBill = report.TotalAmount / report.TotalOrder;
+            report.TotalRevenue = report.FinalAmount - report.ProductCosAmount;
             return report;
         }
     }

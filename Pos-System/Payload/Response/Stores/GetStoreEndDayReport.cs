@@ -12,6 +12,8 @@ namespace Pos_System.API.Payload.Response.Stores
         public double TotalDiscount { get; set; }
         public double VatAmount { get; set; }
         public double FinalAmount { get; set; }
+        public double ProductCosAmount { get; set; }
+        public double TotalRevenue { get; set; }
         public double InStoreAmount { get; set; }
         public double DeliAmount { get; set; }
         public double TakeAwayAmount { get; set; }
@@ -21,6 +23,9 @@ namespace Pos_System.API.Payload.Response.Stores
         public int TotalOrderTakeAway { get; set; }
         public int TotalOrderDeli { get; set; }
         public double AverageBill { get; set; }
+        public List<int> TimeLine { get; set; } = new List<int>();
+        public List<int> TotalOrderTimeLine { get; set; } = new List<int>();
+        public List<double> TotalAmountTimeLine { get; set; } = new List<double>();
     }
 
     public class CategoryReport
