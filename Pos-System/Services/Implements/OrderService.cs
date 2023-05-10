@@ -323,8 +323,7 @@ namespace Pos_System.API.Services.Implements
             return order.Id;
         }
 
-
-        public async Task<IPaginate<GetPromotionResponse>> GetPromotion(Guid storeId, int page, int size)
+        public async Task<List<GetPromotionResponse>> GetPromotion(Guid storeId)
         {
             RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
@@ -334,7 +333,7 @@ namespace Pos_System.API.Services.Implements
     .SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(currentUserStoreId));
 
             if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
-            IPaginate<GetPromotionResponse> responese = await _unitOfWork.GetRepository<Promotion>().GetPagingListAsync(
+            List<GetPromotionResponse> responese = (List<GetPromotionResponse>)await _unitOfWork.GetRepository<Promotion>().GetListAsync(
                 selector: x => new GetPromotionResponse
                 {
                     Id = x.Id,
@@ -346,14 +345,14 @@ namespace Pos_System.API.Services.Implements
                     MinConditionAmount = x.MinConditionAmount,
                     DiscountAmount = x.DiscountAmount,
                     DiscountPercent = x.DiscountPercent,
+                    ListProductApply = x.PromotionProductMappings.Select(x => new ProductApply(x.ProductId)).ToList(),
                     Status = x.Status
                 },
+                include: x => x.Include(product => product.PromotionProductMappings),
                 predicate:
                      x => x.BrandId.Equals(userBrandId) && x.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()),
-                page: page,
-                size: size,
                 orderBy: x => x.OrderBy(x => x.Name)
-                );
+                ); 
             return responese;
         }
     }

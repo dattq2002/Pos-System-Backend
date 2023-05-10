@@ -13,7 +13,7 @@ namespace Pos_System.API.Services.Interfaces
         public Task<GetOrderDetailResponse> GetOrderDetail(Guid storeId, Guid orderId);
         public Task<IPaginate<ViewOrdersResponse>> GetOrdersInStore(Guid storeId, int page, int size,
             DateTime? startDate, DateTime? endDate, OrderType? orderType, OrderStatus? orderStatus);
-        public Task<IPaginate<GetPromotionResponse>> GetPromotion(Guid storeId, int page, int size);
+        public Task<List<GetPromotionResponse>> GetPromotion(Guid storeId);
 
 
     }

@@ -170,9 +170,9 @@ namespace Pos_System.API.Controllers
         [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
         [HttpGet(ApiEndPointConstant.Store.GetPromotion)]
         [ProducesResponseType(typeof(GetPromotionResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPrmotion(Guid id, [FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> GetPrmotion(Guid id)
         {
-            var response = await _orderService.GetPromotion(id, page, size);
+            var response = await _orderService.GetPromotion(id);
             return Ok(response);
         }
     }

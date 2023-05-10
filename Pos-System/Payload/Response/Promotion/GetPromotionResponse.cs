@@ -14,7 +14,16 @@ namespace Pos_System.API.Payload.Response.Promotion
         public double? MinConditionAmount { get; set; }
         public double? DiscountAmount { get; set; }
         public double? DiscountPercent { get; set; }
+        public List<ProductApply> ListProductApply { get; set; } = new List<ProductApply>();
         public string? Status { get; set; }
+    }
+    public class ProductApply {
+        public ProductApply(Guid productId)
+        {
+            ProductId = productId;
+        }
+
+        public Guid ProductId { get; set; }
     }
 }
 
