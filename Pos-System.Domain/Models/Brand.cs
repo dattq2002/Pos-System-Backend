@@ -13,6 +13,7 @@ namespace Pos_System.Domain.Models
             Menus = new HashSet<Menu>();
             OrderSources = new HashSet<OrderSource>();
             Products = new HashSet<Product>();
+            Promotions = new HashSet<Promotion>();
             Stores = new HashSet<Store>();
         }
 
@@ -30,6 +31,7 @@ namespace Pos_System.Domain.Models
         public virtual ICollection<Menu> Menus { get; set; }
         public virtual ICollection<OrderSource> OrderSources { get; set; }
         public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Promotion> Promotions { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
     }
 }

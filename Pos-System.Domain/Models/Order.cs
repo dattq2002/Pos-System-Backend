@@ -8,6 +8,7 @@ namespace Pos_System.Domain.Models
         public Order()
         {
             OrderDetails = new HashSet<OrderDetail>();
+            PromotionOrderMappings = new HashSet<PromotionOrderMapping>();
         }
 
         public Guid Id { get; set; }
@@ -33,5 +34,6 @@ namespace Pos_System.Domain.Models
         public virtual OrderSource? OrderSource { get; set; }
         public virtual Session Session { get; set; } = null!;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<PromotionOrderMapping> PromotionOrderMappings { get; set; }
     }
 }

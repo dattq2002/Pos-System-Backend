@@ -6,6 +6,8 @@ using Pos_System.API.Enums;
 using Pos_System.API.Extensions;
 using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Response.Orders;
+using Pos_System.API.Payload.Response.Products;
+using Pos_System.API.Payload.Response.Promotion;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
@@ -29,11 +31,11 @@ namespace Pos_System.API.Services.Implements
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
 
             string currentUserName = GetUsernameFromJwt();
-            DateTime currentTime =TimeUtils.GetCurrentSEATime();
+            DateTime currentTime = TimeUtils.GetCurrentSEATime();
             string currentTimeStamp = TimeUtils.GetTimestamp(currentTime);
             Account currentUser = await _unitOfWork.GetRepository<Account>().SingleOrDefaultAsync(predicate: x => x.Username.Equals(currentUserName));
-            Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x => 
-	            x.StoreId.Equals(storeId)
+            Session currentUserSession = await _unitOfWork.GetRepository<Session>().SingleOrDefaultAsync(predicate: x =>
+                x.StoreId.Equals(storeId)
                 && DateTime.Compare(x.StartDateTime, currentTime) < 0
                 && DateTime.Compare(x.EndDateTime, currentTime) > 0);
 
@@ -43,7 +45,7 @@ namespace Pos_System.API.Services.Implements
             string newInvoiceId = store.Code + currentTimeStamp;
             double SystemDiscountAmount = 0;
             int defaultGuest = 1;
-            
+
             double VATAmount = (createNewOrderRequest.FinalAmount / VAT_STANDARD) * VAT_PERCENT;
 
             Order newOrder = new Order()
@@ -63,6 +65,9 @@ namespace Pos_System.API.Services.Implements
                 Status = OrderStatus.PENDING.GetDescriptionFromEnum(),
                 SessionId = currentUserSession.Id
             };
+
+
+
 
             List<OrderDetail> orderDetails = new List<OrderDetail>();
             createNewOrderRequest.ProductsList.ForEach(product =>
@@ -105,10 +110,19 @@ namespace Pos_System.API.Services.Implements
             });
 
             currentUserSession.NumberOfOrders++;
-
             await _unitOfWork.GetRepository<Order>().InsertAsync(newOrder);
             await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
+            if (createNewOrderRequest.PromotionId.HasValue)
+            {
+                PromotionOrderMapping promotionOrderMapping = new PromotionOrderMapping()
+                {
+                    Id = Guid.NewGuid(),
+                    PromotionId = (Guid)createNewOrderRequest.PromotionId,
+                    OrderId = newOrder.Id
+                };
+                await _unitOfWork.GetRepository<PromotionOrderMapping>().InsertAsync(promotionOrderMapping);
+            }
             await _unitOfWork.CommitAsync();
 
             return newOrder.Id;
@@ -121,7 +135,10 @@ namespace Pos_System.API.Services.Implements
 
             Store store = await _unitOfWork.GetRepository<Store>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(storeId));
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
-            Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(orderId));
+            Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(
+                predicate: x => x.Id.Equals(orderId),
+                include: x=> x.Include(p => p.PromotionOrderMappings).ThenInclude(a => a.Promotion)
+               );
             if (order == null) throw new BadHttpRequestException(MessageConstant.Order.OrderNotFoundMessage);
 
             GetOrderDetailResponse orderDetailResponse = new GetOrderDetailResponse();
@@ -135,7 +152,7 @@ namespace Pos_System.API.Services.Implements
             orderDetailResponse.OrderStatus = EnumUtil.ParseEnum<OrderStatus>(order.Status);
             orderDetailResponse.OrderType = EnumUtil.ParseEnum<OrderType>(order.OrderType);
             orderDetailResponse.CheckInDate = order.CheckInDate;
-
+            orderDetailResponse.DiscountName = order.Discount > 0 ? order.PromotionOrderMappings.Select(pr => pr.Promotion.Name).First() : "Giảm giá";
             orderDetailResponse.ProductList = (List<OrderProductDetailResponse>)await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
                 selector: x => new OrderProductDetailResponse()
                 {
@@ -187,7 +204,7 @@ namespace Pos_System.API.Services.Implements
                     StaffName = x.CheckInPersonNavigation.Name,
                     StartDate = x.CheckInDate,
                     EndDate = x.CheckOutDate,
-                    FinalAmount= x.FinalAmount,
+                    FinalAmount = x.FinalAmount,
                     OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
                     Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
                 },
@@ -201,32 +218,32 @@ namespace Pos_System.API.Services.Implements
         }
 
         private Expression<Func<Order, bool>> BuildGetOrdersInStoreQuery(Guid storeId, DateTime? startDate,
-	        DateTime? endDate, OrderType? orderType, OrderStatus? status)
+            DateTime? endDate, OrderType? orderType, OrderStatus? status)
         {
-	        Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
-	        if (startDate != null && endDate == null)
-	        {
-		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate && p.CheckInDate <= startDate.Value.AddDays(1));
-	        }
-	        else if (startDate != null)
-	        {
-		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate);
-	        }
+            Expression<Func<Order, bool>> filterQuery = p => p.Session.StoreId.Equals(storeId);
+            if (startDate != null && endDate == null)
+            {
+                filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate && p.CheckInDate <= startDate.Value.AddDays(1));
+            }
+            else if (startDate != null)
+            {
+                filterQuery = filterQuery.AndAlso(p => p.CheckInDate >= startDate);
+            }
 
-	        if (endDate != null)
-	        {
-		        filterQuery = filterQuery.AndAlso(p => p.CheckInDate <= endDate);
-	        }
+            if (endDate != null)
+            {
+                filterQuery = filterQuery.AndAlso(p => p.CheckInDate <= endDate);
+            }
 
-	        if (orderType != null)
-	        {
-		        filterQuery = filterQuery.AndAlso(p => p.OrderType.Equals(orderType.GetDescriptionFromEnum()));
-	        }
+            if (orderType != null)
+            {
+                filterQuery = filterQuery.AndAlso(p => p.OrderType.Equals(orderType.GetDescriptionFromEnum()));
+            }
 
-	        if (status != null)
-	        {
-		        filterQuery = filterQuery.AndAlso(p => p.Status.Equals(status.GetDescriptionFromEnum()));
-	        }
+            if (status != null)
+            {
+                filterQuery = filterQuery.AndAlso(p => p.Status.Equals(status.GetDescriptionFromEnum()));
+            }
 
             return filterQuery;
         }
@@ -278,24 +295,24 @@ namespace Pos_System.API.Services.Implements
                 //if (currentPayment == null)
                 //{
 
-                    //Payment newPaymentRequest = new Payment()
-                    //{
-                    //    Id = Guid.NewGuid(),
-                    //    OrderId = order.Id,
-                    //    Amount = order.FinalAmount,
-                    //    PaymentTypeId = paymentType.Id
-                    //};
-                    //await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
+                //Payment newPaymentRequest = new Payment()
+                //{
+                //    Id = Guid.NewGuid(),
+                //    OrderId = order.Id,
+                //    Amount = order.FinalAmount,
+                //    PaymentTypeId = paymentType.Id
+                //};
+                //await _unitOfWork.GetRepository<Payment>().InsertAsync(newPaymentRequest);
                 //}
                 currentUserSession.TotalAmount += order.TotalAmount;
                 currentUserSession.TotalFinalAmount += order.FinalAmount;
                 currentUserSession.TotalDiscountAmount += order.Discount;
                 if (updateOrderRequest.PaymentType != null)
                 {
-	                if (updateOrderRequest.PaymentType.Equals("CASH"))
-	                {
-		                currentUserSession.TotalChangeCash += order.FinalAmount;
-	                }
+                    if (updateOrderRequest.PaymentType.Equals("CASH"))
+                    {
+                        currentUserSession.TotalChangeCash += order.FinalAmount;
+                    }
                 }
             }
 
@@ -307,6 +324,39 @@ namespace Pos_System.API.Services.Implements
             await _unitOfWork.CommitAsync();
 
             return order.Id;
+        }
+
+        public async Task<List<GetPromotionResponse>> GetPromotion(Guid storeId)
+        {
+            RoleEnum userRole = EnumUtil.ParseEnum<RoleEnum>(GetRoleFromJwt());
+            if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
+            Guid currentUserStoreId = Guid.Parse(GetStoreIdFromJwt());
+            if (currentUserStoreId != storeId) throw new BadHttpRequestException(MessageConstant.Store.GetStoreOrdersUnAuthorized);
+            Guid userBrandId = await _unitOfWork.GetRepository<Store>()
+    .SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(currentUserStoreId));
+
+            if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
+            List<GetPromotionResponse> responese = (List<GetPromotionResponse>)await _unitOfWork.GetRepository<Promotion>().GetListAsync(
+                selector: x => new GetPromotionResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Code = x.Code,
+                    Description = x.Description,
+                    Type = EnumUtil.ParseEnum<PromotionEnum>(x.Type),
+                    MaxDiscount = x.MaxDiscount,
+                    MinConditionAmount = x.MinConditionAmount,
+                    DiscountAmount = x.DiscountAmount,
+                    DiscountPercent = x.DiscountPercent,
+                    ListProductApply = x.PromotionProductMappings.Select(x => new ProductApply(x.ProductId)).ToList(),
+                    Status = x.Status
+                },
+                include: x => x.Include(product => product.PromotionProductMappings),
+                predicate:
+                     x => x.BrandId.Equals(userBrandId) && x.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()),
+                orderBy: x => x.OrderBy(x => x.Name)
+                );
+            return responese;
         }
     }
 }

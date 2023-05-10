@@ -32,10 +32,14 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<OrderSource> OrderSources { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductInGroup> ProductInGroups { get; set; } = null!;
+        public virtual DbSet<Promotion> Promotions { get; set; } = null!;
+        public virtual DbSet<PromotionOrderMapping> PromotionOrderMappings { get; set; } = null!;
+        public virtual DbSet<PromotionProductMapping> PromotionProductMappings { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Session> Sessions { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<StoreAccount> StoreAccounts { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -433,6 +437,75 @@ namespace Pos_System.Domain.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProductInGroup_Product");
+            });
+
+            modelBuilder.Entity<Promotion>(entity =>
+            {
+                entity.ToTable("Promotion");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.Promotions)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Promotion___Brand");
+            });
+
+            modelBuilder.Entity<PromotionOrderMapping>(entity =>
+            {
+                entity.ToTable("PromotionOrderMapping");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.PromotionOrderMappings)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionOrderMapping___Order");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionOrderMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionOrderMapping_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionProductMapping>(entity =>
+            {
+                entity.ToTable("PromotionProductMapping");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.PromotionProductMappings)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionProductMapping_Product");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionProductMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionProductMapping_Promotion");
             });
 
             modelBuilder.Entity<Role>(entity =>
