@@ -73,7 +73,7 @@ namespace Pos_System.API.Services.Implements
             createNewOrderRequest.ProductsList.ForEach(product =>
             {
                 double totalProductAmount = product.SellingPrice * product.Quantity;
-                double finalProductAmount = totalProductAmount - SystemDiscountAmount;
+                double finalProductAmount = totalProductAmount - product.Discount;
                 Guid masterOrderDetailId = Guid.NewGuid();
                 orderDetails.Add(new OrderDetail()
                 {
@@ -83,7 +83,7 @@ namespace Pos_System.API.Services.Implements
                     Quantity = product.Quantity,
                     SellingPrice = product.SellingPrice,
                     TotalAmount = totalProductAmount,
-                    Discount = SystemDiscountAmount,
+                    Discount = product.Discount,
                     FinalAmount = finalProductAmount,
                     Notes = product.Note
                 });
@@ -92,7 +92,7 @@ namespace Pos_System.API.Services.Implements
                     product.Extras.ForEach(extra =>
                     {
                         double totalProductExtraAmount = extra.SellingPrice * extra.Quantity;
-                        double finalProductExtraAmount = totalProductExtraAmount - SystemDiscountAmount;
+                        double finalProductExtraAmount = totalProductExtraAmount - extra.Discount;
                         orderDetails.Add(new OrderDetail()
                         {
                             Id = Guid.NewGuid(),
@@ -101,7 +101,7 @@ namespace Pos_System.API.Services.Implements
                             Quantity = extra.Quantity,
                             SellingPrice = extra.SellingPrice,
                             TotalAmount = totalProductExtraAmount,
-                            Discount = SystemDiscountAmount,
+                            Discount = extra.Discount,
                             FinalAmount = finalProductExtraAmount,
                             MasterOrderDetailId = masterOrderDetailId,
                         });
@@ -152,7 +152,7 @@ namespace Pos_System.API.Services.Implements
             orderDetailResponse.OrderStatus = EnumUtil.ParseEnum<OrderStatus>(order.Status);
             orderDetailResponse.OrderType = EnumUtil.ParseEnum<OrderType>(order.OrderType);
             orderDetailResponse.CheckInDate = order.CheckInDate;
-            orderDetailResponse.DiscountName = order.Discount > 0 ? order.PromotionOrderMappings.Select(pr => pr.Promotion.Name).First() : "Giảm giá";
+            orderDetailResponse.DiscountName = order.PromotionOrderMappings.Count() > 0 ? order.PromotionOrderMappings.Select(pr => pr.Promotion.Name).First() : "Giảm giá";
             orderDetailResponse.ProductList = (List<OrderProductDetailResponse>)await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
                 selector: x => new OrderProductDetailResponse()
                 {

@@ -9,6 +9,8 @@ namespace Pos_System.API.Payload.Response.Stores
         public Guid StoreId { get; set; }
         public List<CategoryReport> CategoryReports { get; set; } = new List<CategoryReport>();
         public double TotalAmount { get; set; }
+        public double TotalProductDiscount { get; set; }
+        public double TotalPromotionDiscount { get; set; }
         public double TotalDiscount { get; set; }
         public double VatAmount { get; set; }
         public double FinalAmount { get; set; }

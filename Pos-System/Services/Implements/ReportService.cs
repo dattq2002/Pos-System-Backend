@@ -43,6 +43,7 @@ namespace Pos_System.API.Services.Implements
                 orderBy: x => x.OrderByDescending(x => x.CheckInDate)
                 );
             report.StoreId = currentUserStoreId;
+            report.TotalProductDiscount = 0;
             for (int i = 0; i < 24; i++)
             {
                 report.TimeLine.Add(i);
@@ -91,6 +92,7 @@ namespace Pos_System.API.Services.Implements
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalDiscount += orderDetail.Discount;
                                 report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
+                                report.TotalProductDiscount += orderDetail.Discount;
                             }
                             else
                             {
@@ -100,7 +102,9 @@ namespace Pos_System.API.Services.Implements
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalDiscount += orderDetail.Discount;
                                 report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
+                                report.TotalProductDiscount += orderDetail.Discount;
                             }
+
                         }
 
                     }
@@ -115,6 +119,7 @@ namespace Pos_System.API.Services.Implements
                     }
                 }
             }
+            report.TotalPromotionDiscount = report.TotalDiscount - report.TotalProductDiscount;
             report.AverageBill = report.TotalAmount / report.TotalOrder;
             report.TotalRevenue = report.FinalAmount - report.ProductCosAmount;
             return report;
