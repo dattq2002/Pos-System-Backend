@@ -63,7 +63,8 @@ namespace Pos_System.API.Services.Implements
                 OrderType = createNewOrderRequest.OrderType.GetDescriptionFromEnum(),
                 NumberOfGuest = defaultGuest,
                 Status = OrderStatus.PENDING.GetDescriptionFromEnum(),
-                SessionId = currentUserSession.Id
+                SessionId = currentUserSession.Id,
+                PaymentType = PaymentTypeEnum.CASH.GetDescriptionFromEnum()
             };
 
 
@@ -151,6 +152,7 @@ namespace Pos_System.API.Services.Implements
             orderDetailResponse.Discount = order.Discount;
             orderDetailResponse.OrderStatus = EnumUtil.ParseEnum<OrderStatus>(order.Status);
             orderDetailResponse.OrderType = EnumUtil.ParseEnum<OrderType>(order.OrderType);
+            orderDetailResponse.PaymentType = string.IsNullOrEmpty(order.PaymentType) ? PaymentTypeEnum.CASH : EnumUtil.ParseEnum<PaymentTypeEnum>(order.PaymentType);
             orderDetailResponse.CheckInDate = order.CheckInDate;
             orderDetailResponse.DiscountName = order.PromotionOrderMappings.Count() > 0 ? order.PromotionOrderMappings.Select(pr => pr.Promotion.Name).First() : "Giảm giá";
             orderDetailResponse.ProductList = (List<OrderProductDetailResponse>)await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
@@ -206,7 +208,9 @@ namespace Pos_System.API.Services.Implements
                     EndDate = x.CheckOutDate,
                     FinalAmount = x.FinalAmount,
                     OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
-                    Status = EnumUtil.ParseEnum<OrderStatus>(x.Status)
+                    Status = EnumUtil.ParseEnum<OrderStatus>(x.Status),
+                    PaymentType = string.IsNullOrEmpty(x.PaymentType)?PaymentTypeEnum.CASH : EnumUtil.ParseEnum<PaymentTypeEnum>(x.PaymentType),
+
                 },
                 predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
                 include: x => x.Include(order => order.Session).Include(order => order.CheckInPersonNavigation),
@@ -309,16 +313,16 @@ namespace Pos_System.API.Services.Implements
                 currentUserSession.TotalDiscountAmount += order.Discount;
                 if (updateOrderRequest.PaymentType != null)
                 {
-                    if (updateOrderRequest.PaymentType.Equals("CASH"))
+                    if (updateOrderRequest.PaymentType.Equals(PaymentTypeEnum.CASH))
                     {
                         currentUserSession.TotalChangeCash += order.FinalAmount;
                     }
                 }
             }
-
             order.CheckOutDate = currentTime;
+            order.PaymentType = updateOrderRequest.PaymentType.GetDescriptionFromEnum();
             order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
-
+            
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             _unitOfWork.GetRepository<Order>().UpdateAsync(order);
             await _unitOfWork.CommitAsync();

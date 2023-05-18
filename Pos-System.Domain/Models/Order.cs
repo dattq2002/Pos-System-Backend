@@ -29,6 +29,7 @@ namespace Pos_System.Domain.Models
         public double? FeeAmount { get; set; }
         public string? FeeDescription { get; set; }
         public Guid SessionId { get; set; }
+        public string? PaymentType { get; set; }
 
         public virtual Account CheckInPersonNavigation { get; set; } = null!;
         public virtual OrderSource? OrderSource { get; set; }

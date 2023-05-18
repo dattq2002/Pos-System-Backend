@@ -22,6 +22,9 @@ namespace Pos_System.Domain.Models
         public double? DiscountPercent { get; set; }
         public string? Status { get; set; }
         public Guid BrandId { get; set; }
+        public int? StartTime { get; set; }
+        public int? EndTime { get; set; }
+        public int? DayFilter { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual ICollection<PromotionOrderMapping> PromotionOrderMappings { get; set; }

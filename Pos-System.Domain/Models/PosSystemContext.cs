@@ -40,6 +40,14 @@ namespace Pos_System.Domain.Models
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<StoreAccount> StoreAccounts { get; set; } = null!;
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=120.72.85.82,9033;User Id=sa;Password=f0^wyhMfl*25;Database=PosSystem");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -305,6 +313,10 @@ namespace Pos_System.Domain.Models
                     .HasColumnName("InvoiceID");
 
                 entity.Property(e => e.OrderType).HasMaxLength(20);
+
+                entity.Property(e => e.PaymentType)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Status).HasMaxLength(20);
 

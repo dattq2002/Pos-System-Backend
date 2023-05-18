@@ -47,7 +47,7 @@ public static class DependencyServices
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IReportService, ReportService>();
-
+		services.AddScoped<IPromotionService, PromotionService>();
         return services;
 	}
 

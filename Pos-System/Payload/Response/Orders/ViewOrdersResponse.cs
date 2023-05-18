@@ -12,6 +12,7 @@ namespace Pos_System.API.Payload.Response.Orders
         public double FinalAmount { get; set; }
         public OrderType OrderType { get; set; }
         public OrderStatus Status { get; set; }
+        public PaymentTypeEnum PaymentType { get; set; }
 
     }
 }
