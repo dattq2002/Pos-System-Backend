@@ -19,11 +19,20 @@ namespace Pos_System.API.Payload.Response.Stores
         public double InStoreAmount { get; set; }
         public double DeliAmount { get; set; }
         public double TakeAwayAmount { get; set; }
+        public double CashAmount { get; set; }
+        public double MomoAmount { get; set; }
+        public double BankingAmount { get; set; }
+        public double VisaAmount { get; set; }
         public int TotalProduct { get; set; }
+        public int TotalPromotionUsed { get; set; }
         public int TotalOrder { get; set; }
         public int TotalOrderInStore { get; set; }
         public int TotalOrderTakeAway { get; set; }
         public int TotalOrderDeli { get; set; }
+        public int TotalCash{ get; set; }
+        public int TotalBanking { get; set; }
+        public int TotalMomo { get; set; }
+        public int TotalVisa { get; set; }
         public double AverageBill { get; set; }
         public List<int> TimeLine { get; set; } = new List<int>();
         public List<int> TotalOrderTimeLine { get; set; } = new List<int>();

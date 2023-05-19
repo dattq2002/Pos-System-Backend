@@ -10,7 +10,6 @@
         public double TotalAmount { get; set; }
         public int TotalPromotion { get; set; }
         public double CurrentCashInVault { get; set; }
-        public double InitCashInVault { get; set; }
         public double ProfitAmount { get; set; }
         public double TotalDiscountAmount { get; set; }
 

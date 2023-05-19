@@ -294,13 +294,6 @@ public class StoreService : BaseService<StoreService>, IStoreService
             .SingleOrDefaultAsync(predicate: x => x.StoreId.Equals(storeId) && x.Id.Equals(sessionId));
         if (session == null) throw new BadHttpRequestException(MessageConstant.Session.SessionNotFoundMessage);
 
-        //Số tiền trong két tiền
-        double currentCashInVault = session.TotalChangeCash ?? 0;
-        //Só tiền hàng đã bán
-        double currentTotalFinalAmount = session.TotalFinalAmount ?? 0;
-        //Số tiền bàn giao lúc đầu
-        double cashHandedOver = currentCashInVault - currentTotalFinalAmount;
-
         GetStoreEndShiftStatisticsResponse result = new GetStoreEndShiftStatisticsResponse()
         {
             SessionId = session.Id,
@@ -310,9 +303,8 @@ public class StoreService : BaseService<StoreService>, IStoreService
             NumberOfOrders = session.NumberOfOrders,
             TotalAmount = session.TotalAmount ?? 0,
             TotalPromotion = session.TotalPromotion ?? 0,
-            CurrentCashInVault = currentCashInVault,
-            InitCashInVault = cashHandedOver,
-            ProfitAmount = currentTotalFinalAmount,
+            CurrentCashInVault = session.TotalChangeCash ?? 0,
+            ProfitAmount = session.TotalFinalAmount ?? 0,
             TotalDiscountAmount = session.TotalDiscountAmount ?? 0,
         };
 

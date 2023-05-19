@@ -78,6 +78,26 @@ namespace Pos_System.API.Services.Implements
                     report.DeliAmount += item.FinalAmount;
                     report.TotalOrderDeli++;
                 };
+                if (item.PaymentType == PaymentTypeEnum.CASH.GetDescriptionFromEnum())
+                {
+                    report.CashAmount += item.FinalAmount;
+                    report.TotalCash++;
+                }
+                else if (item.PaymentType == PaymentTypeEnum.MOMO.GetDescriptionFromEnum())
+                {
+                    report.MomoAmount += item.FinalAmount;
+                    report.TotalMomo++;
+                }
+                else if (item.PaymentType == PaymentTypeEnum.BANKING.GetDescriptionFromEnum())
+                {
+                    report.BankingAmount += item.FinalAmount;
+                    report.TotalBanking++;
+                }
+                else
+                {
+                    report.VisaAmount += item.FinalAmount;
+                    report.TotalVisa++;
+                };
                 foreach (var cateReport in report.CategoryReports)
                 {
                     foreach (var orderDetail in item.OrderDetails)
@@ -120,7 +140,15 @@ namespace Pos_System.API.Services.Implements
                 }
             }
             report.TotalPromotionDiscount = report.TotalDiscount - report.TotalProductDiscount;
-            report.AverageBill = report.TotalAmount / report.TotalOrder;
+            if (report.TotalOrder == 0)
+            {
+                report.AverageBill = 0;
+            }
+            else
+            {
+                report.AverageBill = report.FinalAmount / report.TotalOrder;
+            }
+
             report.TotalRevenue = report.FinalAmount - report.ProductCosAmount;
             return report;
         }
