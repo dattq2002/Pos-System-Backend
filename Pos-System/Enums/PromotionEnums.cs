@@ -5,7 +5,8 @@ namespace Pos_System.API.Enums
     {
         Amount,
         Percent,
-        Product
+        Product,
+        AutoApply
     }
 }
 

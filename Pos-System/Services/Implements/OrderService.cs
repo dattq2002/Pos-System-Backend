@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Extensions;
+using Pos_System.API.Helpers;
 using Pos_System.API.Payload.Request.Orders;
 using Pos_System.API.Payload.Response.Orders;
 using Pos_System.API.Payload.Response.Products;
@@ -138,7 +139,7 @@ namespace Pos_System.API.Services.Implements
             if (store == null) throw new BadHttpRequestException(MessageConstant.Store.StoreNotFoundMessage);
             Order order = await _unitOfWork.GetRepository<Order>().SingleOrDefaultAsync(
                 predicate: x => x.Id.Equals(orderId),
-                include: x=> x.Include(p => p.PromotionOrderMappings).ThenInclude(a => a.Promotion)
+                include: x => x.Include(p => p.PromotionOrderMappings).ThenInclude(a => a.Promotion)
                );
             if (order == null) throw new BadHttpRequestException(MessageConstant.Order.OrderNotFoundMessage);
 
@@ -209,7 +210,7 @@ namespace Pos_System.API.Services.Implements
                     FinalAmount = x.FinalAmount,
                     OrderType = EnumUtil.ParseEnum<OrderType>(x.OrderType),
                     Status = EnumUtil.ParseEnum<OrderStatus>(x.Status),
-                    PaymentType = string.IsNullOrEmpty(x.PaymentType)?PaymentTypeEnum.CASH : EnumUtil.ParseEnum<PaymentTypeEnum>(x.PaymentType),
+                    PaymentType = string.IsNullOrEmpty(x.PaymentType) ? PaymentTypeEnum.CASH : EnumUtil.ParseEnum<PaymentTypeEnum>(x.PaymentType),
 
                 },
                 predicate: BuildGetOrdersInStoreQuery(storeId, startDate, endDate, orderType, status),
@@ -322,7 +323,7 @@ namespace Pos_System.API.Services.Implements
             order.CheckOutDate = currentTime;
             order.PaymentType = updateOrderRequest.PaymentType.GetDescriptionFromEnum();
             order.Status = updateOrderRequest.Status.GetDescriptionFromEnum();
-            
+
             _unitOfWork.GetRepository<Session>().UpdateAsync(currentUserSession);
             _unitOfWork.GetRepository<Order>().UpdateAsync(order);
             await _unitOfWork.CommitAsync();
@@ -339,6 +340,12 @@ namespace Pos_System.API.Services.Implements
             Guid userBrandId = await _unitOfWork.GetRepository<Store>()
     .SingleOrDefaultAsync(selector: x => x.BrandId, predicate: x => x.Id.Equals(currentUserStoreId));
 
+            DateTime currentSEATime = TimeUtils.GetCurrentSEATime();
+            DateFilter currentDay = DateTimeHelper.GetDateFromDateTime(currentSEATime);
+            TimeOnly currentTime = TimeOnly.FromDateTime(currentSEATime);
+
+
+
             if (userBrandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandIdMessage);
             List<GetPromotionResponse> responese = (List<GetPromotionResponse>)await _unitOfWork.GetRepository<Promotion>().GetListAsync(
                 selector: x => new GetPromotionResponse
@@ -352,7 +359,11 @@ namespace Pos_System.API.Services.Implements
                     MinConditionAmount = x.MinConditionAmount,
                     DiscountAmount = x.DiscountAmount,
                     DiscountPercent = x.DiscountPercent,
-                    ListProductApply = x.PromotionProductMappings.Select(x => new ProductApply(x.ProductId)).ToList(),
+                    StartTime = DateTimeHelper.ConvertIntToTimeOnly(x.StartTime ?? 0),
+                    EndTime = DateTimeHelper.ConvertIntToTimeOnly(x.EndTime ?? 1439),
+                    DateFilters = DateTimeHelper.GetDatesFromDateFilter(x.DayFilter??127),
+                    IsAvailable = false,
+            ListProductApply = x.PromotionProductMappings.Select(x => new ProductApply(x.ProductId)).ToList(),
                     Status = x.Status
                 },
                 include: x => x.Include(product => product.PromotionProductMappings),
@@ -360,6 +371,14 @@ namespace Pos_System.API.Services.Implements
                      x => x.BrandId.Equals(userBrandId) && x.Status.Equals(ProductStatus.Active.GetDescriptionFromEnum()),
                 orderBy: x => x.OrderBy(x => x.Name)
                 );
+            foreach (var promotionResponse in responese)
+            {
+                //Find the menu available days and time
+                if (promotionResponse.DateFilters.Contains(currentDay) && currentTime <= promotionResponse.EndTime && currentTime >= promotionResponse.StartTime)
+                    promotionResponse.IsAvailable = true;
+            }
+
+
             return responese;
         }
     }

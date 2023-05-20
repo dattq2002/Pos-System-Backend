@@ -44,7 +44,14 @@ namespace Pos_System.API.Services.Implements
                 );
             report.StoreId = currentUserStoreId;
             report.TotalProductDiscount = 0;
-            for (int i = 0; i < 24; i++)
+            report.TotalProduct = 0;
+            report.TotalAmountSizeL = 0;
+            report.TotalAmountSizeM = 0;
+            report.TotalAmountSizeS = 0;
+            report.TotalSizeL = 0;
+            report.TotalSizeM = 0;
+            report.TotalSizeS = 0;
+            for (int i = 6; i < 24; i++)
             {
                 report.TimeLine.Add(i);
                 report.TotalAmountTimeLine.Add(0);
@@ -53,7 +60,7 @@ namespace Pos_System.API.Services.Implements
             }
             foreach (var category in categories)
             {
-                report.CategoryReports.Add(new CategoryReport(category.Id, category.Name, 0, 0, 0, new List<ProductReport>()));
+                report.CategoryReports.Add(new CategoryReport(category.Id, category.Name, 0, 0, 0, 0, new List<ProductReport>()));
             }
             foreach (var item in orders)
             {
@@ -62,7 +69,7 @@ namespace Pos_System.API.Services.Implements
                 report.VatAmount += item.Vatamount;
                 report.FinalAmount += item.FinalAmount;
                 report.TotalOrder++;
-                report.TotalProduct += item.OrderDetails.Count();
+
                 if (item.OrderType == OrderType.EAT_IN.GetDescriptionFromEnum())
                 {
                     report.InStoreAmount += item.FinalAmount;
@@ -78,10 +85,11 @@ namespace Pos_System.API.Services.Implements
                     report.DeliAmount += item.FinalAmount;
                     report.TotalOrderDeli++;
                 };
-                if (item.PaymentType == PaymentTypeEnum.CASH.GetDescriptionFromEnum())
+                if (item.PaymentType == PaymentTypeEnum.VISA.GetDescriptionFromEnum())
                 {
-                    report.CashAmount += item.FinalAmount;
-                    report.TotalCash++;
+                    report.VisaAmount += item.FinalAmount;
+                    report.TotalVisa++;
+
                 }
                 else if (item.PaymentType == PaymentTypeEnum.MOMO.GetDescriptionFromEnum())
                 {
@@ -95,8 +103,8 @@ namespace Pos_System.API.Services.Implements
                 }
                 else
                 {
-                    report.VisaAmount += item.FinalAmount;
-                    report.TotalVisa++;
+                    report.CashAmount += item.FinalAmount;
+                    report.TotalCash++;
                 };
                 foreach (var cateReport in report.CategoryReports)
                 {
@@ -107,12 +115,32 @@ namespace Pos_System.API.Services.Implements
                             var exitProduct = cateReport.ProductReports.FindIndex(element => element.Id.Equals(orderDetail.MenuProduct.ProductId));
                             if (exitProduct == -1)
                             {
-                                cateReport.ProductReports.Add(new ProductReport(orderDetail.MenuProduct.Product.Id, orderDetail.MenuProduct.Product.Name, orderDetail.Quantity, orderDetail.TotalAmount, orderDetail.Discount));
+                                cateReport.ProductReports.Add(new ProductReport(orderDetail.MenuProduct.Product.Id, orderDetail.MenuProduct.Product.Name, orderDetail.Quantity, orderDetail.TotalAmount, orderDetail.Discount, orderDetail.FinalAmount));
                                 cateReport.TotalProduct += orderDetail.Quantity;
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalDiscount += orderDetail.Discount;
+                                cateReport.FinalAmount += orderDetail.FinalAmount;
                                 report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
                                 report.TotalProductDiscount += orderDetail.Discount;
+                                report.TotalProduct += orderDetail.Quantity;
+                                if (!string.IsNullOrEmpty(orderDetail.MenuProduct.Product.Size))
+                                {
+                                    if (orderDetail.MenuProduct.Product.Size.Equals(ProductSize.S.GetDescriptionFromEnum()))
+                                    {
+                                        report.TotalSizeS += orderDetail.Quantity;
+                                        report.TotalAmountSizeS += orderDetail.FinalAmount;
+                                    }
+                                    else if (orderDetail.MenuProduct.Product.Size.Equals(ProductSize.M.GetDescriptionFromEnum()))
+                                    {
+                                        report.TotalSizeM += orderDetail.Quantity;
+                                        report.TotalAmountSizeM += orderDetail.FinalAmount;
+                                    }
+                                    else
+                                    {
+                                        report.TotalSizeL += orderDetail.Quantity;
+                                        report.TotalAmountSizeL += orderDetail.FinalAmount;
+                                    }
+                                }
                             }
                             else
                             {
@@ -121,20 +149,40 @@ namespace Pos_System.API.Services.Implements
                                 cateReport.TotalProduct += orderDetail.Quantity;
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalDiscount += orderDetail.Discount;
+                                cateReport.FinalAmount += orderDetail.FinalAmount;
                                 report.ProductCosAmount += orderDetail.MenuProduct.Product.HistoricalPrice * orderDetail.Quantity;
                                 report.TotalProductDiscount += orderDetail.Discount;
+                                report.TotalProduct += orderDetail.Quantity;
+                                if (!string.IsNullOrEmpty(orderDetail.MenuProduct.Product.Size))
+                                {
+                                    if (orderDetail.MenuProduct.Product.Size.Equals(ProductSize.S.GetDescriptionFromEnum()))
+                                    {
+                                        report.TotalSizeS += orderDetail.Quantity;
+                                        report.TotalAmountSizeS += orderDetail.FinalAmount;
+                                    }
+                                    else if (orderDetail.MenuProduct.Product.Size.Equals(ProductSize.M.GetDescriptionFromEnum()))
+                                    {
+                                        report.TotalSizeM += orderDetail.Quantity;
+                                        report.TotalAmountSizeM += orderDetail.FinalAmount;
+                                    }
+                                    else
+                                    {
+                                        report.TotalSizeL += orderDetail.Quantity;
+                                        report.TotalAmountSizeL += orderDetail.FinalAmount;
+                                    }
+                                }
                             }
 
                         }
 
                     }
                 }
-                for (int i = 0; i < 24; i++)
+                for (int i = 6; i < 24; i++)
                 {
                     if (i == item.CheckOutDate.Hour)
                     {
-                        report.TotalOrderTimeLine[i]++;
-                        report.TotalAmountTimeLine[i] += item.FinalAmount;
+                        report.TotalOrderTimeLine[i-6]++;
+                        report.TotalAmountTimeLine[i-6] += item.FinalAmount;
 
                     }
                 }
@@ -148,7 +196,6 @@ namespace Pos_System.API.Services.Implements
             {
                 report.AverageBill = report.FinalAmount / report.TotalOrder;
             }
-
             report.TotalRevenue = report.FinalAmount - report.ProductCosAmount;
             return report;
         }
