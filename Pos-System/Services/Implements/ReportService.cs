@@ -38,7 +38,7 @@ namespace Pos_System.API.Services.Implements
              predicate: x => x.BrandId.Equals(userBrandId)
          );
             List<Order> orders = (List<Order>)await _unitOfWork.GetRepository<Order>().GetListAsync(
-                include: x => x.Include(order => order.OrderDetails).ThenInclude(x => x.MenuProduct).ThenInclude(x => x.Product).Include(order => order.Session),
+                include: x => x.Include(order => order.OrderDetails).ThenInclude(x => x.MenuProduct).ThenInclude(x => x.Product).Include(x => x.PromotionOrderMappings).Include(order => order.Session),
                 predicate: p => p.Session.StoreId.Equals(storeId) && p.CheckInDate >= startDate && p.CheckInDate <= endDate.Value.AddDays(1) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum()),
                 orderBy: x => x.OrderByDescending(x => x.CheckInDate)
                 );
@@ -51,6 +51,7 @@ namespace Pos_System.API.Services.Implements
             report.TotalSizeL = 0;
             report.TotalSizeM = 0;
             report.TotalSizeS = 0;
+            report.TotalPromotionUsed = 0;
             for (int i = 6; i < 24; i++)
             {
                 report.TimeLine.Add(i);
@@ -70,6 +71,10 @@ namespace Pos_System.API.Services.Implements
                 report.FinalAmount += item.FinalAmount;
                 report.TotalOrder++;
 
+                if (item.PromotionOrderMappings.Count() > 0)
+                {
+                    report.TotalPromotionUsed++;
+                }
                 if (item.OrderType == OrderType.EAT_IN.GetDescriptionFromEnum())
                 {
                     report.InStoreAmount += item.FinalAmount;
@@ -146,6 +151,7 @@ namespace Pos_System.API.Services.Implements
                             {
                                 cateReport.ProductReports[exitProduct].Quantity += orderDetail.Quantity;
                                 cateReport.ProductReports[exitProduct].TotalAmount += orderDetail.TotalAmount;
+                                cateReport.ProductReports[exitProduct].FinalAmount += orderDetail.FinalAmount;
                                 cateReport.TotalProduct += orderDetail.Quantity;
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
                                 cateReport.TotalDiscount += orderDetail.Discount;
