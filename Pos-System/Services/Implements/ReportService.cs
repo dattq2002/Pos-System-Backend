@@ -151,6 +151,7 @@ namespace Pos_System.API.Services.Implements
                             {
                                 cateReport.ProductReports[exitProduct].Quantity += orderDetail.Quantity;
                                 cateReport.ProductReports[exitProduct].TotalAmount += orderDetail.TotalAmount;
+                                cateReport.ProductReports[exitProduct].TotalDiscount += orderDetail.Discount;
                                 cateReport.ProductReports[exitProduct].FinalAmount += orderDetail.FinalAmount;
                                 cateReport.TotalProduct += orderDetail.Quantity;
                                 cateReport.TotalAmount += orderDetail.TotalAmount;
