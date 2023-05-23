@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
+using Pos_System.API.Payload.Response.Report;
 using Pos_System.API.Payload.Response.Stores;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
@@ -188,8 +189,8 @@ namespace Pos_System.API.Services.Implements
                 {
                     if (i == item.CheckOutDate.Hour)
                     {
-                        report.TotalOrderTimeLine[i-6]++;
-                        report.TotalAmountTimeLine[i-6] += item.FinalAmount;
+                        report.TotalOrderTimeLine[i - 6]++;
+                        report.TotalAmountTimeLine[i - 6] += item.FinalAmount;
 
                     }
                 }
@@ -206,6 +207,55 @@ namespace Pos_System.API.Services.Implements
             report.TotalRevenue = report.FinalAmount - report.ProductCosAmount;
             return report;
         }
+
+        public async Task<SessionReport> GetSessionReportDetail(Guid sessionId)
+        {
+            Guid userStoreId = Guid.Parse(GetStoreIdFromJwt());
+            if (sessionId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Session.EmptySessionIdMessage);
+
+            Session session = await _unitOfWork.GetRepository<Session>()
+                .SingleOrDefaultAsync(predicate: x => x.StoreId.Equals(userStoreId) && x.Id.Equals(sessionId));
+            if (session == null) throw new BadHttpRequestException(MessageConstant.Session.SessionNotFoundMessage);
+
+
+            List<Order> orders = (List<Order>)await _unitOfWork.GetRepository<Order>().GetListAsync(
+               include: x => x.Include(order => order.Session),
+               predicate: p => p.SessionId.Equals(sessionId) && p.Status.Equals(OrderStatus.PAID.GetDescriptionFromEnum())
+               );
+            SessionReport report = new SessionReport(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            foreach (var item in orders)
+            {
+                report.TotalAmount += item.TotalAmount;
+                report.TotalDiscount += item.Discount;
+                report.FinalAmount += item.FinalAmount;
+                report.TotalOrder++;
+                if (item.PaymentType == PaymentTypeEnum.VISA.GetDescriptionFromEnum())
+                {
+                    report.VisaAmount += item.FinalAmount;
+                    report.TotalVisa++;
+
+                }
+                else if (item.PaymentType == PaymentTypeEnum.MOMO.GetDescriptionFromEnum())
+                {
+                    report.MomoAmount += item.FinalAmount;
+                    report.TotalMomo++;
+                }
+                else if (item.PaymentType == PaymentTypeEnum.BANKING.GetDescriptionFromEnum())
+                {
+                    report.BankingAmount += item.FinalAmount;
+                    report.TotalBanking++;
+                }
+                else
+                {
+                    report.CashAmount += item.FinalAmount;
+                    report.TotalCash++;
+                }
+            }
+            return report;
+
+        }
+
+
     }
 }
 

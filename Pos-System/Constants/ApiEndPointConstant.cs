@@ -90,4 +90,11 @@ public static class ApiEndPointConstant
         public const string OrdersEndPoint = Store.StoresEndpoint + "/{storeId}/orders";
         public const string OrderEndPoint = OrdersEndPoint + "/{id}";
     }
+
+
+    public static class Report
+    {
+        public const string ReportEndpoint = ApiEndpoint + "/report";
+        public const string SessionReportEndPoint = ReportEndpoint + "/session-report/{id}";
+    }
 }

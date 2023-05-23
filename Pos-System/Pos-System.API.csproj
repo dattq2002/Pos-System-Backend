@@ -33,6 +33,7 @@
     <Folder Include="Payload\Request\Products\" />
     <Folder Include="Payload\Response\Promotion\" />
     <Folder Include="Payload\Request\Promotion\" />
+    <Folder Include="Payload\Response\Report\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,5 +46,6 @@
     <None Remove="Payload\Response\Products\" />
     <None Remove="Payload\Response\Promotion\" />
     <None Remove="Payload\Request\Promotion\" />
+    <None Remove="Payload\Response\Report\" />
   </ItemGroup>
 </Project>
