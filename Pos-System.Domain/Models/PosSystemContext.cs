@@ -398,8 +398,6 @@ namespace Pos_System.Domain.Models
 
                 entity.Property(e => e.Code).HasMaxLength(20);
 
-                entity.Property(e => e.Description).HasMaxLength(150);
-
                 entity.Property(e => e.Name).HasMaxLength(100);
 
                 entity.Property(e => e.PicUrl).HasColumnName("PicURL");

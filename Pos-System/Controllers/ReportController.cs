@@ -16,7 +16,6 @@ namespace Pos_System.API.Controllers
 {
     public class ReportController : BaseController<ReportController>
     {
-
         private readonly IReportService _reportService;
 
         public ReportController(ILogger<ReportController> logger, IReportService reportService) : base(logger)
@@ -32,6 +31,15 @@ namespace Pos_System.API.Controllers
             var response = await _reportService.GetSessionReportDetail(id);
             return Ok(response);
         }
+
+        [CustomAuthorize(RoleEnum.StoreManager)]
+        [HttpGet(ApiEndPointConstant.Report.StoreReportExcelEndPoint)]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> StoreReportDownloadExcel(Guid id, [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate)
+        {
+            return await _reportService.DownloadStoreReport(id, startDate, endDate);
+        
+        }
     }
 }
-

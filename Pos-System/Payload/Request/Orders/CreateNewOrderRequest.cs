@@ -9,7 +9,7 @@ namespace Pos_System.API.Payload.Request.Orders
         public double TotalAmount { get; set; }
         public double DiscountAmount { get; set; }
         public double FinalAmount { get; set; }
-        public Guid? PromotionId { get; set; }
+        public List<OrderPromotion> PromotionList { get; set; } = new List<OrderPromotion>();
     }
 
     public class OrderProduct
@@ -28,5 +28,12 @@ namespace Pos_System.API.Payload.Request.Orders
         public int Quantity { get; set; }
         public float SellingPrice { get; set; }
         public double Discount { get; set; }
+    }
+    
+    public class OrderPromotion
+    {
+        public Guid PromotionId { get; set; }
+        public int Quantity { get; set; }
+        public double DiscountAmount { get; set; }
     }
 }

@@ -96,5 +96,12 @@ public static class ApiEndPointConstant
     {
         public const string ReportEndpoint = ApiEndpoint + "/report";
         public const string SessionReportEndPoint = ReportEndpoint + "/session-report/{id}";
+        public const string StoreReportExcelEndPoint = ReportEndpoint + "/store/{id}/download-excel";
+    }
+
+    public static class Promotion
+    {
+        public const string PromotionEndpoint = ApiEndpoint + "/promotion";
+        public const string SessionReportEndPoint = PromotionEndpoint + "/session-report/{id}";
     }
 }

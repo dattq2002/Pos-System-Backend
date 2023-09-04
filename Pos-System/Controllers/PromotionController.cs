@@ -3,48 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Pos_System.API.Constants;
+using Pos_System.API.Enums;
+using Pos_System.API.Payload.Request.Promotion;
+using Pos_System.API.Payload.Response.Promotion;
+using Pos_System.API.Services.Interfaces;
+using Pos_System.API.Validators;
+using Pos_System.Domain.Paginate;
 
 
 namespace Pos_System.API.Controllers
 {
-    [ApiController]
-    public class PromotionController :BaseController<PromotionController>
+    public class PromotionController : BaseController<PromotionController>
     {
-        public PromotionController(ILogger<PromotionController> logger) : base(logger)
+        private readonly IPromotionService _promotionService;
+        public PromotionController(ILogger<PromotionController> logger, IPromotionService promotionService) : base(logger)
         {
+            _promotionService = promotionService;
         }
-
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpGet(ApiEndPointConstant.Promotion.PromotionEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetPromotionResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetListPromotion([FromQuery] PromotionEnum? type, [FromQuery] int page, [FromQuery] int size)
         {
-            return new string[] { "value1", "value2" };
+            var response = await _promotionService.GetListPromotion(type, page, size);
+            return Ok(response);
         }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        
+        [CustomAuthorize(RoleEnum.BrandAdmin)]
+        [HttpPost(ApiEndPointConstant.Promotion.PromotionEndpoint)]
+        [ProducesResponseType(typeof(CreatePromotionRequest), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateNewPromotion(CreatePromotionRequest request)
         {
-            return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var response = await _promotionService.CreateNewPromotion(request);
+            return Ok(response);
         }
     }
 }
 
+        

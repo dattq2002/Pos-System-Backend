@@ -6,7 +6,8 @@ namespace Pos_System.API.Enums
 		CASH,
 		MOMO,
 		BANKING,
-		VISA
+		VISA,
+		W3W
 	}
 }
 

@@ -8,5 +8,11 @@ namespace Pos_System.API.Enums
         Product,
         AutoApply
     }
+
+    public enum PromotionStatus
+    {
+        Active,
+        Deactive
+    }
 }
 

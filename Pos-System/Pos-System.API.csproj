@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="EPPlus" Version="7.0.0-preview1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
     <PackageReference Include="NLog" Version="5.0.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.5" />
@@ -32,7 +33,6 @@
     <Folder Include="Validators\" />
     <Folder Include="Payload\Request\Products\" />
     <Folder Include="Payload\Response\Promotion\" />
-    <Folder Include="Payload\Request\Promotion\" />
     <Folder Include="Payload\Response\Report\" />
   </ItemGroup>
 

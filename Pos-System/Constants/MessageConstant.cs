@@ -129,4 +129,12 @@ public static class MessageConstant
         public const string ProductInGroupNotFound = "Product in Group không tồn tại trong hệ thống";
         public const string ProductNotInGroupMessage = "Data cũ của product không tồn tại, productId: ";
     }
+    
+    public static class Promotion
+    {
+        public const string CreateNewPromotionFailedMessage = "Tạo mới Promotion thất bại";
+        public const string UpdatePromotionFailedMessage = "Cập nhật thông tin Promotion thất bại";
+        public const string EmptyPromotionIdMessage = "Promotion Id bị trống";
+        public const string PromotionNotFoundMessage = "Promotion không tồn tại trong hệ thống";
+    }
 }

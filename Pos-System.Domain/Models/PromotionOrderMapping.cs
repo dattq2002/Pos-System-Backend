@@ -9,6 +9,7 @@ namespace Pos_System.Domain.Models
         public Guid PromotionId { get; set; }
         public Guid OrderId { get; set; }
         public double? DiscountAmount { get; set; }
+        public int? Quantity { get; set; }
 
         public virtual Order Order { get; set; } = null!;
         public virtual Promotion Promotion { get; set; } = null!;
