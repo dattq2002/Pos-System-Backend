@@ -96,18 +96,20 @@ namespace Pos_System.API.Services.Implements
                 report.TotalOrder++;
                 if (item.PromotionOrderMappings.Any())
                 {
-                    report.TotalPromotionUsed++;
                     foreach (var promotionInOrder in item.PromotionOrderMappings)
                     {
+                        report.TotalPromotionUsed += (promotionInOrder.Quantity ?? 1);
                         var idx = report.PromotionReports.FindIndex(element =>
                             element.Id.Equals(promotionInOrder.PromotionId));
                         if (idx != -1)
                         {
-                            report.PromotionReports[idx].Quantity++;
-                            report.PromotionReports[idx].TotalDiscount += item.Discount;
+                            report.PromotionReports[idx].Quantity += (promotionInOrder.Quantity ?? 1);
+                            report.PromotionReports[idx].TotalDiscount +=
+                                (promotionInOrder.DiscountAmount ?? item.Discount);
                         }
                     }
                 }
+
                 if (item.OrderType == OrderType.EAT_IN.GetDescriptionFromEnum())
                 {
                     report.InStoreAmount += item.FinalAmount;
