@@ -24,6 +24,7 @@ namespace Pos_System.Domain.Models
         public string? Phone { get; set; }
         public string? PicUrl { get; set; }
         public string Status { get; set; } = null!;
+        public string? BrandCode { get; set; }
 
         public virtual ICollection<BrandAccount> BrandAccounts { get; set; }
         public virtual ICollection<Category> Categories { get; set; }

@@ -12,8 +12,11 @@ public class GetStoreResponse
     public string Email { get; set; }
     public string? Address { get; set; }
     public StoreStatus Status { get; set; }
+    public string? WifiName { get; set; }
+    public string? WifiPassword { get; set; }
 
-    public GetStoreResponse(Guid id, Guid brandId, string name, string shortname, string email, string address, string status)
+    public GetStoreResponse(Guid id, Guid brandId, string name, string shortname, string email, string address,
+        string status, string wifiName, string wifiPassword)
     {
         Id = id;
         BrandId = brandId;
@@ -22,5 +25,7 @@ public class GetStoreResponse
         Email = email;
         Address = address;
         Status = EnumUtil.ParseEnum<StoreStatus>(status);
+        WifiName = wifiName;
+        WifiPassword = wifiPassword;
     }
 }

@@ -17,7 +17,8 @@ namespace Pos_System.API.Services.Implements
 {
     public class MenuService : BaseService<MenuService>, IMenuService
     {
-        public MenuService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<MenuService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
+        public MenuService(IUnitOfWork<PosSystemContext> unitOfWork, ILogger<MenuService> logger, IMapper mapper,
+            IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
 
@@ -46,11 +47,12 @@ namespace Pos_System.API.Services.Implements
             };
             if (createNewMenuRequest.IsBaseMenu || createNewMenuRequest.Priority == 0)
             {
-	            HasBaseMenuResponse hasBaseMenu = await CheckHasBaseMenuInBrand(brandId);
-	            if (hasBaseMenu.HasBaseMenu)
-	            {
-		            throw new BadHttpRequestException(MessageConstant.Menu.BaseMenuExistedMessage);
-	            }
+                HasBaseMenuResponse hasBaseMenu = await CheckHasBaseMenuInBrand(brandId);
+                if (hasBaseMenu.HasBaseMenu)
+                {
+                    throw new BadHttpRequestException(MessageConstant.Menu.BaseMenuExistedMessage);
+                }
+
                 newMenu.Priority = 0; //Default priority of base menu is 0
                 newMenu.MenuStores = new List<MenuStore>();
                 IEnumerable<Guid> storesInBrand = await _unitOfWork.GetRepository<Store>()
@@ -71,10 +73,11 @@ namespace Pos_System.API.Services.Implements
             List<MenuProduct> menuProductsToInsert = new List<MenuProduct>();
             if (createNewMenuRequest.IsUseBaseMenu)
             {
-                if (createNewMenuRequest.Priority == 0) throw new BadHttpRequestException(MessageConstant.Menu.CanNotUsePriorityAsBaseMenu);
+                if (createNewMenuRequest.Priority == 0)
+                    throw new BadHttpRequestException(MessageConstant.Menu.CanNotUsePriorityAsBaseMenu);
                 IEnumerable<MenuProduct> menuProducts = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetListAsync(predicate: x => x.Menu.Priority == 0 && x.Menu.BrandId.Equals(brandId),
-                    include: x => x.Include(x => x.Menu));
+                        include: x => x.Include(x => x.Menu));
 
                 menuProducts.ToList().ForEach(x => menuProductsToInsert.Add(new MenuProduct
                 {
@@ -89,6 +92,7 @@ namespace Pos_System.API.Services.Implements
                     CreatedAt = now
                 }));
             }
+
             await _unitOfWork.GetRepository<Menu>().InsertAsync(newMenu);
             await _unitOfWork.GetRepository<MenuProduct>().InsertRangeAsync(menuProductsToInsert);
             bool isSuccessfully = await _unitOfWork.CommitAsync() > 0;
@@ -110,7 +114,7 @@ namespace Pos_System.API.Services.Implements
                 {
                     HasBaseMenu = false
                 };
-            }// brand đó chưa có menu nào
+            } // brand đó chưa có menu nào
 
             if (menus.Any(x => x.Priority == 0))
             {
@@ -128,7 +132,8 @@ namespace Pos_System.API.Services.Implements
             }
         }
 
-        public async Task<IPaginate<GetMenuDetailResponse>> GetMenus(Guid brandId, string? code, int page = 1, int size = 10)
+        public async Task<IPaginate<GetMenuDetailResponse>> GetMenus(Guid brandId, string? code, int page = 1,
+            int size = 10)
         {
             if (brandId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
             Brand brand = await _unitOfWork.GetRepository<Brand>()
@@ -136,9 +141,15 @@ namespace Pos_System.API.Services.Implements
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
             code = code?.Trim();
             IPaginate<GetMenuDetailResponse> menusInBrand = await _unitOfWork.GetRepository<Menu>().GetPagingListAsync(
-                selector: x => new GetMenuDetailResponse(x.Id, x.Code, x.Priority, x.DateFilter, x.StartTime, x.EndTime, x.Status, x.CreatedBy, x.CreatedAt, x.UpdatedBy, x.UpdatedAt, x.MenuProducts.ToList(), x.MenuStores.ToList()),
-                predicate: string.IsNullOrEmpty(code) ? x => x.BrandId.Equals(brandId) : x => x.Code.ToLower().Equals(code) && x.BrandId.Equals(brandId),
-                include: x => x.Include(x => x.MenuStores).ThenInclude(x => x.Store).Include(x => x.MenuProducts).ThenInclude(x => x.Product).ThenInclude(x => x.Category),
+                selector: x => new GetMenuDetailResponse(x.Id, x.Code, x.Priority, x.DateFilter, x.StartTime, x.EndTime,
+                    x.Status, x.CreatedBy, x.CreatedAt, x.UpdatedBy, x.UpdatedAt, x.MenuProducts.ToList(),
+                    x.MenuStores.ToList()),
+                predicate: string.IsNullOrEmpty(code)
+                    ? x => x.BrandId.Equals(brandId)
+                    : x => x.Code.ToLower().Equals(code) && x.BrandId.Equals(brandId),
+                include: x =>
+                    x.Include(x => x.MenuStores).ThenInclude(x => x.Store).Include(x => x.MenuProducts)
+                        .ThenInclude(x => x.Product).ThenInclude(x => x.Category),
                 page: page,
                 size: size
             );
@@ -165,10 +176,11 @@ namespace Pos_System.API.Services.Implements
                     .ThenInclude(menu => menu.Store)
             );
 
-            menuProducts = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
-                predicate: x => x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()) && x.MenuId == menuId,
+            menuProducts = (List<MenuProduct>) await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
+                predicate: x =>
+                    x.Status.Equals(MenuProductStatus.Active.GetDescriptionFromEnum()) && x.MenuId == menuId,
                 include: x => x.Include(x => x.Product).ThenInclude(x => x.Category)
-                );
+            );
 
             menuDetailResponse.SetProductsInMenu(menuProducts);
 
@@ -176,26 +188,30 @@ namespace Pos_System.API.Services.Implements
             {
                 throw new BadHttpRequestException(MessageConstant.Menu.BrandIdWithMenuIdIsNotExistedMessage);
             }
+
             return menuDetailResponse;
         }
 
         public async Task<Guid> UpdateMenuProducts(Guid menuId, UpdateMenuProductsRequest updateMenuProductsRequest)
         {
             if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
-            Menu menu = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(predicate: x => x.Id.Equals(menuId));
+            Menu menu = await _unitOfWork.GetRepository<Menu>()
+                .SingleOrDefaultAsync(predicate: x => x.Id.Equals(menuId));
             if (menu == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
 
             string currentUserName = GetUsernameFromJwt();
             Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
             DateTime currentTime = DateTime.Now;
 
-            List<MenuProduct> productsInMenu = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(predicate: x => x.MenuId.Equals(menuId));
-            List<Product> currentProductsInSystem = (List<Product>)await _unitOfWork
-                    .GetRepository<Product>()
-                    .GetListAsync(predicate: x => x.BrandId.Equals(userBrandId));
+            List<MenuProduct> productsInMenu = (List<MenuProduct>) await _unitOfWork.GetRepository<MenuProduct>()
+                .GetListAsync(predicate: x => x.MenuId.Equals(menuId));
+            List<Product> currentProductsInSystem = (List<Product>) await _unitOfWork
+                .GetRepository<Product>()
+                .GetListAsync(predicate: x => x.BrandId.Equals(userBrandId));
             List<Guid> newProductIds = updateMenuProductsRequest.Products.Select(x => x.ProductId).ToList();
             List<Guid> oldProductIds = productsInMenu.Select(x => x.ProductId).ToList();
-            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedProductIds = CustomListUtil.splitIdsToAddAndRemove(oldProductIds, newProductIds);
+            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedProductIds =
+                CustomListUtil.splitIdsToAddAndRemove(oldProductIds, newProductIds);
 
             if (splittedProductIds.idsToAdd.Count > 0)
             {
@@ -205,14 +221,18 @@ namespace Pos_System.API.Services.Implements
                 productsToInsert.ForEach(x =>
                 {
                     Product referenceProductData = currentProductsInSystem.Find(y => y.Id.Equals(x.ProductId));
-                    if (referenceProductData == null) throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
+                    if (referenceProductData == null)
+                        throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
 
                     prepareDataToInsert.Add(new MenuProduct
                     {
                         Id = Guid.NewGuid(),
                         Status = ProductStatus.Active.GetDescriptionFromEnum(),
-                        SellingPrice = (double)(x.SellingPrice == null ? referenceProductData.SellingPrice : x.SellingPrice),
-                        DiscountPrice = (double)(x.DiscountPrice == null ? referenceProductData.DiscountPrice : x.DiscountPrice),
+                        SellingPrice =
+                            (double) (x.SellingPrice == null ? referenceProductData.SellingPrice : x.SellingPrice),
+                        DiscountPrice = (double) (x.DiscountPrice == null
+                            ? referenceProductData.DiscountPrice
+                            : x.DiscountPrice),
                         HistoricalPrice = referenceProductData.HistoricalPrice,
                         MenuId = menuId,
                         ProductId = x.ProductId,
@@ -251,13 +271,19 @@ namespace Pos_System.API.Services.Implements
                         _unitOfWork.GetRepository<MenuProduct>().UpdateRange(prepareDataToUpdate);
                     }
 
-                    ProductToUpdate requestProductData = productDataFromRequest.Find(y => y.ProductId.Equals(x.ProductId));
+                    ProductToUpdate requestProductData =
+                        productDataFromRequest.Find(y => y.ProductId.Equals(x.ProductId));
                     //Get ref product data to update newest price from product
                     Product referenceProductData = currentProductsInSystem.Find(y => y.Id.Equals(x.ProductId));
-                    if (referenceProductData == null) throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
+                    if (referenceProductData == null)
+                        throw new BadHttpRequestException(MessageConstant.Menu.ProductNotInBrandMessage + x.ProductId);
                     if (requestProductData == null) return;
-                    x.SellingPrice = (double)(requestProductData.SellingPrice == null ? referenceProductData.SellingPrice : requestProductData.SellingPrice);
-                    x.DiscountPrice = (double)(requestProductData.DiscountPrice == null ? referenceProductData.DiscountPrice : requestProductData.DiscountPrice);
+                    x.SellingPrice = (double) (requestProductData.SellingPrice == null
+                        ? referenceProductData.SellingPrice
+                        : requestProductData.SellingPrice);
+                    x.DiscountPrice = (double) (requestProductData.DiscountPrice == null
+                        ? referenceProductData.DiscountPrice
+                        : requestProductData.DiscountPrice);
                     x.UpdatedBy = currentUserName;
                     x.UpdatedAt = currentTime;
                 });
@@ -266,9 +292,10 @@ namespace Pos_System.API.Services.Implements
 
             if (splittedProductIds.idsToRemove.Count > 0)
             {
-                List<MenuProduct> prepareDataToRemove = (List<MenuProduct>)await _unitOfWork.GetRepository<MenuProduct>().GetListAsync(
-                    predicate: x => splittedProductIds.idsToRemove.Contains(x.ProductId)
-                    && x.MenuId.Equals(menuId));
+                List<MenuProduct> prepareDataToRemove = (List<MenuProduct>) await _unitOfWork
+                    .GetRepository<MenuProduct>().GetListAsync(
+                        predicate: x => splittedProductIds.idsToRemove.Contains(x.ProductId)
+                                        && x.MenuId.Equals(menuId));
                 //Change status of product in menu from 'Active' to 'Deactivate' to remove product
                 List<MenuProduct> finalDataToRemove = new List<MenuProduct>();
                 foreach (var menuProductToChangeStatus in prepareDataToRemove)
@@ -277,6 +304,7 @@ namespace Pos_System.API.Services.Implements
                     menuProductToChangeStatus.Status = MenuProductStatus.Deactivate.ToString();
                     finalDataToRemove.Add(menuProductToChangeStatus);
                 }
+
                 _unitOfWork.GetRepository<MenuProduct>().UpdateRange(finalDataToRemove);
             }
 
@@ -284,7 +312,8 @@ namespace Pos_System.API.Services.Implements
             return menuId;
         }
 
-        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName, string? productCode, int page, int size)
+        public async Task<IPaginate<GetProductInMenuResponse>> GetProductsInMenu(Guid menuId, string? productName,
+            string? productCode, int page, int size)
         {
             Guid brandId = Guid.Parse(GetBrandIdFromJwt());
             Brand brand = await _unitOfWork.GetRepository<Brand>()
@@ -296,9 +325,14 @@ namespace Pos_System.API.Services.Implements
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
-                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name,
+                            product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
+                        predicate: product => product.MenuId.Equals(menuId) &&
+                                              product.Product.BrandId.Equals(brandId) &&
+                                              product.Product.Name.Contains(productName) &&
+                                              product.Product.Code.Contains(productCode) &&
+                                              product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
@@ -309,9 +343,13 @@ namespace Pos_System.API.Services.Implements
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
-                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name,
+                            product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Name.Contains(productName) && product.Status == MenuProductStatus.Active.ToString(),
+                        predicate: product =>
+                            product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) &&
+                            product.Product.Name.Contains(productName) &&
+                            product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
@@ -322,9 +360,13 @@ namespace Pos_System.API.Services.Implements
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
-                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name,
+                            product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Product.Code.Contains(productCode) && product.Status == MenuProductStatus.Active.ToString(),
+                        predicate: product =>
+                            product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) &&
+                            product.Product.Code.Contains(productCode) &&
+                            product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
@@ -335,19 +377,24 @@ namespace Pos_System.API.Services.Implements
             {
                 productsInMenu = await _unitOfWork.GetRepository<MenuProduct>()
                     .GetPagingListAsync(
-                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name, product.Product.Code, product.Product.PicUrl, product.SellingPrice,
+                        selector: product => new GetProductInMenuResponse(product.ProductId, product.Product.Name,
+                            product.Product.Code, product.Product.PicUrl, product.SellingPrice,
                             product.HistoricalPrice, product.DiscountPrice, product.Product.Type),
-                        predicate: product => product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) && product.Status == MenuProductStatus.Active.ToString(),
+                        predicate: product =>
+                            product.MenuId.Equals(menuId) && product.Product.BrandId.Equals(brandId) &&
+                            product.Status == MenuProductStatus.Active.ToString(),
                         include: product => product.Include(product => product.Product),
                         orderBy: x => x.OrderBy(x => x.Product.Code),
                         page: page,
                         size: size
                     );
             }
+
             return productsInMenu;
         }
 
-        public async Task<bool> UpdateMenuInformation(Guid menuId, UpdateMenuInformationRequest updateMenuInformationRequest)
+        public async Task<bool> UpdateMenuInformation(Guid menuId,
+            UpdateMenuInformationRequest updateMenuInformationRequest)
         {
             Guid branId = Guid.Parse(GetBrandIdFromJwt());
 
@@ -374,20 +421,25 @@ namespace Pos_System.API.Services.Implements
             }
 
             if (updateMenuInformationRequest.StartTime.HasValue && updateMenuInformationRequest.EndTime.HasValue
-                                                                && updateMenuInformationRequest.StartTime > updateMenuInformationRequest.EndTime)
+                                                                && updateMenuInformationRequest.StartTime >
+                                                                updateMenuInformationRequest.EndTime)
             {
                 _logger.LogInformation($"Failed to update menu {menuId} because endtime is lower than starttime");
                 throw new BadHttpRequestException(MessageConstant.Menu.EndTimeLowerThanStartTimeMessage);
             }
 
-            if (updateMenuInformationRequest.StartTime.HasValue && (updateMenuInformationRequest.StartTime > currentMenu.EndTime))
+            if (updateMenuInformationRequest.StartTime.HasValue &&
+                (updateMenuInformationRequest.StartTime > currentMenu.EndTime))
             {
-                throw new BadHttpRequestException(MessageConstant.Menu.StartTimeRequestBiggerThanCurrentMenuEndTimeMessage);
+                throw new BadHttpRequestException(MessageConstant.Menu
+                    .StartTimeRequestBiggerThanCurrentMenuEndTimeMessage);
             }
 
-            if (updateMenuInformationRequest.EndTime.HasValue && (updateMenuInformationRequest.EndTime < currentMenu.StartTime))
+            if (updateMenuInformationRequest.EndTime.HasValue &&
+                (updateMenuInformationRequest.EndTime < currentMenu.StartTime))
             {
-                throw new BadHttpRequestException(MessageConstant.Menu.EndTimeRequestLowerThanCurrentMenuStartTimeMessage);
+                throw new BadHttpRequestException(MessageConstant.Menu
+                    .EndTimeRequestLowerThanCurrentMenuStartTimeMessage);
             }
 
             _logger.LogInformation($"Start update menu information of menu's {menuId} id");
@@ -400,35 +452,46 @@ namespace Pos_System.API.Services.Implements
             return isSuccessful;
         }
 
-        public async Task<IPaginate<GetStoreDetailResponse>> GetStoresInMenu(Guid menuId, string? storeName, int page, int size)
+        public async Task<IPaginate<GetStoreDetailResponse>> GetStoresInMenu(Guid menuId, string? storeName, int page,
+            int size)
         {
             if (menuId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Menu.EmptyMenuIdMessage);
 
-            Menu currentMenuInSystem = await _unitOfWork.GetRepository<Menu>().SingleOrDefaultAsync(predicate: menu => menu.Id.Equals(menuId));
+            Menu currentMenuInSystem = await _unitOfWork.GetRepository<Menu>()
+                .SingleOrDefaultAsync(predicate: menu => menu.Id.Equals(menuId));
 
-            if (currentMenuInSystem == null) throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
+            if (currentMenuInSystem == null)
+                throw new BadHttpRequestException(MessageConstant.Menu.MenuNotFoundMessage);
 
             IPaginate<GetStoreDetailResponse> storesApplyMenu = await _unitOfWork.GetRepository<MenuStore>()
                 .GetPagingListAsync(
                     selector: menuStore => new GetStoreDetailResponse(menuStore.Store.Id, menuStore.Store.BrandId,
                         menuStore.Store.Name, menuStore.Store.ShortName, menuStore.Store.Email, menuStore.Store.Address,
-                        menuStore.Store.Status, menuStore.Store.Phone, menuStore.Store.Code, menuStore.Store.Brand.PicUrl),
-                    predicate: string.IsNullOrEmpty(storeName) ? menuStore => menuStore.MenuId.Equals(menuId) : menuStore => menuStore.MenuId.Equals(menuId) && menuStore.Store.Name.ToLower().Contains(storeName),
-                    include: menuStore => menuStore.Include(menuStore => menuStore.Store).ThenInclude(store => store.Brand),
+                        menuStore.Store.Status, menuStore.Store.Phone, menuStore.Store.Code,
+                        menuStore.Store.Brand.PicUrl, menuStore.Store.WifiName, menuStore.Store.WifiPassword),
+                    predicate: string.IsNullOrEmpty(storeName)
+                        ? menuStore => menuStore.MenuId.Equals(menuId)
+                        : menuStore => menuStore.MenuId.Equals(menuId) &&
+                                       menuStore.Store.Name.ToLower().Contains(storeName),
+                    include: menuStore =>
+                        menuStore.Include(menuStore => menuStore.Store).ThenInclude(store => store.Brand),
                     page: page,
                     size: size
                 );
             return storesApplyMenu;
         }
 
-        public async Task<Guid> UpdateStoresApplyMenu(Guid menuId, UpdateStoresApplyMenuRequest updateStoresApplyMenuRequest)
+        public async Task<Guid> UpdateStoresApplyMenu(Guid menuId,
+            UpdateStoresApplyMenuRequest updateStoresApplyMenuRequest)
         {
-            List<Guid> currentStoreIdsApplyMenu = (List<Guid>)await _unitOfWork.GetRepository<MenuStore>().GetListAsync(
-                selector: menuStore => menuStore.StoreId,
-                predicate: menuStore => menuStore.MenuId.Equals(menuId)
-            );
+            List<Guid> currentStoreIdsApplyMenu = (List<Guid>) await _unitOfWork.GetRepository<MenuStore>()
+                .GetListAsync(
+                    selector: menuStore => menuStore.StoreId,
+                    predicate: menuStore => menuStore.MenuId.Equals(menuId)
+                );
 
-            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedStoreIds = CustomListUtil.splitIdsToAddAndRemove(currentStoreIdsApplyMenu, updateStoresApplyMenuRequest.storeIds);
+            (List<Guid> idsToRemove, List<Guid> idsToAdd, List<Guid> idsToKeep) splittedStoreIds =
+                CustomListUtil.splitIdsToAddAndRemove(currentStoreIdsApplyMenu, updateStoresApplyMenuRequest.storeIds);
 
             if (splittedStoreIds.idsToAdd.Count > 0)
             {
@@ -443,6 +506,7 @@ namespace Pos_System.API.Services.Implements
                     };
                     newMenuStoresToAdd.Add(newMenuStoreToAdd);
                 }
+
                 await _unitOfWork.GetRepository<MenuStore>().InsertRangeAsync(newMenuStoresToAdd);
             }
 
@@ -454,8 +518,9 @@ namespace Pos_System.API.Services.Implements
                 {
                     MenuStore menuStoreToRemove = await _unitOfWork.GetRepository<MenuStore>().SingleOrDefaultAsync(
                         selector: menuStore => new MenuStore()
-                        { Id = menuStore.Id, MenuId = menuStore.MenuId, StoreId = menuStore.StoreId },
-                        predicate: menuStore => menuStore.MenuId.Equals(menuId) && menuStore.StoreId.Equals(storeIdToRemove)
+                            {Id = menuStore.Id, MenuId = menuStore.MenuId, StoreId = menuStore.StoreId},
+                        predicate: menuStore =>
+                            menuStore.MenuId.Equals(menuId) && menuStore.StoreId.Equals(storeIdToRemove)
                     );
                     listMenuStoreToRemove.Add(menuStoreToRemove);
                 }

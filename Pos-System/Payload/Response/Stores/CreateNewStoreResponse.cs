@@ -13,5 +13,7 @@ namespace Pos_System.API.Payload.Response.Stores
         public StoreStatus Status { get; set; }
         public Guid BrandId { get; set; }
         public string? Address { get; set; }
+        public string? WifiName { get; set; }
+        public string? WifiPassword { get; set; }
     }
 }

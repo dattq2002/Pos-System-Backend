@@ -21,6 +21,8 @@ namespace Pos_System.Domain.Models
         public string Status { get; set; } = null!;
         public Guid BrandId { get; set; }
         public string? Address { get; set; }
+        public string? WifiName { get; set; }
+        public string? WifiPassword { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual ICollection<MenuStore> MenuStores { get; set; }

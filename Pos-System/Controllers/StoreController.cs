@@ -47,7 +47,7 @@ namespace Pos_System.API.Controllers
             return Ok(storeResponse);
         }
 
-        [CustomAuthorize(RoleEnum.BrandManager)]
+        [CustomAuthorize(RoleEnum.BrandManager ,RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Store.StoresEndpoint)]
         [ProducesResponseType(typeof(CreateNewStoreResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -72,7 +72,7 @@ namespace Pos_System.API.Controllers
             return Ok(storeResponse);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandManager)]
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
         [HttpPost(ApiEndPointConstant.Store.StoreAccountEndpoint)]
         [ProducesResponseType(typeof(CreateNewStoreAccountResponse), StatusCodes.Status200OK)]
         [ProducesErrorResponseType(typeof(ProblemDetails))]
@@ -88,7 +88,7 @@ namespace Pos_System.API.Controllers
             return CreatedAtAction(nameof(CreateNewStoreAccount), response);
         }
 
-        [CustomAuthorize(RoleEnum.BrandManager)]
+        [CustomAuthorize(RoleEnum.BrandManager , RoleEnum.BrandAdmin)]
         [HttpPut(ApiEndPointConstant.Store.StoreEndpoint)]
         public async Task<IActionResult> UpdateStoreInformation(Guid id, UpdateStoreRequest updateStoreRequest)
         {
@@ -96,7 +96,7 @@ namespace Pos_System.API.Controllers
             return Ok(MessageConstant.Store.UpdateStoreInformationSuccessfulMessage);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandManager)]
+        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
         [HttpPut(ApiEndPointConstant.Store.StoreUpdateEmployeeEndpoint)]
         public async Task<IActionResult> UpdateAccountInformation(Guid storeId, Guid id, UpdateStoreAccountInformationRequest staffAccountInformationRequest)
         {

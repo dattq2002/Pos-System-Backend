@@ -6,15 +6,23 @@ namespace Pos_System.API.Payload.Request.Stores
     {
         [MaxLength(50, ErrorMessage = "Store's name max length is 50 characters")]
         public string? Name { get; set; }
+
         public string? ShortName { get; set; }
+
         [EmailAddress(ErrorMessage = "Invalid Email")]
         public string? Email { get; set; }
+
         [Phone(ErrorMessage = "Invalid Phone number")]
         public string? Phone { get; set; }
+
         public string? Code { get; set; }
         public string? Address { get; set; }
+        public string? WifiName { get; set; }
+        public string? WifiPassword { get; set; }
 
-        public UpdateStoreRequest() { }
+        public UpdateStoreRequest()
+        {
+        }
 
         public void TrimString()
         {
