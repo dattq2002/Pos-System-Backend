@@ -4,7 +4,6 @@ public static class ApiEndPointConstant
 {
     static ApiEndPointConstant()
     {
-
     }
 
     public const string RootEndPoint = "/api";
@@ -23,6 +22,12 @@ public static class ApiEndPointConstant
         public const string BrandEndpoint = BrandsEndpoint + "/{id}";
         public const string BrandAccountEndpoint = BrandEndpoint + "/users";
         public const string StoresInBrandEndpoint = BrandEndpoint + "/stores";
+        public const string GetCategoriesInBrand = BrandEndpoint + "/categories";
+        public const string GetCategoryDetailsInBrand = GetCategoriesInBrand + "/{id}";
+        public const string GetCollectionsInBrand = BrandEndpoint + "/collections";
+        public const string GetCollectionDetailsInBrand = GetCollectionsInBrand + "/{id}";
+        public const string GetProductsInBrand = BrandEndpoint + "/products";
+        public const string GetProductDetailsInBrand = GetProductsInBrand + "/{id}";
     }
 
     public static class Store
@@ -59,6 +64,7 @@ public static class ApiEndPointConstant
         public const string CollectionEndPoint = CollectionsEndPoint + "/{id}";
         public const string ProductsInCollectionEndpoint = CollectionsEndPoint + "/{collectionId}/products";
     }
+
     public static class Product
     {
         public const string ProductsEndPoint = ApiEndpoint + "/products";
@@ -66,8 +72,12 @@ public static class ApiEndPointConstant
         public const string ProductsInBrandEndPoint = Brand.BrandEndpoint + "/products";
         public const string GroupProductsInBrandEndPoint = Brand.BrandEndpoint + "/groupProducts";
         public const string GroupProductInBrandEndPoint = Brand.BrandsEndpoint + "/{brandId}/groupProducts/{id}";
-        public const string GroupProductOfComboEndPoint = Brand.BrandsEndpoint + "/{brandId}/products/{id}/groupProducts";
-        public const string ProductInGroupEndPoint = ApiEndpoint + "/groupProducts/{groupProductId}/productInGroup/{id}";
+
+        public const string GroupProductOfComboEndPoint =
+            Brand.BrandsEndpoint + "/{brandId}/products/{id}/groupProducts";
+
+        public const string ProductInGroupEndPoint =
+            ApiEndpoint + "/groupProducts/{groupProductId}/productInGroup/{id}";
     }
 
     public static class Menu
@@ -82,7 +92,7 @@ public static class ApiEndPointConstant
 
     public static class PaymentType
     {
-	    public const string PaymentTypesEndPoint = ApiEndpoint + "/payment-types";
+        public const string PaymentTypesEndPoint = ApiEndpoint + "/payment-types";
     }
 
     public static class Order

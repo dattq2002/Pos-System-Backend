@@ -280,7 +280,7 @@ namespace Pos_System.API.Services.Implements
             RoleEnum newAccountRole;
             switch (userRole)
             {
-                case RoleEnum.BrandManager:
+                case RoleEnum.BrandAdmin:
                     newAccountRole = RoleEnum.StoreManager;
                     Guid userBrandId = Guid.Parse(GetBrandIdFromJwt());
                     if (!store.BrandId.Equals(userBrandId)) throw new BadHttpRequestException(MessageConstant.Store.StoreNotInBrandMessage);

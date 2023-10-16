@@ -14,5 +14,4 @@ public interface ICategoryService
     Task<bool> AddExtraCategoriesToNormalCategory(Guid categoryId, List<Guid> request);
     Task<IPaginate<GetCategoryResponse>> GetExtraCategoriesByCategoryId(Guid categoryId, int page, int size);
     Task<IPaginate<GetProductsInCategory>> GetProductsInCategory(Guid categoryId, int page, int size);
-
 }

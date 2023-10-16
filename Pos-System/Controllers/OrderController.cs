@@ -31,6 +31,7 @@ namespace Pos_System.API.Controllers
                 _logger.LogInformation($"Create order failed");
                 return BadRequest(MessageConstant.Order.CreateOrderFailedMessage);
             }
+
             _logger.LogInformation($"Create order successfully");
             return Ok(newOrderIdResponse);
         }
@@ -44,10 +45,11 @@ namespace Pos_System.API.Controllers
             return Ok(response);
         }
 
-        [CustomAuthorize(RoleEnum.Staff)]
+        [CustomAuthorize(RoleEnum.Staff, RoleEnum.StoreManager)]
         [HttpPut(ApiEndPointConstant.Order.OrderEndPoint)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateOrderPayment(Guid storeId, Guid id, UpdateOrderRequest updateOrderRequest)
+        public async Task<IActionResult> UpdateOrderPayment(Guid storeId, Guid id,
+            UpdateOrderRequest updateOrderRequest)
         {
             var response = await _orderService.UpdateOrder(storeId, id, updateOrderRequest);
             return Ok(response);

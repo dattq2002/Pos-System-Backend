@@ -33,7 +33,6 @@
     <Folder Include="Validators\" />
     <Folder Include="Payload\Request\Products\" />
     <Folder Include="Payload\Response\Promotion\" />
-    <Folder Include="Payload\Response\Report\" />
   </ItemGroup>
 
   <ItemGroup>

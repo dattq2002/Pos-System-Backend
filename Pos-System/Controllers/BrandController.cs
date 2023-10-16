@@ -20,13 +20,18 @@ namespace Pos_System.API.Controllers
         private readonly IBrandService _brandService;
         private readonly IAccountService _accountService;
         private readonly IStoreService _storeService;
+        private readonly ICategoryService _categoryService;
+        private readonly ICollectionService _collectionService;
 
         public BrandController(ILogger<BrandController> logger, IBrandService brandService,
-            IAccountService accountService, IStoreService storeService) : base(logger)
+            IAccountService accountService, IStoreService storeService, ICategoryService categoryService,
+            ICollectionService collectionService) : base(logger)
         {
             _brandService = brandService;
             _accountService = accountService;
             _storeService = storeService;
+            _categoryService = categoryService;
+            _collectionService = collectionService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
@@ -105,7 +110,7 @@ namespace Pos_System.API.Controllers
             return Ok(storesInBrandResponse);
         }
 
-        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager , RoleEnum.BrandAdmin)]
+        [CustomAuthorize(RoleEnum.SysAdmin, RoleEnum.BrandManager, RoleEnum.BrandAdmin)]
         [HttpPut(ApiEndPointConstant.Brand.BrandEndpoint)]
         public async Task<IActionResult> UpdateBrandInformation(Guid id, UpdateBrandRequest updateBrandRequest)
         {
@@ -118,6 +123,17 @@ namespace Pos_System.API.Controllers
 
             _logger.LogInformation($"Update Brand {id} information failed");
             return Ok(MessageConstant.Brand.UpdateBrandFailedMessage);
+        }
+
+        [HttpGet(ApiEndPointConstant.Brand.GetCategoriesInBrand)]
+        [ProducesResponseType(typeof(IPaginate<GetStoreResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCategories(Guid brandId, [FromQuery] string? name,
+            [FromQuery] CategoryType? type,
+            [FromQuery] int page,
+            [FromQuery] int size)
+        {
+            var storesInBrandResponse = await _categoryService.GetCategories(name, type, page, size);
+            return Ok(storesInBrandResponse);
         }
     }
 }
