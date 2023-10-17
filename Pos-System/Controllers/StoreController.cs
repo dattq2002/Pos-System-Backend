@@ -158,12 +158,12 @@ namespace Pos_System.API.Controllers
             return Ok(response);
         }
 
-        [CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
+        //[CustomAuthorize(RoleEnum.StoreManager, RoleEnum.Staff)]
         [HttpGet(ApiEndPointConstant.Store.StoreEndDayReportEndpoint)]
         [ProducesResponseType(typeof(GetStoreEndDayReport), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoreEndDayReport(Guid id, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        public async Task<IActionResult> GetStoreEndDayReport(string? storeCode, string? brandCode, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var response = await _reportService.GetStoreEndDayReport(id, startDate, endDate);
+            var response = await _reportService.GetStoreEndDayReport(storeCode, brandCode, startDate, endDate);
             return Ok(response);
         }
 

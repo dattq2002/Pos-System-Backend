@@ -10,6 +10,9 @@ public static class MessageConstant
 
     public static class Brand
     {
+        public const string EmptyBrandCodeMessage = "Brand Code bị trống";
+        public const string BrandCodeNotFoundMessage = "Không tìm thấy Brand Code trong hệ thống";
+
         public const string CreateBrandFailMessage = "Tạo nhãn hiệu mới thất bại";
         public const string CreateBrandSucceedMessage = "Tạo nhãn hiệu mới thành công";
         public const string BrandNotFoundMessage = "Brand không tồn tại trong hệ thống";
@@ -36,6 +39,8 @@ public static class MessageConstant
 
     public static class Store
     {
+        public const string EmptyStoreCodeMessage = "Store Code bị trống";
+
         public const string EmptyStoreIdMessage = "Store Id bị trống";
         public const string CreateStoreFailMessage = "Tạo của hàng mới thất bại";
         public const string StoreNotFoundMessage = "Store không tồn tại trong hệ thống";
