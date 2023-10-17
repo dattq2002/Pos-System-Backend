@@ -8,6 +8,7 @@ using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response;
 using Pos_System.API.Payload.Response.Brands;
 using Pos_System.API.Payload.Response.Stores;
+using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Validators;
 using Pos_System.Domain.Paginate;
@@ -22,16 +23,18 @@ namespace Pos_System.API.Controllers
         private readonly IStoreService _storeService;
         private readonly ICategoryService _categoryService;
         private readonly ICollectionService _collectionService;
+        private readonly IReportService _reportService;
 
         public BrandController(ILogger<BrandController> logger, IBrandService brandService,
             IAccountService accountService, IStoreService storeService, ICategoryService categoryService,
-            ICollectionService collectionService) : base(logger)
+            ICollectionService collectionService, IReportService reportService) : base(logger)
         {
             _brandService = brandService;
             _accountService = accountService;
             _storeService = storeService;
             _categoryService = categoryService;
             _collectionService = collectionService;
+            _reportService = reportService;
         }
 
         [CustomAuthorize(RoleEnum.SysAdmin)]
@@ -134,6 +137,15 @@ namespace Pos_System.API.Controllers
         {
             var storesInBrandResponse = await _categoryService.GetCategories(name, type, page, size);
             return Ok(storesInBrandResponse);
+        }
+
+        [HttpGet(ApiEndPointConstant.Brand.ExportStoreEndDateReport)]
+        [ProducesResponseType(typeof(GetStoreEndDayReport), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportStoreEndDayReport(string? storeCode, string? brandCode, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            var response = await _reportService.GetStoreEndDayReport(storeCode, brandCode, startDate, endDate);
+            return Ok(response);
+
         }
     }
 }
