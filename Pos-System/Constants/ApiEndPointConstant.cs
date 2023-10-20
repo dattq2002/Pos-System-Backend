@@ -30,6 +30,8 @@ public static class ApiEndPointConstant
         public const string GetProductDetailsInBrand = GetProductsInBrand + "/{id}";
 
         public const string ExportStoreEndDateReport = BrandsEndpoint + "/day-report";
+
+        public const string BrandMenuEndpoint = BrandsEndpoint + "/menus";
     }
 
     public static class Store

@@ -1,5 +1,6 @@
 ﻿using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Response.Brands;
+using Pos_System.API.Payload.Response.Menus;
 using Pos_System.Domain.Paginate;
 
 namespace Pos_System.API.Services.Interfaces;
@@ -13,4 +14,6 @@ public interface IBrandService
     public Task<GetBrandResponse> GetBrandById(Guid brandId);
     
     public Task<bool> UpdateBrandInformation(Guid brandId, UpdateBrandRequest updateBrandRequest);
+
+    public Task<GetMenuDetailForStaffResponse> GetMenus(string? brandCode);
 }
