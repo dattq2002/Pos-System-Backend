@@ -142,4 +142,14 @@ public static class MessageConstant
         public const string EmptyPromotionIdMessage = "Promotion Id bị trống";
         public const string PromotionNotFoundMessage = "Promotion không tồn tại trong hệ thống";
     }
+
+    public static class User
+    {
+        public const string CreateNewUserFailedMessage = "Tạo mới User thất bại";
+        public const string UpdateUserFailedMessage = "Cập nhật thông tin User thất bại";
+        public const string UpdateUserSuccessfulMessage = "Cập nhật thông tin User thành công";
+        public const string EmptyUserId = "Id của User bị trống";
+        public const string UserNotFound = "User không tồn tại trong hệ thống";
+
+    }
 }

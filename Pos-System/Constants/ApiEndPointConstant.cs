@@ -32,6 +32,7 @@ public static class ApiEndPointConstant
         public const string ExportStoreEndDateReport = BrandsEndpoint + "/day-report";
 
         public const string BrandMenuEndpoint = BrandsEndpoint + "/menus";
+        public const string StoresInBrandCodeEndpoint = BrandsEndpoint + "/brandcode/stores";
     }
 
     public static class Store
@@ -117,5 +118,11 @@ public static class ApiEndPointConstant
     {
         public const string PromotionEndpoint = ApiEndpoint + "/promotion";
         public const string SessionReportEndPoint = PromotionEndpoint + "/session-report/{id}";
+    }
+
+    public static class User
+    {
+        public const string UsersEndpoint = ApiEndpoint + "/users";
+        public const string UserEndpoint = UsersEndpoint + "/{id}";
     }
 }

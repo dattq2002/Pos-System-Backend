@@ -155,5 +155,13 @@ namespace Pos_System.API.Controllers
             var response = await _brandService.GetMenus(brandCode);
             return Ok(response);
         }
+
+        [HttpGet(ApiEndPointConstant.Brand.StoresInBrandCodeEndpoint)]
+        public async Task<IActionResult> GetStoresInBrand([FromQuery] string? brandCode, [FromQuery] int page,
+            [FromQuery] int size)
+        {
+            var response = await _storeService.GetStoresInBrandByBrandCode(brandCode, page, size);
+            return Ok(response);
+        }
     }
 }

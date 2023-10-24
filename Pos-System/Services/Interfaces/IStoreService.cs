@@ -19,4 +19,6 @@ public interface IStoreService
     public Task<GetMenuDetailForStaffResponse> GetMenuDetailForStaff();
     public Task<GetStoreEndShiftStatisticsResponse> GetStoreEndShiftStatistics(Guid storeId, Guid sessionId);
 
+    public Task<IPaginate<GetStoreResponse>> GetStoresInBrandByBrandCode(string? brandCode, int page, int size);
+
 }

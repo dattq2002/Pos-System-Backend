@@ -355,4 +355,22 @@ public class StoreService : BaseService<StoreService>, IStoreService
 
         return result;
     }
+
+    public async Task<IPaginate<GetStoreResponse>> GetStoresInBrandByBrandCode(string? brandCode, int page, int size)
+    {
+        if (brandCode == null) throw new BadHttpRequestException(MessageConstant.Brand.EmptyBrandCodeMessage);
+        Brand brand = await _unitOfWork.GetRepository<Brand>()
+            .SingleOrDefaultAsync(predicate: x => x.BrandCode.Equals(brandCode));
+        if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+
+        IPaginate<GetStoreResponse> storesInBrandResponse = await _unitOfWork.GetRepository<Store>().GetPagingListAsync(
+            selector: x => new GetStoreResponse(x.Id, x.BrandId, x.Name, x.ShortName, x.Email, x.Address, x.Status,
+                x.WifiName, x.WifiPassword),
+            predicate: x => x.BrandId.Equals(brand.Id),
+            orderBy: x => x.OrderBy(x => x.ShortName),
+            page: page,
+            size: size
+        );
+        return storesInBrandResponse;
+    }
 }

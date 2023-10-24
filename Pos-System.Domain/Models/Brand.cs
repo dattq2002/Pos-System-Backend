@@ -15,6 +15,7 @@ namespace Pos_System.Domain.Models
             Products = new HashSet<Product>();
             Promotions = new HashSet<Promotion>();
             Stores = new HashSet<Store>();
+            Users = new HashSet<User>();
         }
 
         public Guid Id { get; set; }
@@ -34,5 +35,6 @@ namespace Pos_System.Domain.Models
         public virtual ICollection<Product> Products { get; set; }
         public virtual ICollection<Promotion> Promotions { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }
