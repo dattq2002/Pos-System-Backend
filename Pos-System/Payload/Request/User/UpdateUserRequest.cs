@@ -5,11 +5,11 @@ namespace Pos_System.API.Payload.Request.User
     public class UpdateUserRequest
     {
         [Phone(ErrorMessage = "Phone sai format")]
-        public string? PhoneNunmer;
-        public string? FullName;
-        public string? Gender;
+        public string? PhoneNunmer { get; set; }
+        public string? FullName { get; set; }
+        public string? Gender { get; set; }
         [EmailAddress(ErrorMessage = "Email sai format")]
-        public string? Email;
+        public string? Email { get; set; }
 
         public void TrimString()
         {

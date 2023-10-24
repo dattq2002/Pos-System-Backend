@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pos_System.API.Constants;
-using Pos_System.API.Payload.Request.Brands;
 using Pos_System.API.Payload.Request.User;
-using Pos_System.API.Payload.Response.Brands;
 using Pos_System.API.Payload.Response.User;
 using Pos_System.API.Services.Implements;
 using Pos_System.API.Services.Interfaces;
@@ -24,7 +22,7 @@ namespace Pos_System.API.Controllers
         [HttpPost(ApiEndPointConstant.User.UsersEndpoint)]
         [ProducesResponseType(typeof(CreateNewUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateNewUser(CreateNewUserRequest newUserRequest, [FromQuery]string? brandCode)
+        public async Task<IActionResult> CreateNewUser([FromBody]CreateNewUserRequest newUserRequest, [FromQuery]string? brandCode)
         {
             CreateNewUserResponse response = await _userService.CreateNewUser(newUserRequest, brandCode);
             if (response == null)
@@ -34,11 +32,11 @@ namespace Pos_System.API.Controllers
             }
 
             _logger.LogInformation($"Create new user successful with {newUserRequest.FullName}");
-            return CreatedAtAction(nameof(CreateNewUserResponse), response);
+            return CreatedAtAction(nameof(CreateNewUser), response);
         }
 
         [HttpPatch(ApiEndPointConstant.User.UserEndpoint)]
-        public async Task<IActionResult> UpdateUserInformation(Guid id, UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateUserInformation(Guid id, [FromBody]UpdateUserRequest updateUserRequest)
         {
             bool isSuccessful = await _userService.UpdateUserInformation(id, updateUserRequest);
             if (isSuccessful)

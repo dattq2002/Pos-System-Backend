@@ -30,6 +30,10 @@ namespace Pos_System.API.Services.Implements
             newUser.Status = UserStatus.Active.GetDescriptionFromEnum();
             newUser.Id = Guid.NewGuid();
             newUser.BrandId = brand.Id;
+
+            newUser.FireBaseUid = "";
+            newUser.Fcmtoken = "";
+
             newUser.CreatedAt = DateTime.UtcNow;
             newUser.UpdatedAt = DateTime.UtcNow;
 
