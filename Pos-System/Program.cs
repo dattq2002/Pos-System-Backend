@@ -26,7 +26,7 @@ try
 		x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 		x.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
 	});
-	builder.Services.AddDatabase();
+	builder.Services.AddDatabase(builder.Configuration);
 	builder.Services.AddUnitOfWork();
 	builder.Services.AddServices();
 	builder.Services.AddJwtValidation();
