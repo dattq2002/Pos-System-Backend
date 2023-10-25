@@ -50,7 +50,6 @@ namespace Pos_System.API.Services.Implements
                 throw new BadHttpRequestException(MessageConstant.Order.NoProductsInOrderMessage);
 
             string newInvoiceId = store.Code + currentTimeStamp;
-            double SystemDiscountAmount = 0;
             int defaultGuest = 1;
 
             double VATAmount = (createNewOrderRequest.FinalAmount / VAT_STANDARD) * VAT_PERCENT;
@@ -141,6 +140,17 @@ namespace Pos_System.API.Services.Implements
 
             return newOrder.Id;
         }
+
+        //làm prepare order
+        //public async Task<PrepareOrderInfoResponse> PrepareOrder(PrepareOrderInfoPrequest req)
+        //{
+        //    string checkPromotionUrl = "";
+        //    var data = new
+        //    {
+
+        //    } 
+                
+        //}
 
         public async Task<GetOrderDetailResponse> GetOrderDetail(Guid storeId, Guid orderId)
         {
@@ -297,7 +307,7 @@ namespace Pos_System.API.Services.Implements
             return filterQuery;
         }
 
-        public async Task<Guid> UpdateOrder(Guid storeId, Guid orderId, UpdateOrderRequest updateOrderRequest)
+        public async Task<Guid> UpdateOrder(Guid storeId, Guid orderId, PrepareOrderInfoPrequest updateOrderRequest)
         {
             if (storeId == Guid.Empty) throw new BadHttpRequestException(MessageConstant.Store.EmptyStoreIdMessage);
             Store store = await _unitOfWork.GetRepository<Store>()

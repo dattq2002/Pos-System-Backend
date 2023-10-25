@@ -36,6 +36,15 @@ namespace Pos_System.API.Controllers
             return Ok(newOrderIdResponse);
         }
 
+        //[CustomAuthorize(RoleEnum.Staff)]
+        //[HttpPost(ApiEndPointConstant.Order.PrepareOrderEndPoint)]
+        //[ProducesResponseType(typeof(PrepareOrderInfoResponse), StatusCodes.Status200OK)]
+        //public async Task<IActionResult> PrepareOrder(PrepareOrderInfoPrequest prepareOrderInfoPrequest)
+        //{
+        //    var response = await _orderService.PrepareOrder(prepareOrderInfoPrequest);
+        //    return Ok(response);
+        //}
+
         [CustomAuthorize(RoleEnum.Staff, RoleEnum.StoreManager)]
         [HttpGet(ApiEndPointConstant.Order.OrderEndPoint)]
         [ProducesResponseType(typeof(GetOrderDetailResponse), StatusCodes.Status200OK)]
@@ -49,7 +58,7 @@ namespace Pos_System.API.Controllers
         [HttpPut(ApiEndPointConstant.Order.OrderEndPoint)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateOrderPayment(Guid storeId, Guid id,
-            UpdateOrderRequest updateOrderRequest)
+            PrepareOrderInfoPrequest updateOrderRequest)
         {
             var response = await _orderService.UpdateOrder(storeId, id, updateOrderRequest);
             return Ok(response);
