@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Pos_System.API.Constants;
 using Pos_System.API.Enums;
 using Pos_System.API.Payload.Request.Brands;
@@ -8,6 +9,10 @@ using Pos_System.API.Services.Interfaces;
 using Pos_System.API.Utils;
 using Pos_System.Domain.Models;
 using Pos_System.Repository.Interfaces;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using ZaloPay.Helper;
 
 namespace Pos_System.API.Services.Implements
 {
@@ -24,6 +29,7 @@ namespace Pos_System.API.Services.Implements
             Brand brand = await _unitOfWork.GetRepository<Brand>()
                 .SingleOrDefaultAsync(predicate: x => x.BrandCode.Equals(brandCode));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
+            
 
             _logger.LogInformation($"Create new brand with {newUserRequest.FullName}");
             User newUser = _mapper.Map<User>(newUserRequest);
@@ -31,7 +37,7 @@ namespace Pos_System.API.Services.Implements
             newUser.Id = Guid.NewGuid();
             newUser.BrandId = brand.Id;
 
-            newUser.FireBaseUid = "";
+            newUser.FireBaseUid = "lELWhqB973M62ShrSKMFWJTXc703";
             newUser.Fcmtoken = "";
 
             newUser.CreatedAt = DateTime.UtcNow;
@@ -39,6 +45,23 @@ namespace Pos_System.API.Services.Implements
 
             await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
             bool isSuccessful = await _unitOfWork.CommitAsync() > 0;
+
+            //tạo membership bên pointify
+            string createMemberPromoUrl = $"https://api-pointify.reso.vn/api/memberships?apiKey={brand.Id}";
+            var data = new
+            {
+                membershipId = newUser.Id,
+                fullname = newUser.FullName,
+                email = newUser.Email,
+                gender = newUser.Gender.Equals("Nam")? 1 : 2,
+                phoneNumber = newUser.PhoneNumber,
+                memberProgramId = "52b1f27d-885f-4b1c-9773-91ed894b4eac"
+            };
+
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync(createMemberPromoUrl, content);
             CreateNewUserResponse createNewUserResponse = null;
             if (isSuccessful)
             {
