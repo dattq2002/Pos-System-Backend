@@ -35,10 +35,6 @@ namespace Pos_System.API.Services.Implements
             Brand brand = await _unitOfWork.GetRepository<Brand>()
                 .SingleOrDefaultAsync(predicate: x => x.BrandCode.Equals(brandCode));
             if (brand == null) throw new BadHttpRequestException(MessageConstant.Brand.BrandNotFoundMessage);
-
-            if (newUserRequest.Gender.Equals("Nam")) newUserRequest.Gender = GenderEnum.MALE.GetDescriptionFromEnum();
-            else if(newUserRequest.Gender.Equals("Nữ")) newUserRequest.Gender= GenderEnum.FEMALE.GetDescriptionFromEnum();
-            else newUserRequest.Gender = GenderEnum.OTHER.GetDescriptionFromEnum(); 
             _logger.LogInformation($"Create new brand with {newUserRequest.FullName}");
             User newUser = _mapper.Map<User>(newUserRequest);
             newUser.Status = UserStatus.Active.GetDescriptionFromEnum();
@@ -61,7 +57,7 @@ namespace Pos_System.API.Services.Implements
                 membershipId = newUser.Id,
                 fullname = newUser.FullName,
                 email = newUser.Email,
-                gender = newUser.Gender.Equals(GenderEnum.MALE)? 1 : 2,
+                gender = newUserRequest.Gender.Equals("MALE")? 1 : (newUserRequest.Gender.Equals("FEMALE")? 2 : 3),
                 phoneNumber = newUser.PhoneNumber,
                 memberProgramId = "52b1f27d-885f-4b1c-9773-91ed894b4eac"
             };
